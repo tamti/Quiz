@@ -5,6 +5,7 @@ CREATE TABLE users (
     user_id INT AUTO_INCREMENT,
     nickname VARCHAR(20) NOT NULL,
     password VARCHAR(40) NOT NULL,
+	salt varchar(20),
     is_admin BOOLEAN NOT NULL,
     CONSTRAINT users_pk PRIMARY KEY (user_id)
 );
