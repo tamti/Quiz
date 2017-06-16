@@ -1,5 +1,6 @@
-create database quiz_website;
-use quiz_website;
+CREATE database quiz_website
+DEFAULT CHARACTER SET utf8;
+USE quiz_website;
 
 CREATE TABLE users (
     user_id INT AUTO_INCREMENT,
@@ -22,16 +23,25 @@ CREATE TABLE friend_lists (
         REFERENCES users (user_id)
 );
 
+CREATE TABLE quiz_categories (
+	category_id INT AUTO_INCREMENT,
+	category_name VARCHAR(30) NOT NULL,
+	CONSTRAINT quiz_categories_pk PRIMARY KEY (category_id)
+);
+
 CREATE TABLE quizes (
     quiz_id INT AUTO_INCREMENT,
     quiz_author_id INT,
-    date_created DATETIME NOT NULL,
+	category_id INT,
     quiz_file VARCHAR(30) NOT NULL,
     num_questions INT NOT NULL,
     max_points INT NOT NULL,
+	date_created DATETIME NOT NULL,
     CONSTRAINT quizes_pk PRIMARY KEY (quiz_id),
-    CONSTRAINT quizes_fk FOREIGN KEY (quiz_author_id)
-        REFERENCES users (user_id)
+    CONSTRAINT quizes_fk1 FOREIGN KEY (quiz_author_id)
+        REFERENCES users (user_id),
+	CONSTRAINT quizes_fk2 FOREIGN KEY (category_id)
+        REFERENCES quiz_categories (category_id)
 );
 
 CREATE TABLE quiz_stats (
