@@ -36,7 +36,7 @@ CREATE TABLE quizes (
     quiz_file VARCHAR(30) NOT NULL,
     num_questions INT NOT NULL,
     max_points INT NOT NULL,
-	date_created DATETIME NOT NULL,
+	time_created DATETIME,
     CONSTRAINT quizes_pk PRIMARY KEY (quiz_id),
     CONSTRAINT quizes_fk1 FOREIGN KEY (quiz_author_id)
         REFERENCES users (user_id),
@@ -48,7 +48,7 @@ CREATE TABLE quiz_stats (
     stat_id INT AUTO_INCREMENT,
     quiz_id INT NOT NULL,
     user_id INT NOT NULL,
-    taken_on DATE NOT NULL,
+    taken_on DATETIME NOT NULL,
     used_time TIME NOT NULL,
     num_correct_answers INT NOT NULL,
     num_recieved_points INT NOT NULL,
