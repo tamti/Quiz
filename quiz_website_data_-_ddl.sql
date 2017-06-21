@@ -146,7 +146,7 @@ CREATE TABLE user_achievements (
  * Authors are stored as a reference to their
  * respective table ("users")
  */
-CREATE TABLE quizes (
+CREATE TABLE quizzes (
     quiz_id INT AUTO_INCREMENT,
     quiz_name VARCHAR(30),
     quiz_author_id INT,
@@ -167,9 +167,9 @@ CREATE TABLE all_quiz_categories (
 );
 
 /*
- * Stores which quizes belong to which categories
+ * Stores which quizzes belong to which categories
  *
- * Quizes and quiz categories are stored as a reference to their
+ * Quizzes and quiz categories are stored as a reference to their
  * respective tables
  */
 CREATE TABLE categories_of_quizes (
@@ -178,7 +178,7 @@ CREATE TABLE categories_of_quizes (
     quiz_category_id INT NOT NULL,
     CONSTRAINT categories_of_quizes_pk PRIMARY KEY (category_of_quiz_id),
     CONSTRAINT categories_of_quizes_fk1 FOREIGN KEY (quiz_id)
-        REFERENCES quizes (quiz_id),
+        REFERENCES quizzes (quiz_id),
     CONSTRAINT categories_of_quizes_fk2 FOREIGN KEY (quiz_category_id)
         REFERENCES all_quiz_categories (quiz_category_id)
 );
@@ -270,9 +270,9 @@ CREATE TABLE answers_to_questions (
         REFERENCES answers (answer_id)
 );
 
-/* Stores which questions belong to which quizes
+/* Stores which questions belong to which quizzes
  *
- * Quizes and questions are stored as a reference to their
+ * Quizzes and questions are stored as a reference to their
  * respective tables
  */
 CREATE TABLE quiz_questions (
@@ -281,7 +281,7 @@ CREATE TABLE quiz_questions (
     question_id INT NOT NULL,
     CONSTRAINT quiz_questions_pk PRIMARY KEY (quiz_question_id),
     CONSTRAINT quiz_questions_fk1 FOREIGN KEY (quiz_id)
-        REFERENCES quizes (quiz_id),
+        REFERENCES quizzes (quiz_id),
     CONSTRAINT quiz_questions_fk2 FOREIGN KEY (question_id)
         REFERENCES questions (question_id)
 );
@@ -315,7 +315,7 @@ CREATE TABLE user_answers (
  * as well as for the user "history page" or just on
  * user's "profile page" as a "recently made quiz" post.
  *
- * Quizes and users are stored as a reference to their
+ * Quizzes and users are stored as a reference to their
  * respective tables
  */
 CREATE TABLE quiz_stats (
@@ -329,7 +329,7 @@ CREATE TABLE quiz_stats (
 	some_answers_need_checking boolean not null,
     CONSTRAINT quiz_stats_pk PRIMARY KEY (stat_id),
     CONSTRAINT quiz_stats_fk1 FOREIGN KEY (quiz_id)
-        REFERENCES quizes (quiz_id),
+        REFERENCES quizzes (quiz_id),
     CONSTRAINT quiz_stats_fk2 FOREIGN KEY (user_id)
         REFERENCES users (user_id)
 );
