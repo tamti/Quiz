@@ -1,5 +1,8 @@
+DROP DATABASE IF EXISTS quiz_website;
+
 CREATE DATABASE quiz_website
 DEFAULT CHARACTER SET utf8;
+
 USE quiz_website;
 
 /*
@@ -13,9 +16,12 @@ USE quiz_website;
  */
 CREATE TABLE users (
     user_id INT AUTO_INCREMENT,
+    first_name VARCHAR(20),
+    last_name VARCHAR(20),
     nickname VARCHAR(20) NOT NULL,
     password VARCHAR(40) NOT NULL,
-	salt varchar(20),
+    salt varchar(20),
+	email varchar(30),
 	is_active BOOLEAN NOT NULL,
     is_admin BOOLEAN NOT NULL,
 	has_photo boolean NOT NULL,
