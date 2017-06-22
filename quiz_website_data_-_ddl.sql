@@ -32,7 +32,7 @@ CREATE TABLE photos (
 /* 
  * Store photos that represent "profile pictures" of the users that have one
  *
- * Users and photos are stored as a reference to their
+ * Users and photos are stored as a foreign keys referencing their
  * respective tables
  */
 CREATE TABLE user_photos (
@@ -54,7 +54,7 @@ CREATE TABLE user_photos (
  * If the request is denied or one of friends removes another
  * from ones "friend list" value of the column "friendship_active" is set to False
  *
- * Users are stored as a reference to their
+ * Users are stored as foreign keys referencing their
  * respective table
  */
 CREATE TABLE friend_lists (
@@ -76,7 +76,7 @@ CREATE TABLE friend_lists (
  * a "friend request", a "challange" request or just a "note") 
  * and time when the message was sent. As well as IDs of those users.
  *
- * Users are stored as a reference to their
+ * Users are stored as foreign keys referencing their
  * respective table
  */
 CREATE TABLE messages (
@@ -97,7 +97,7 @@ CREATE TABLE messages (
  * Stores String values of all announcements,
  * their authors and times when the announcements were made
  * 
- * Authors are stored as a reference to their
+ * Authors are stored as foreign keys referencing their
  * respective table ("users")
  */
 CREATE TABLE announcements (
@@ -120,7 +120,7 @@ CREATE TABLE achievements (
 /*
  * Stores achievements of users
  *
- * Users and achievements are stored as a reference to their
+ * Users and achievements are stored as foreign keys referencing their
  * respective tables
  */
 CREATE TABLE user_achievements (
@@ -143,7 +143,7 @@ CREATE TABLE user_achievements (
  * (true indicates that they should), max allowed time to complete
  * the quiz, max number of points for the quiz.
  *
- * Authors are stored as a reference to their
+ * Authors are stored as foreign keys referencing their
  * respective table ("users")
  */
 CREATE TABLE quizzes (
@@ -169,7 +169,7 @@ CREATE TABLE all_quiz_categories (
 /*
  * Stores which quizzes belong to which categories
  *
- * Quizzes and quiz categories are stored as a reference to their
+ * Quizzes and quiz categories are stored as reference to their
  * respective tables
  */
 CREATE TABLE categories_of_quizes (
@@ -194,7 +194,7 @@ CREATE TABLE question_types (
  * This table Stores string values of all questions. Also idicates
  * their type and max number of points for the question
  *
- * Questions types are stored as a reference to their
+ * Questions types are stored as foreign keys referencing their
  * respective table
  */
 CREATE TABLE questions (
@@ -210,7 +210,7 @@ CREATE TABLE questions (
 /*
  * Stores photos for the questions that need them
  *
- * Questions and photos are stored as a reference to their
+ * Questions and photos are stored as foreign keys referencing their
  * respective tables
  */
 CREATE TABLE question_photos (
@@ -234,7 +234,7 @@ CREATE TABLE answers (
 /* 
  * Stores photos for the answers that need them
  *
- * Photos and answers are stored as a reference to their
+ * Photos and answers are stored as foreign keys referencing their
  * respective tables
  */
 CREATE TABLE answer_photos (
@@ -254,7 +254,7 @@ CREATE TABLE answer_photos (
  * an optional column ("answer_no") for the kind of answers
  * which have an order.
  *
- * Questions and answers are stored as a reference to their
+ * Questions and answers are stored as foreign keys referencing their
  * respective tables
  */
 CREATE TABLE answers_to_questions (
@@ -272,7 +272,7 @@ CREATE TABLE answers_to_questions (
 
 /* Stores which questions belong to which quizzes
  *
- * Quizzes and questions are stored as a reference to their
+ * Quizzes and questions are stored as foreign keys referencing their
  * respective tables
  */
 CREATE TABLE quiz_questions (
@@ -292,7 +292,7 @@ CREATE TABLE quiz_questions (
  * by the computer. So the quiz author will be 
  * able to see and grade those answers when possible.
  *
- * Questions and users are stored as a reference to their
+ * Questions and users are stored as foreign keys referencing their
  * respective tables
  */
 CREATE TABLE user_answers (
@@ -315,7 +315,7 @@ CREATE TABLE user_answers (
  * as well as for the user "history page" or just on
  * user's "profile page" as a "recently made quiz" post.
  *
- * Quizzes and users are stored as a reference to their
+ * Quizzes and users are stored as foreign keys referencing their
  * respective tables
  */
 CREATE TABLE quiz_stats (
