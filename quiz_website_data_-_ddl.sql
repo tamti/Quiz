@@ -1,4 +1,4 @@
-CREATE DATABASE IF NOT exists quiz_website
+CREATE DATABASE quiz_website
 DEFAULT CHARACTER SET utf8;
 USE quiz_website;
 
