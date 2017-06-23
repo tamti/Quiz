@@ -15,13 +15,13 @@ USE quiz_website;
  * user has a "profile picture" or not (used to avoid useless searching in the table "user_photos")
  */
 CREATE TABLE users (
-    user_id INT AUTO_INCREMENT,
-    first_name VARCHAR(20),
-    last_name VARCHAR(20),
-    nickname VARCHAR(20) NOT NULL,
+    user_id INT NOT NULL,
+    first_name VARCHAR(20) NOT NULL,
+    last_name VARCHAR(20) NOT NULL,
+    username VARCHAR(20) NOT NULL,
     password VARCHAR(40) NOT NULL,
     salt varchar(20),
-	email varchar(30),
+	email varchar(30) NOT NULL,
 	is_active BOOLEAN NOT NULL,
     is_admin BOOLEAN NOT NULL,
 	has_photo boolean NOT NULL,
@@ -30,7 +30,7 @@ CREATE TABLE users (
 
 -- List of names of all photo files avaliable on the website
 CREATE TABLE photos (
-    photo_id INT AUTO_INCREMENT,
+    photo_id INT NOT NULL,
     photo_file VARCHAR(30) NOT NULL,
     CONSTRAINT photos_pk PRIMARY KEY (photo_id)
 );
@@ -153,11 +153,12 @@ CREATE TABLE user_achievements (
  * respective table ("users")
  */
 CREATE TABLE quizzes (
-    quiz_id INT AUTO_INCREMENT,
+    quiz_id INT NOT NULL,
     quiz_name VARCHAR(30),
     quiz_author_id INT,
     time_created DATETIME,
     show_correct_answer_immediately BOOLEAN NOT NULL,
+	show_questions_on_one_page BOOlEAN NOT NULL,
 	max_allowed_time TIME,
     max_points INT NOT NULL,
     CONSTRAINT quizes_pk PRIMARY KEY (quiz_id),
@@ -204,7 +205,7 @@ CREATE TABLE question_types (
  * respective table
  */
 CREATE TABLE questions (
-    question_id INT AUTO_INCREMENT,
+    question_id INT NOT NULL,
     question_txt VARCHAR(500) NOT NULL,
     question_type_id INT NOT NULL,
     max_points DECIMAL NOT NULL,
@@ -232,26 +233,9 @@ CREATE TABLE question_photos (
 
 -- String values of all kinds of answers
 CREATE TABLE answers (
-    answer_id INT AUTO_INCREMENT,
+    answer_id INT NOT NULL,
     answer_txt VARCHAR(150),
     CONSTRAINT answers_pk PRIMARY KEY (answer_id)
-);
-
-/* 
- * Stores photos for the answers that need them
- *
- * Photos and answers are stored as foreign keys referencing their
- * respective tables
- */
-CREATE TABLE answer_photos (
-    answer_photos_id INT AUTO_INCREMENT,
-    answer_id INT NOT NULL,
-    photo_id INT NOT NULL,
-    CONSTRAINT answer_photos_pk PRIMARY KEY (answer_photos_id),
-    CONSTRAINT answer_photos_fk1 FOREIGN KEY (answer_id)
-        REFERENCES answers (answer_id),
-    CONSTRAINT answer_photos_fk2 FOREIGN KEY (photo_id)
-        REFERENCES photos (photo_id)
 );
 
 /*
