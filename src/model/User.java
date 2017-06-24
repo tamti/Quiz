@@ -1,57 +1,49 @@
 package model;
 
-import java.util.ArrayList;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
-public class User {
-	int userID;
-	String firstname;
-	String lastname;
-	String email;
-	String username;
-	String password;
-	ArrayList <User> friends;
+import others.PhotoAble;
+
+public class User extends PhotoAble implements Comparable {
+	private long ID;
+	private String firstName;
+	private String lastName;
+	private String email;
+	private String username;
+	private String password;
+	private String salt;
+	private SortedSet <User> friends;
 	
-	public User(String firstname, String lastname, String email,
-			String username, String password, int ID) {
-		super();
-		this.userID = ID;
-		this.firstname = firstname;
-		this.lastname = lastname;
+	public User(String firstName, String lastName, String email, String username, String password, String salt,
+			SortedSet<User> friends) {
+		this.firstName = firstName;
+		this.lastName = lastName;
 		this.email = email;
 		this.username = username;
 		this.password = password;
-		friends = new ArrayList<>();
-	}
-	public User(String firstname, String lastname, String email,
-			String username, String password) {
-		super();
-		this.firstname = firstname;
-		this.lastname = lastname;
-		this.email = email;
-		this.username = username;
-		this.password = password;
-		friends = new ArrayList<>();
-	}
-	public User(String firstname, String lastname, String email,
-			String username, String password, ArrayList<User> friends) {
-		super();
-		this.firstname = firstname;
-		this.lastname = lastname;
-		this.email = email;
-		this.username = username;
-		this.password = password;
+		this.salt = salt;
 		this.friends = friends;
 	}
+
+	public User(String firstName, String lastName, String email, String username, String password, String salt) {
+		this(firstName, lastName, email, username, password, salt, new TreeSet<User>());
+	}
+
+	public User(String firstName, String lastName, String email, String username, String password, String salt,
+			long ID) {
+		this(firstName, lastName, email, username, password, salt);
+		this.ID = ID;
+	}
+
+	public long getID() {
+		return ID;
+	}
 	
-	public User() {
-		// TODO Auto-generated constructor stub
+	public void setID(long userID) {
+		this.ID = userID;
 	}
-	public int getUserID() {
-		return userID;
-	}
-	public void setUserID(int userID) {
-		this.userID = userID;
-	}
+	
 	public String getURL(){
 		return "User.jsp?username="+username;
 	}
@@ -59,62 +51,85 @@ public class User {
 	public void addFriend(User user){
 		friends.add(user);
 	}
-	public ArrayList<User> getFriends() {
+	
+	public SortedSet<User> getFriends() {
 		return friends;
 	}
-	public void setFriends(ArrayList<User> friends) {
+	
+	public void setFriends(SortedSet<User> friends) {
 		this.friends = friends;
 	}
-	public String getFirstname() {
-		return firstname;
-	}
-	public void setFirstname(String firstname) {
-		this.firstname = firstname;
+	
+	public String getFirstName() {
+		return firstName;
 	}
 	
-	public String getLastname() {
-		return lastname;
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
 	}
-	public void setLastname(String lastname) {
-		this.lastname = lastname;
+	
+	public String getLastName() {
+		return lastName;
 	}
+	
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+	
 	public String getEmail() {
 		return email;
 	}
+	
 	public void setEmail(String email) {
 		this.email = email;
 	}
+	
 	public String getUsername() {
 		return username;
 	}
+	
 	public void setUsername(String username) {
 		this.username = username;
 	}
+	
 	public String getPassword() {
 		return password;
 	}
+	
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public boolean isFriend(User other){
-		for(int i=0; i<friends.size(); i++){
-			User friend = friends.get(i);
-			if(friend.getUsername().equals(other.getUsername())) 
-				return true;
-		}
-		return false;
+	
+	public String getSalt() {
+		return salt;
 	}
-	public void removeFriend(String userName){
-		for(int i =0; i<=friends.size(); i++){
-			if(friends.get(i).getUsername().equals(userName)){
-				friends.remove(i);
-				break;
-			}
-		}
+	
+	public void setSalt(String salt) {
+		this.salt = salt;
+	}
+	
+	public boolean isFriend(User u) {
+		return friends.contains(u);
+	}
+	
+	public void removeFriend(User friend){
+		friends.remove(friend);
 	}
 	
 	@Override
 	public String toString(){
-		return firstname + " " + lastname;
+		return firstName + " " + lastName;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		User other = (User) o;
+		return username.equals(other.getUsername());
+	}
+
+	@Override
+	public int compareTo(Object o) {
+		User other = (User) o;
+		return username.compareToIgnoreCase(other.toString());
 	}
 }
