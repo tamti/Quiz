@@ -5,6 +5,14 @@ DEFAULT CHARACTER SET utf8;
 
 USE quiz_website;
 
+-- List of names of all photo files avaliable on the website
+CREATE TABLE photos (
+    photo_id INT NOT NULL,
+    photo_file VARCHAR(100) NOT NULL,
+    is_default BOOLEAN,
+    CONSTRAINT photos_pk PRIMARY KEY (photo_id)
+);
+
 /*
  * This table stores string values of nicknames and passwords (hash-values)
  * of all users of the website. String values of the column "salt"
@@ -16,40 +24,17 @@ USE quiz_website;
  */
 CREATE TABLE users (
     user_id INT NOT NULL,
-    first_name VARCHAR(20) NOT NULL,
-    last_name VARCHAR(20) NOT NULL,
-    username VARCHAR(20) NOT NULL,
-    password VARCHAR(40) NOT NULL,
+    first_name VARCHAR(30) NOT NULL,
+    last_name VARCHAR(40) NOT NULL,
+    username VARCHAR(30) NOT NULL,
+    password VARCHAR(60) NOT NULL,
     salt varchar(20),
-	email varchar(30) NOT NULL,
+	email varchar(50) NOT NULL,
 	is_active BOOLEAN NOT NULL,
+	photo_id int,
     is_admin BOOLEAN NOT NULL,
-	has_photo boolean NOT NULL,
-    CONSTRAINT users_pk PRIMARY KEY (user_id)
-);
-
--- List of names of all photo files avaliable on the website
-CREATE TABLE photos (
-    photo_id INT NOT NULL,
-    photo_file VARCHAR(30) NOT NULL,
-    CONSTRAINT photos_pk PRIMARY KEY (photo_id)
-);
-
-/* 
- * Store photos that represent "profile pictures" of the users that have one
- *
- * Users and photos are stored as a foreign keys referencing their
- * respective tables
- */
-CREATE TABLE user_photos (
-    user_photo_id INT AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    photo_id INT NOT NULL,
-    CONSTRAINT user_photos_pk PRIMARY KEY (user_photo_id),
-    CONSTRAINT user_photos_fk1 FOREIGN KEY (user_id)
-        REFERENCES users (user_id),
-    CONSTRAINT user_photos_fk2 FOREIGN KEY (photo_id)
-        REFERENCES photos (photo_id)
+    CONSTRAINT users_pk PRIMARY KEY (user_id),
+    CONSTRAINT users_fk FOREIGN KEY (photo_id) references photos (photo_id)
 );
 
 /*
@@ -91,7 +76,7 @@ CREATE TABLE messages (
     receiver_id INT NOT NULL,
     message_type ENUM('friend_request', 'challange', 'note'),
     time_sent DATETIME NOT NULL,
-    text VARCHAR(100) NOT NULL,
+    text VARCHAR(1000) NOT NULL,
     CONSTRAINT messages_pk PRIMARY KEY (message_id),
     CONSTRAINT messages_fk1 FOREIGN KEY (sender_id)
         REFERENCES users (user_id),
@@ -110,7 +95,7 @@ CREATE TABLE announcements (
     announcement_id INT AUTO_INCREMENT,
     author_id INT NOT NULL,
     time_announced DATETIME NOT NULL,
-    text VARCHAR(200) NOT NULL,
+    text VARCHAR(1000) NOT NULL,
     CONSTRAINT announcements_pk PRIMARY KEY (announcement_id),
     CONSTRAINT announcements_fk FOREIGN KEY (author_id)
         REFERENCES users (user_id)
@@ -119,7 +104,7 @@ CREATE TABLE announcements (
 -- Stores String values of all achievements
 CREATE TABLE achievements (
     achievement_id INT AUTO_INCREMENT,
-    achievement_name VARCHAR(40) NOT NULL,
+    achievement_name VARCHAR(100) NOT NULL,
     CONSTRAINT achievements_pk PRIMARY KEY (achievement_id)
 );
 
@@ -154,7 +139,7 @@ CREATE TABLE user_achievements (
  */
 CREATE TABLE quizzes (
     quiz_id INT NOT NULL,
-    quiz_name VARCHAR(30),
+    quiz_name VARCHAR(100),
     quiz_author_id INT,
     time_created DATETIME,
     show_correct_answer_immediately BOOLEAN NOT NULL,
@@ -169,7 +154,7 @@ CREATE TABLE quizzes (
 -- String values of all quiz categories
 CREATE TABLE all_quiz_categories (
 	quiz_category_id INT AUTO_INCREMENT,
-	category_name VARCHAR(20) NOT NULL,
+	category_name VARCHAR(100) NOT NULL,
 	CONSTRAINT all_quiz_categories_pk PRIMARY KEY (quiz_category_id)
 );
 
@@ -193,7 +178,7 @@ CREATE TABLE categories_of_quizes (
 -- String values of all questions types
 CREATE TABLE question_types (
 	question_type_id int auto_increment,
-	question_type_name varchar(10) not null,
+	question_type_name varchar(50) not null,
 	constraint question_types primary key (question_type_id)
 );
 
@@ -206,7 +191,7 @@ CREATE TABLE question_types (
  */
 CREATE TABLE questions (
     question_id INT NOT NULL,
-    question_txt VARCHAR(500) NOT NULL,
+    question_txt VARCHAR(2000) NOT NULL,
     question_type_id INT NOT NULL,
     max_points DECIMAL NOT NULL,
     CONSTRAINT questions_pk PRIMARY KEY (question_id),
@@ -234,7 +219,7 @@ CREATE TABLE question_photos (
 -- String values of all kinds of answers
 CREATE TABLE answers (
     answer_id INT NOT NULL,
-    answer_txt VARCHAR(150),
+    answer_txt VARCHAR(600),
     CONSTRAINT answers_pk PRIMARY KEY (answer_id)
 );
 
@@ -289,7 +274,7 @@ CREATE TABLE user_answers (
     user_answer_id INT AUTO_INCREMENT,
     question_id INT NOT NULL,
     user_id INT NOT NULL,
-    user_answer_txt VARCHAR(200) NOT NULL,
+    user_answer_txt VARCHAR(1000) NOT NULL,
     CONSTRAINT user_answers_pk PRIMARY KEY (user_answer_id),
     CONSTRAINT user_answers_fk1 FOREIGN KEY (question_id)
         REFERENCES questions (question_id),

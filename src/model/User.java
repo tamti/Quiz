@@ -40,7 +40,7 @@ public class User extends PhotoAble implements Comparable {
 		this.ID = ID;
 	}
 
-	public long getID() {
+	public int getID() {
 		return ID;
 	}
 	
