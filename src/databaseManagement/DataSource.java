@@ -48,8 +48,15 @@ public class DataSource {
 		return dataSource;
 	}
 
+	/**
+	 * Returns one of available connections
+	 * to the database
+	 * 
+	 * @return Connection
+	 * @throws SQLException
+	 */
 	public Connection getConnection() throws SQLException {
-		return ds.getConnection();
+		return this.ds.getConnection();
 	}
 
 }

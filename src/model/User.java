@@ -1,18 +1,21 @@
 package model;
 
+import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import others.PhotoAble;
 
+@SuppressWarnings("rawtypes")
 public class User extends PhotoAble implements Comparable {
-	private long ID;
+	private int ID;
 	private String firstName;
 	private String lastName;
 	private String email;
 	private String username;
 	private String password;
 	private String salt;
+	private boolean isAdmin;
 	private SortedSet <User> friends;
 	
 	public User(String firstName, String lastName, String email, String username, String password, String salt,
@@ -24,6 +27,7 @@ public class User extends PhotoAble implements Comparable {
 		this.password = password;
 		this.salt = salt;
 		this.friends = friends;
+		isAdmin = false;
 	}
 
 	public User(String firstName, String lastName, String email, String username, String password, String salt) {
@@ -31,7 +35,7 @@ public class User extends PhotoAble implements Comparable {
 	}
 
 	public User(String firstName, String lastName, String email, String username, String password, String salt,
-			long ID) {
+			int ID) {
 		this(firstName, lastName, email, username, password, salt);
 		this.ID = ID;
 	}
@@ -40,8 +44,8 @@ public class User extends PhotoAble implements Comparable {
 		return ID;
 	}
 	
-	public void setID(long userID) {
-		this.ID = userID;
+	public void setID(int ID) {
+		this.ID = ID;
 	}
 	
 	public String getURL(){
@@ -108,8 +112,36 @@ public class User extends PhotoAble implements Comparable {
 		this.salt = salt;
 	}
 	
+	public void makeAdmin() {
+		isAdmin = true;
+	}
+	
+	public boolean isAdmin() {
+		return isAdmin;
+	}
+	
 	public boolean isFriend(User u) {
 		return friends.contains(u);
+	}
+	
+	public boolean isFriend(String username) {
+		Iterator it = friends.iterator();
+		while (it.hasNext()) {
+			User curr = (User) it.next();
+			if (curr.getUsername().equals(username))
+				return true;
+		}
+		return false;
+	}
+	
+	public boolean isFriend(int ID) {
+		Iterator it = friends.iterator();
+		while (it.hasNext()) {
+			User curr = (User) it.next();
+			if (curr.getID() == ID)
+				return true;
+		}
+		return false;
 	}
 	
 	public void removeFriend(User friend){
@@ -117,7 +149,7 @@ public class User extends PhotoAble implements Comparable {
 	}
 	
 	@Override
-	public String toString(){
+	public String toString() {
 		return firstName + " " + lastName;
 	}
 	
