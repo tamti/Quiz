@@ -10,3 +10,8 @@ values
     ('matching'),
     ('graded'),
     ('timed');
+	
+insert into photos
+	(photo_id, photo_file, is_default);
+values
+	(1, "no_profile_picture.jpg", true);

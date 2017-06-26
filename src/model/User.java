@@ -16,10 +16,11 @@ public class User extends PhotoAble implements Comparable {
 	private String password;
 	private String salt;
 	private boolean isAdmin;
-	private SortedSet <User> friends;
-	
+	private SortedSet<String> friends;
+	private SortedSet<String> friendRequests;
+
 	public User(String firstName, String lastName, String email, String username, String password, String salt,
-			SortedSet<User> friends) {
+			SortedSet<String> friends, SortedSet<String> friendRequests) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
@@ -27,11 +28,12 @@ public class User extends PhotoAble implements Comparable {
 		this.password = password;
 		this.salt = salt;
 		this.friends = friends;
+		this.friendRequests = friendRequests;
 		isAdmin = false;
 	}
 
 	public User(String firstName, String lastName, String email, String username, String password, String salt) {
-		this(firstName, lastName, email, username, password, salt, new TreeSet<User>());
+		this(firstName, lastName, email, username, password, salt, new TreeSet<String>(), new TreeSet<String>());
 	}
 
 	public User(String firstName, String lastName, String email, String username, String password, String salt,
@@ -43,87 +45,100 @@ public class User extends PhotoAble implements Comparable {
 	public int getID() {
 		return ID;
 	}
-	
+
 	public void setID(int ID) {
 		this.ID = ID;
 	}
-	
-	public String getURL(){
-		return "User.jsp?username="+username;
+
+	public String getURL() {
+		return "User.jsp?username=" + username;
 	}
-	
-	public void addFriend(User user){
-		friends.add(user);
+
+	public void addFriend(String username) {
+		friendRequests.remove(username);
+		friends.add(username);
 	}
-	
-	public SortedSet<User> getFriends() {
+
+	public SortedSet<String> getFriends() {
 		return friends;
 	}
-	
-	public void setFriends(SortedSet<User> friends) {
+
+	public void setFriends(SortedSet<String> friends) {
 		this.friends = friends;
 	}
-	
+
+	public void addFriendRequest(String username) {
+		friendRequests.add(username);
+	}
+
+	public SortedSet<String> getFriendRequests() {
+		return friendRequests;
+	}
+
+	public void setFriendRequests(SortedSet<String> friendRequests) {
+		this.friendRequests = friendRequests;
+	}
+
 	public String getFirstName() {
 		return firstName;
 	}
-	
+
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
 	}
-	
+
 	public String getLastName() {
 		return lastName;
 	}
-	
+
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
 	}
-	
+
 	public String getEmail() {
 		return email;
 	}
-	
+
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	
+
 	public String getUsername() {
 		return username;
 	}
-	
+
 	public void setUsername(String username) {
 		this.username = username;
 	}
-	
+
 	public String getPassword() {
 		return password;
 	}
-	
+
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
+
 	public String getSalt() {
 		return salt;
 	}
-	
+
 	public void setSalt(String salt) {
 		this.salt = salt;
 	}
-	
+
 	public void makeAdmin() {
 		isAdmin = true;
 	}
-	
+
 	public boolean isAdmin() {
 		return isAdmin;
 	}
-	
+
 	public boolean isFriend(User u) {
 		return friends.contains(u);
 	}
-	
+
 	public boolean isFriend(String username) {
 		Iterator it = friends.iterator();
 		while (it.hasNext()) {
@@ -133,7 +148,7 @@ public class User extends PhotoAble implements Comparable {
 		}
 		return false;
 	}
-	
+
 	public boolean isFriend(int ID) {
 		Iterator it = friends.iterator();
 		while (it.hasNext()) {
@@ -143,16 +158,16 @@ public class User extends PhotoAble implements Comparable {
 		}
 		return false;
 	}
-	
-	public void removeFriend(User friend){
+
+	public void removeFriend(User friend) {
 		friends.remove(friend);
 	}
-	
+
 	@Override
 	public String toString() {
 		return firstName + " " + lastName;
 	}
-	
+
 	@Override
 	public boolean equals(Object o) {
 		User other = (User) o;

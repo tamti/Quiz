@@ -8,7 +8,7 @@ USE quiz_website;
 -- List of names of all photo files avaliable on the website
 CREATE TABLE photos (
     photo_id INT NOT NULL,
-    photo_file VARCHAR(100) NOT NULL,
+    photo_file VARCHAR(150) NOT NULL,
     is_default BOOLEAN,
     CONSTRAINT photos_pk PRIMARY KEY (photo_id)
 );
@@ -30,8 +30,8 @@ CREATE TABLE users (
     password VARCHAR(60) NOT NULL,
     salt varchar(20),
 	email varchar(50) NOT NULL,
-	is_active BOOLEAN NOT NULL,
 	photo_id int,
+	is_active BOOLEAN NOT NULL,
     is_admin BOOLEAN NOT NULL,
     CONSTRAINT users_pk PRIMARY KEY (user_id),
     CONSTRAINT users_fk FOREIGN KEY (photo_id) references photos (photo_id)

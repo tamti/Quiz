@@ -1,7 +1,5 @@
 package others;
 
-import model.User;
-
 /**
  * @author Vazha
  *
@@ -10,16 +8,6 @@ public class PhotoAble {
 	private int photoID;
 	private String photoFile;
 	private String defaultPhoto;
-
-	public PhotoAble(String defaultPhoto, int photoID) {
-		this.defaultPhoto = defaultPhoto;
-		photoFile = "";
-		this.photoID = photoID;
-	}
-
-	public PhotoAble() {
-		this("", -1);
-	}
 
 	public void setPhoto(String photoFileName, int photoID, boolean isDefault) {
 		this.photoID = photoID;
@@ -52,7 +40,7 @@ public class PhotoAble {
 		return !defaultPhoto.isEmpty();
 	}
 
-	public long getPhotoID() {
+	public int getPhotoID() {
 		return photoID;
 	}
 
