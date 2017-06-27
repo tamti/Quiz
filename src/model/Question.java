@@ -6,7 +6,7 @@ import java.util.TreeSet;
 import others.PhotoAble;
 import others.QuestionType;
 
-public class Question extends PhotoAble {
+public class Question extends PhotoAble implements Comparable<Question> {
 	private int ID;
 	private QuestionType type;
 	private String questionStr;
@@ -110,5 +110,20 @@ public class Question extends PhotoAble {
 	 */
 	public SortedSet<Answer> getAnswers() {
 		return answers;
+	}
+
+	
+	/**
+	 * Compares Question objects. Comparison is made with their IDs
+	 * 
+	 * @param other
+	 *            Question object to compare to
+	 * @return the value 0 if this.ID == other.getID(); a value less than 0 if
+	 *         this.ID < other.getID(); and a value greater than 0 if this.ID >
+	 *         other.getID();
+	 */
+	@Override
+	public int compareTo(Question other) {
+		return Integer.compare(this.ID, other.getID());
 	}
 }

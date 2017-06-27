@@ -6,28 +6,7 @@ import java.util.TreeSet;
 
 import model.User;
 
-public class UserDAO {
-	private static final String TABLE_USERS = "users";
-	private static final String COL_USER_ID = "user_id";
-	private static final String COL_FIRST_NAME = "first_name";
-	private static final String COL_LAST_NAME = "last_name";
-	private static final String COL_USERNAME = "username";
-	private static final String COL_PASSWORD = "password";
-	private static final String COL_SALT = "salt";
-	private static final String COL_EMAIL = "email";
-	private static final String COL_IS_ACTIVE = "is_active";
-	private static final String COL_IS_ADMIN = "is_admin";
-
-	private static final String TABLE_PHOTOS = "";
-	private static final String COL_PHOTO_ID = "photo_id";
-	private static final String COL_PHOTO_FILE = "photo_file";
-	private static final String COL_IS_DEFAULT_PHOTO = "is_default";
-
-	private static final String TABLE_FRIEND_LISTS = "friend_lists";
-	private static final String COL_FRIEND1 = "user1_id";
-	private static final String COL_FRIEND2 = "user2_id";
-	private static final String COL_AWAITING_RESPONSE = "awaiting_response";
-	private static final String COL_FRIENDSHIP_ACTIVE = "friendship_active";
+public class UserDAO extends BasicQuizWebSiteDAO {
 
 	/**
 	 * Selects from the database all the necessary parameters for the user
@@ -41,7 +20,7 @@ public class UserDAO {
 	 *         could be found, returns null
 	 */
 	public User getUserByID(int userID) {
-		return getUserWithCondition(COL_USER_ID + " = " + userID);
+		return getUserWithCondition(DbContract.COL_USER_ID + " = " + userID);
 	}
 
 	/**
@@ -56,7 +35,7 @@ public class UserDAO {
 	 *         user could be found, returns null
 	 */
 	public User getUserByUsername(String username) {
-		return getUserWithCondition(COL_USERNAME + " = " + username);
+		return getUserWithCondition(DbContract.COL_USERNAME + " = " + username);
 	}
 
 	/*
@@ -70,8 +49,8 @@ public class UserDAO {
 	 * If no user could be found, returns null
 	 */
 	private User getUserWithCondition(String condition) {
-		String selectQuery = "select * from " + TABLE_USERS + " u, " + TABLE_PHOTOS + " p where " + "u." + COL_PHOTO_ID
-				+ " = " + "p." + COL_PHOTO_ID + " and " + condition + ";";
+		String selectQuery = "select * from " + DbContract.TABLE_USERS + " u, " + DbContract.TABLE_PHOTOS + " p where "
+				+ "u." + DbContract.COL_PHOTO_ID + " = " + "p." + DbContract.COL_PHOTO_ID + " and " + condition + ";";
 
 		ResultSet resultSet = getResultSetWithQuery(selectQuery);
 
@@ -91,26 +70,6 @@ public class UserDAO {
 	}
 
 	/*
-	 * Argument "query" is a String representing MySQL "Select" query. The
-	 * function Returns a ResultSet returned by the
-	 * statement.executeQuery(query).
-	 */
-	private ResultSet getResultSetWithQuery(String query) {
-		ResultSet res = null;
-
-		try {
-			Connection connection = DataSource.getDataSource().getConnection();
-			Statement statement = connection.createStatement();
-			res = statement.executeQuery(query);
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return res;
-	}
-
-	/*
 	 * Returns a User object which is constructed from the values of the current
 	 * row of the given ResultSet object. If the row is empty or there's no rows
 	 * returns null
@@ -119,20 +78,20 @@ public class UserDAO {
 		User res = null;
 
 		try {
-			int userID = resultSet.getInt(COL_USER_ID);
-			String firstName = resultSet.getString(COL_FIRST_NAME);
-			String lastName = resultSet.getString(COL_LAST_NAME);
-			String username = resultSet.getString(COL_USERNAME);
-			String password = resultSet.getString(COL_PASSWORD);
-			String salt = resultSet.getString(COL_SALT);
-			String email = resultSet.getString(COL_EMAIL);
-			int photoID = resultSet.getInt(COL_PHOTO_ID);
+			int userID = resultSet.getInt(DbContract.COL_USER_ID);
+			String firstName = resultSet.getString(DbContract.COL_FIRST_NAME);
+			String lastName = resultSet.getString(DbContract.COL_LAST_NAME);
+			String username = resultSet.getString(DbContract.COL_USERNAME);
+			String password = resultSet.getString(DbContract.COL_PASSWORD);
+			String salt = resultSet.getString(DbContract.COL_SALT);
+			String email = resultSet.getString(DbContract.COL_EMAIL);
+			int photoID = resultSet.getInt(DbContract.COL_PHOTO_ID);
 
 			res = new User(firstName, lastName, email, username, password, salt, userID);
 
 			if (photoID > 0) {
-				String photo = resultSet.getString(COL_PHOTO_FILE);
-				boolean isDefault = resultSet.getBoolean(COL_IS_DEFAULT_PHOTO);
+				String photo = resultSet.getString(DbContract.COL_PHOTO_FILE);
+				boolean isDefault = resultSet.getBoolean(DbContract.COL_IS_DEFAULT_PHOTO);
 				res.setPhoto(photo, photoID, isDefault);
 			}
 
@@ -151,7 +110,7 @@ public class UserDAO {
 	public SortedSet<User> getAllUsers() {
 		SortedSet<User> result = new TreeSet<User>();
 
-		ResultSet rs = getResultSetWithQuery("select * from " + TABLE_USERS);
+		ResultSet rs = getResultSetWithQuery("select * from " + DbContract.TABLE_USERS);
 
 		try {
 			while (rs.next()) {
@@ -170,7 +129,7 @@ public class UserDAO {
 	public int getNumberOfUsers() {
 		int res = 0;
 
-		String countQuery = "select count(1) numberOfUsers from " + TABLE_USERS + ";";
+		String countQuery = "select count(1) numberOfUsers from " + DbContract.TABLE_USERS + ";";
 
 		ResultSet rs = getResultSetWithQuery(countQuery);
 
@@ -195,11 +154,12 @@ public class UserDAO {
 		try {
 			Connection connection = DataSource.getDataSource().getConnection();
 
-			String allUserColumns = COL_USER_ID + "," + COL_FIRST_NAME + "," + COL_LAST_NAME + "," + COL_USERNAME + ","
-					+ COL_PASSWORD + "," + COL_SALT + "," + COL_EMAIL + "," + COL_PHOTO_ID + "," + COL_IS_ACTIVE + ","
-					+ COL_IS_ADMIN;
+			String allUserColumns = DbContract.COL_USER_ID + "," + DbContract.COL_FIRST_NAME + ","
+					+ DbContract.COL_LAST_NAME + "," + DbContract.COL_USERNAME + "," + DbContract.COL_PASSWORD + ","
+					+ DbContract.COL_SALT + "," + DbContract.COL_EMAIL + "," + DbContract.COL_PHOTO_ID + ","
+					+ DbContract.COL_IS_ACTIVE + "," + DbContract.COL_IS_ADMIN;
 
-			String query = "insert into " + TABLE_USERS + " (" + allUserColumns
+			String query = "insert into " + DbContract.TABLE_USERS + " (" + allUserColumns
 					+ ") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
 			PreparedStatement prepSt = connection.prepareStatement(query);
@@ -235,31 +195,31 @@ public class UserDAO {
 	private SortedSet<String> getUserFriends(int userID, boolean friendshipActive) {
 		SortedSet<String> result = new TreeSet<String>();
 
-		String beginning = "select u." + COL_USERNAME + " from " + TABLE_USERS + " u, " + TABLE_FRIEND_LISTS
-				+ "f, where f.";
+		String beginning = "select u." + DbContract.COL_USERNAME + " from " + DbContract.TABLE_USERS + " u, "
+				+ DbContract.TABLE_FRIEND_LISTS + "f, where f.";
 
-		String end = " = " + userID + " and f." + COL_AWAITING_RESPONSE + " = " + !friendshipActive + " and f."
-				+ COL_FRIENDSHIP_ACTIVE + " = " + friendshipActive + ";";
+		String end = " = " + userID + " and f." + DbContract.COL_AWAITING_RESPONSE + " = " + !friendshipActive
+				+ " and f." + DbContract.COL_FRIENDSHIP_ACTIVE + " = " + friendshipActive + ";";
 
-		String query1 = beginning + COL_FRIEND1 + end;
+		String query1 = beginning + DbContract.COL_FRIEND1 + end;
 
 		ResultSet rs1 = getResultSetWithQuery(query1);
 
 		try {
 			while (rs1.next()) {
-				result.add(rs1.getString(COL_USERNAME));
+				result.add(rs1.getString(DbContract.COL_USERNAME));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
-		String query2 = beginning + COL_FRIEND2 + end;
+		String query2 = beginning + DbContract.COL_FRIEND2 + end;
 
 		ResultSet rs2 = getResultSetWithQuery(query2);
 
 		try {
 			while (rs2.next()) {
-				result.add(rs2.getString(COL_USERNAME));
+				result.add(rs2.getString(DbContract.COL_USERNAME));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -278,9 +238,10 @@ public class UserDAO {
 	public boolean areFriends(int user1ID, int user2ID) {
 		boolean res = false;
 
-		String query = "select (count(1)>0) areFriends from " + TABLE_FRIEND_LISTS + " where ((" + COL_FRIEND1 + " = "
-				+ user1ID + " AND " + COL_FRIEND2 + " = " + user2ID + ") OR (" + COL_FRIEND1 + " = " + user2ID + " and "
-				+ COL_FRIEND2 + " = " + user1ID + "))" + " and " + COL_FRIENDSHIP_ACTIVE + " = true;";
+		String query = "select (count(1)>0) areFriends from " + DbContract.TABLE_FRIEND_LISTS + " where (("
+				+ DbContract.COL_FRIEND1 + " = " + user1ID + " AND " + DbContract.COL_FRIEND2 + " = " + user2ID
+				+ ") OR (" + DbContract.COL_FRIEND1 + " = " + user2ID + " and " + DbContract.COL_FRIEND2 + " = "
+				+ user1ID + "))" + " and " + DbContract.COL_FRIENDSHIP_ACTIVE + " = true;";
 
 		ResultSet rs = getResultSetWithQuery(query);
 
@@ -314,8 +275,9 @@ public class UserDAO {
 		try {
 			Connection connection = DataSource.getDataSource().getConnection();
 
-			PreparedStatement prepSt = connection.prepareStatement("insert into " + TABLE_USERS + " (" + COL_FRIEND1
-					+ COL_FRIEND2 + COL_AWAITING_RESPONSE + COL_FRIENDSHIP_ACTIVE + ") values (?, ?, ?, ?)");
+			PreparedStatement prepSt = connection.prepareStatement("insert into " + DbContract.TABLE_USERS + " ("
+					+ DbContract.COL_FRIEND1 + DbContract.COL_FRIEND2 + DbContract.COL_AWAITING_RESPONSE
+					+ DbContract.COL_FRIENDSHIP_ACTIVE + ") values (?, ?, ?, ?)");
 
 			prepSt.setInt(1, user1ID);
 			prepSt.setInt(2, user2ID);
@@ -348,13 +310,14 @@ public class UserDAO {
 	 *            from his "friend list"
 	 */
 	public void updateFriendshipStatus(int user1ID, int user2ID, boolean awaitingResponse, boolean friendshipActive) {
-		String where = "where (" + COL_FRIEND1 + " = " + user1ID + " AND " + COL_FRIEND2 + " = " + user2ID + ") OR ("
-				+ COL_FRIEND1 + " = " + user2ID + " and " + COL_FRIEND2 + " = " + user1ID + ")";
+		String where = "where (" + DbContract.COL_FRIEND1 + " = " + user1ID + " AND " + DbContract.COL_FRIEND2 + " = "
+				+ user2ID + ") OR (" + DbContract.COL_FRIEND1 + " = " + user2ID + " and " + DbContract.COL_FRIEND2
+				+ " = " + user1ID + ")";
 
-		String setCol = COL_AWAITING_RESPONSE + " = " + awaitingResponse + ", " + COL_FRIENDSHIP_ACTIVE
-				+ friendshipActive;
+		String setCol = DbContract.COL_AWAITING_RESPONSE + " = " + awaitingResponse + ", "
+				+ DbContract.COL_FRIENDSHIP_ACTIVE + friendshipActive;
 
-		updateWithQuery(TABLE_FRIEND_LISTS, setCol, where);
+		updateWithQuery(DbContract.TABLE_FRIEND_LISTS, setCol, where);
 	}
 
 	/**
@@ -367,8 +330,8 @@ public class UserDAO {
 	public boolean usernameExists(String username) {
 		boolean res = false;
 
-		String query = "select (count(1)>0) userExists from " + TABLE_USERS + " u where u." + COL_USERNAME + " = "
-				+ username + ";";
+		String query = "select (count(1)>0) userExists from " + DbContract.TABLE_USERS + " u where u."
+				+ DbContract.COL_USERNAME + " = " + username + ";";
 
 		ResultSet rs = getResultSetWithQuery(query);
 
@@ -396,8 +359,8 @@ public class UserDAO {
 	public boolean passwordIsValid(int userID, String password) {
 		boolean res = false;
 
-		String query = "select (count(1)>0) userCanPass from " + TABLE_USERS + " u where u." + COL_USER_ID + " = "
-				+ userID + "and u." + COL_PASSWORD + " = " + password + ";";
+		String query = "select (count(1)>0) userCanPass from " + DbContract.TABLE_USERS + " u where u."
+				+ DbContract.COL_USER_ID + " = " + userID + "and u." + DbContract.COL_PASSWORD + " = " + password + ";";
 
 		ResultSet rs = getResultSetWithQuery(query);
 
@@ -423,14 +386,14 @@ public class UserDAO {
 	public String getUserSalt(int userID) {
 		String res = "";
 
-		String query = "select " + COL_SALT + " from " + TABLE_USERS + " u where u." + COL_USER_ID + " = " + userID
-				+ ";";
+		String query = "select " + DbContract.COL_SALT + " from " + DbContract.TABLE_USERS + " u where u."
+				+ DbContract.COL_USER_ID + " = " + userID + ";";
 
 		ResultSet rs = getResultSetWithQuery(query);
 
 		try {
 			if (rs.first())
-				res = rs.getString(COL_SALT);
+				res = rs.getString(DbContract.COL_SALT);
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -446,17 +409,18 @@ public class UserDAO {
 	 * @param photoFileName
 	 */
 	public void updateUserPhoto(int userID, String newPhotoFileName) {
-		String selectQuery = "select " + COL_PHOTO_ID + " from " + TABLE_USERS + " where " + COL_USER_ID + " = "
-				+ userID;
+		String selectQuery = "select " + DbContract.COL_PHOTO_ID + " from " + DbContract.TABLE_USERS + " where "
+				+ DbContract.COL_USER_ID + " = " + userID;
 
 		ResultSet rs = getResultSetWithQuery(selectQuery);
 
 		try {
-			int photoID = rs.getInt(COL_PHOTO_ID);
+			int photoID = rs.getInt(DbContract.COL_PHOTO_ID);
 
-			updateWithQuery(TABLE_PHOTOS,
-					COL_PHOTO_FILE + " = " + newPhotoFileName + ", " + COL_IS_DEFAULT_PHOTO + " = false",
-					"where " + COL_PHOTO_ID + " = " + photoID);
+			updateWithQuery(
+					DbContract.TABLE_PHOTOS, DbContract.COL_PHOTO_FILE + " = " + newPhotoFileName + ", "
+							+ DbContract.COL_IS_DEFAULT_PHOTO + " = false",
+					"where " + DbContract.COL_PHOTO_ID + " = " + photoID);
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -472,7 +436,7 @@ public class UserDAO {
 	 * @param newUsername
 	 */
 	public void updateUsername(int userID, String newUsername) {
-		updateUserColWhereIdIs(userID, COL_USERNAME, newUsername);
+		updateUserColWhereIdIs(userID, DbContract.COL_USERNAME, newUsername);
 	}
 
 	/**
@@ -482,7 +446,7 @@ public class UserDAO {
 	 * @param newPassword
 	 */
 	public void updateUserPassword(int userID, String newPassword) {
-		updateUserColWhereIdIs(userID, COL_PASSWORD, newPassword);
+		updateUserColWhereIdIs(userID, DbContract.COL_PASSWORD, newPassword);
 	}
 
 	/**
@@ -492,7 +456,7 @@ public class UserDAO {
 	 * @param newEmail
 	 */
 	public void updateUserEmail(int userID, String newEmail) {
-		updateUserColWhereIdIs(userID, COL_EMAIL, newEmail);
+		updateUserColWhereIdIs(userID, DbContract.COL_EMAIL, newEmail);
 	}
 
 	/**
@@ -502,21 +466,12 @@ public class UserDAO {
 	 *            ID of the user in the database
 	 */
 	public void deactivateUserAccount(int userID) {
-		updateUserColWhereIdIs(userID, COL_IS_ACTIVE, "false");
+		updateUserColWhereIdIs(userID, DbContract.COL_IS_ACTIVE, "false");
 	}
 
 	private void updateUserColWhereIdIs(int userID, String col, String newVal) {
-		updateWithQuery(TABLE_USERS, col + " = " + newVal, "where " + COL_USER_ID + " = " + userID);
-	}
-
-	private void updateWithQuery(String tableName, String setCol, String where) {
-		try {
-			Connection connection = DataSource.getDataSource().getConnection();
-			Statement statement = connection.createStatement();
-			statement.executeQuery("update " + tableName + " set " + setCol + " " + where + ";");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		updateWithQuery(DbContract.TABLE_USERS, col + " = " + newVal,
+				"where " + DbContract.COL_USER_ID + " = " + userID);
 	}
 
 }

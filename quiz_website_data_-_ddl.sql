@@ -164,7 +164,7 @@ CREATE TABLE all_quiz_categories (
  * Quizzes and quiz categories are stored as reference to their
  * respective tables
  */
-CREATE TABLE categories_of_quizes (
+CREATE TABLE categories_of_quizzes (
     category_of_quiz_id INT AUTO_INCREMENT,
     quiz_id INT NOT NULL,
     quiz_category_id INT NOT NULL,
@@ -294,7 +294,7 @@ CREATE TABLE user_answers (
  * respective tables
  */
 CREATE TABLE quiz_stats (
-    stat_id INT AUTO_INCREMENT,
+    stat_id INT NOT NULL,
     quiz_id INT NOT NULL,
     user_id INT NOT NULL,
     taken_on DATETIME NOT NULL,

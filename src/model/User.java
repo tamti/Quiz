@@ -6,8 +6,7 @@ import java.util.TreeSet;
 
 import others.PhotoAble;
 
-@SuppressWarnings("rawtypes")
-public class User extends PhotoAble implements Comparable {
+public class User extends PhotoAble implements Comparable<User> {
 	private int ID;
 	private String firstName;
 	private String lastName;
@@ -135,48 +134,39 @@ public class User extends PhotoAble implements Comparable {
 		return isAdmin;
 	}
 
-	public boolean isFriend(User u) {
-		return friends.contains(u);
-	}
-
 	public boolean isFriend(String username) {
-		Iterator it = friends.iterator();
-		while (it.hasNext()) {
-			User curr = (User) it.next();
-			if (curr.getUsername().equals(username))
-				return true;
-		}
-		return false;
-	}
-
-	public boolean isFriend(int ID) {
-		Iterator it = friends.iterator();
-		while (it.hasNext()) {
-			User curr = (User) it.next();
-			if (curr.getID() == ID)
-				return true;
-		}
-		return false;
+		return friends.contains(username);
 	}
 
 	public void removeFriend(User friend) {
 		friends.remove(friend);
 	}
 
+	/**
+	 * @return firstName + " " + lastName; Full name of the user
+	 */
 	@Override
 	public String toString() {
 		return firstName + " " + lastName;
 	}
 
-	@Override
-	public boolean equals(Object o) {
-		User other = (User) o;
-		return username.equals(other.getUsername());
+	public boolean equals(User other) {
+		return this.ID == other.getID();
 	}
 
+	/**
+	 * Compares User objects. Comparison is made with their full names (using
+	 * toString() method which returns exactly user's full name)
+	 * 
+	 * @param other
+	 *            User object to compare to
+	 * @return a negative integer, zero, or a positive integer as the
+	 *         other.toString() is greater than, equal to, or less than
+	 *         this.toString(), ignoring case considerations.
+	 */
 	@Override
-	public int compareTo(Object o) {
-		User other = (User) o;
-		return username.compareToIgnoreCase(other.toString());
+	public int compareTo(User other) {
+		String fullName = this.toString();
+		return fullName.compareToIgnoreCase(other.toString());
 	}
 }

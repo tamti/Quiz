@@ -1,7 +1,6 @@
 package model;
 
-@SuppressWarnings("rawtypes")
-public class Answer implements Comparable {
+public class Answer implements Comparable<Answer> {
 	private int ID;
 	private String answerStr;
 	private boolean isCorrect;
@@ -109,13 +108,16 @@ public class Answer implements Comparable {
 	}
 
 	/**
-	 * (non-Javadoc)
+	 * Compares Answer objects. Comparison is made with their IDs
 	 * 
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 * @param other
+	 *            Answer object to compare to
+	 * @return the value 0 if this.ID == other.getID(); a value less than 0 if
+	 *         this.ID < other.getID(); and a value greater than 0 if this.ID >
+	 *         other.getID();
 	 */
 	@Override
-	public int compareTo(Object o) {
-		Answer tmp = (Answer) o;
-		return Integer.compare(ID, tmp.getID());
+	public int compareTo(Answer other) {
+		return Integer.compare(this.ID, other.getID());
 	}
 }
