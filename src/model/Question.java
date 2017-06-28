@@ -11,6 +11,7 @@ public class Question extends PhotoAble implements Comparable<Question> {
 	private QuestionType type;
 	private String questionStr;
 	private SortedSet<Answer> answers;
+	private double maxPoints;
 
 	/**
 	 * 
@@ -22,12 +23,17 @@ public class Question extends PhotoAble implements Comparable<Question> {
 	 *            Of which type is this question
 	 * @param answers
 	 *            set of answers (Answer objects) to this question
+	 * 
+	 * @param maxPoints
+	 *            a real number - max number of points a user will get for
+	 *            answering correctly
 	 */
-	public Question(int ID, String questionStr, QuestionType type, SortedSet<Answer> answers) {
+	public Question(int ID, String questionStr, QuestionType type, double maxPoints, SortedSet<Answer> answers) {
 		this.ID = ID;
 		this.questionStr = questionStr;
 		this.type = type;
 		this.answers = answers;
+		this.maxPoints = maxPoints;
 	}
 
 	/**
@@ -40,9 +46,12 @@ public class Question extends PhotoAble implements Comparable<Question> {
 	 *            a string representing question's text
 	 * @param type
 	 *            Of which type is this question
+	 * @param maxPoints
+	 *            a real number - max number of points a user will get for
+	 *            answering correctly
 	 */
-	public Question(int ID, String questionStr, QuestionType type) {
-		this(ID, questionStr, type, new TreeSet<Answer>());
+	public Question(int ID, String questionStr, QuestionType type, double maxPoints) {
+		this(ID, questionStr, type, maxPoints, new TreeSet<Answer>());
 	}
 
 	/**
@@ -112,7 +121,33 @@ public class Question extends PhotoAble implements Comparable<Question> {
 		return answers;
 	}
 
-	
+	/**
+	 * 
+	 * @param answers
+	 */
+	public void setAnswers(SortedSet<Answer> answers) {
+		this.answers = answers;
+	}
+
+	/**
+	 * 
+	 * @return a real number - max number of points a user will get for
+	 *         answering correctly
+	 */
+	public double getMaxPoints() {
+		return maxPoints;
+	}
+
+	/**
+	 * 
+	 * @param maxPoints
+	 *            a real number - max number of points a user will get for
+	 *            answering correctly
+	 */
+	public void setMaxPoints(double maxPoints) {
+		this.maxPoints = maxPoints;
+	}
+
 	/**
 	 * Compares Question objects. Comparison is made with their IDs
 	 * 

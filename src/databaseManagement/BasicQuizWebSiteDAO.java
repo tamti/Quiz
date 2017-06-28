@@ -1,9 +1,6 @@
 package databaseManagement;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class BasicQuizWebSiteDAO {
 
@@ -14,7 +11,7 @@ public class BasicQuizWebSiteDAO {
 	 */
 	protected ResultSet getResultSetWithQuery(String query) {
 		ResultSet res = null;
-
+		
 		try {
 			Connection connection = DataSource.getDataSource().getConnection();
 			Statement statement = connection.createStatement();
@@ -32,9 +29,24 @@ public class BasicQuizWebSiteDAO {
 			Connection connection = DataSource.getDataSource().getConnection();
 			Statement statement = connection.createStatement();
 			statement.executeQuery("update " + tableName + " set " + setCol + " " + where + ";");
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+
+	protected PreparedStatement getPreparedStatementWithQuery(String query) {
+		PreparedStatement res = null;
+
+		try {
+			Connection connection = DataSource.getDataSource().getConnection();
+			res = connection.prepareStatement(query);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return res;
 	}
 
 }

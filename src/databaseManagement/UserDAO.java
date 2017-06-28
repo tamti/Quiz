@@ -89,11 +89,8 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 
 			res = new User(firstName, lastName, email, username, password, salt, userID);
 
-			if (photoID > 0) {
-				String photo = resultSet.getString(DbContract.COL_PHOTO_FILE);
-				boolean isDefault = resultSet.getBoolean(DbContract.COL_IS_DEFAULT_PHOTO);
-				res.setPhoto(photo, photoID, isDefault);
-			}
+			String photo = resultSet.getString(DbContract.COL_PHOTO_FILE);
+			res.setPhoto(photoID, photo);
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -114,7 +111,8 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 
 		try {
 			while (rs.next()) {
-				result.add(getUserFromResultSetRow(rs));
+				User current = getUserFromResultSetRow(rs);
+				result.add(current);
 			}
 		} catch (SQLException e1) {
 			e1.printStackTrace();
@@ -152,8 +150,6 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	 */
 	public void insertUser(User newUser) {
 		try {
-			Connection connection = DataSource.getDataSource().getConnection();
-
 			String allUserColumns = DbContract.COL_USER_ID + "," + DbContract.COL_FIRST_NAME + ","
 					+ DbContract.COL_LAST_NAME + "," + DbContract.COL_USERNAME + "," + DbContract.COL_PASSWORD + ","
 					+ DbContract.COL_SALT + "," + DbContract.COL_EMAIL + "," + DbContract.COL_PHOTO_ID + ","
@@ -162,7 +158,7 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 			String query = "insert into " + DbContract.TABLE_USERS + " (" + allUserColumns
 					+ ") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
-			PreparedStatement prepSt = connection.prepareStatement(query);
+			PreparedStatement prepSt = getPreparedStatementWithQuery(query);
 
 			prepSt.setInt(1, newUser.getID());
 			prepSt.setString(2, newUser.getFirstName());
@@ -171,10 +167,11 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 			prepSt.setString(5, newUser.getPassword());
 			prepSt.setString(6, newUser.getSalt());
 			prepSt.setString(7, newUser.getEmail());
+
 			if (newUser.hasPhoto()) {
 				prepSt.setInt(8, newUser.getPhotoID());
 			} else {
-				prepSt.setNull(8, Types.INTEGER);
+				prepSt.setNull(8, DbContract.DEFAULT_USER_PHOTO_ID);
 			}
 			prepSt.setBoolean(9, true);
 			prepSt.setBoolean(10, newUser.isAdmin());
@@ -273,11 +270,11 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	 */
 	public void insertFriendShip(int user1ID, int user2ID, boolean awaitingResponse, boolean friendshipActive) {
 		try {
-			Connection connection = DataSource.getDataSource().getConnection();
+			String query = "insert into " + DbContract.TABLE_USERS + " (" + DbContract.COL_FRIEND1
+					+ DbContract.COL_FRIEND2 + DbContract.COL_AWAITING_RESPONSE + DbContract.COL_FRIENDSHIP_ACTIVE
+					+ ") values (?, ?, ?, ?)";
 
-			PreparedStatement prepSt = connection.prepareStatement("insert into " + DbContract.TABLE_USERS + " ("
-					+ DbContract.COL_FRIEND1 + DbContract.COL_FRIEND2 + DbContract.COL_AWAITING_RESPONSE
-					+ DbContract.COL_FRIENDSHIP_ACTIVE + ") values (?, ?, ?, ?)");
+			PreparedStatement prepSt = getPreparedStatementWithQuery(query);
 
 			prepSt.setInt(1, user1ID);
 			prepSt.setInt(2, user2ID);
@@ -403,30 +400,31 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	}
 
 	/**
-	 * Sets photo of the user with the given ID to the provided new photo
+	 * TODO Sets photo of the user with the given ID to the provided new photo
 	 * 
-	 * @param photoID
-	 * @param photoFileName
+	 * @param userID
+	 * @param newPhotoFileName
+	 * @return id of the new photo in the database
 	 */
-	public void updateUserPhoto(int userID, String newPhotoFileName) {
+	/*public int updateUserPhoto(int userID, String newPhotoFileName) {
 		String selectQuery = "select " + DbContract.COL_PHOTO_ID + " from " + DbContract.TABLE_USERS + " where "
 				+ DbContract.COL_USER_ID + " = " + userID;
 
 		ResultSet rs = getResultSetWithQuery(selectQuery);
 
-		try {
-			int photoID = rs.getInt(DbContract.COL_PHOTO_ID);
+		updateWithQuery(DbContract.TABLE_USERS,"","");
+		return 0;
+	}*/
 
-			updateWithQuery(
-					DbContract.TABLE_PHOTOS, DbContract.COL_PHOTO_FILE + " = " + newPhotoFileName + ", "
-							+ DbContract.COL_IS_DEFAULT_PHOTO + " = false",
-					"where " + DbContract.COL_PHOTO_ID + " = " + photoID);
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		// updateWithQuery
+	/**
+	 * Removes photo of the user with the given ID and sets it to the default
+	 * photo
+	 * 
+	 * @param userID
+	 */
+	public void removeUserPhoto(int userID) {
+		updateWithQuery(DbContract.TABLE_USERS, DbContract.COL_PHOTO_ID + " = " + DbContract.DEFAULT_USER_PHOTO_ID,
+				DbContract.COL_USER_ID + " = " + userID);
 	}
 
 	/**

@@ -5,11 +5,14 @@ DEFAULT CHARACTER SET utf8;
 
 USE quiz_website;
 
+
+-- ---------------------------- TABLES ----------------------------
+
+
 -- List of names of all photo files avaliable on the website
 CREATE TABLE photos (
     photo_id INT NOT NULL,
     photo_file VARCHAR(150) NOT NULL,
-    is_default BOOLEAN,
     CONSTRAINT photos_pk PRIMARY KEY (photo_id)
 );
 
@@ -19,8 +22,8 @@ CREATE TABLE photos (
  * (which are optional) are used for ensuring the avoidance of repeting
  * the hash values of same passwords of different users. Column "is_active"
  * indicates wether the account has been deactivated. Value of the column "is_admin" 
- * is set to true if the user is an admin. Column has_photo indicates wether
- * user has a "profile picture" or not (used to avoid useless searching in the table "user_photos")
+ * is set to true if the user is an admin. Column photo_id is a reference 
+ * to the user's "profile picture"
  */
 CREATE TABLE users (
     user_id INT NOT NULL,
@@ -30,7 +33,7 @@ CREATE TABLE users (
     password VARCHAR(60) NOT NULL,
     salt varchar(20),
 	email varchar(50) NOT NULL,
-	photo_id int,
+	photo_id int NOT NULL,
 	is_active BOOLEAN NOT NULL,
     is_admin BOOLEAN NOT NULL,
     CONSTRAINT users_pk PRIMARY KEY (user_id),
@@ -140,8 +143,9 @@ CREATE TABLE user_achievements (
 CREATE TABLE quizzes (
     quiz_id INT NOT NULL,
     quiz_name VARCHAR(100),
+    quiz_description VARCHAR(1500),
     quiz_author_id INT,
-    time_created DATETIME,
+    date_created DATE,
     show_correct_answer_immediately BOOLEAN NOT NULL,
 	show_questions_on_one_page BOOlEAN NOT NULL,
 	max_allowed_time TIME,
@@ -177,7 +181,7 @@ CREATE TABLE categories_of_quizzes (
 
 -- String values of all questions types
 CREATE TABLE question_types (
-	question_type_id int auto_increment,
+	question_type_id NOT NULL,
 	question_type_name varchar(50) not null,
 	constraint question_types primary key (question_type_id)
 );
@@ -193,33 +197,19 @@ CREATE TABLE questions (
     question_id INT NOT NULL,
     question_txt VARCHAR(2000) NOT NULL,
     question_type_id INT NOT NULL,
+    photo_id INT,
     max_points DECIMAL NOT NULL,
     CONSTRAINT questions_pk PRIMARY KEY (question_id),
     CONSTRAINT qyestions_fk FOREIGN KEY (question_type_id)
         REFERENCES question_types (question_type_id)
 );
 
-/*
- * Stores photos for the questions that need them
- *
- * Questions and photos are stored as foreign keys referencing their
- * respective tables
- */
-CREATE TABLE question_photos (
-    question_photo_id INT AUTO_INCREMENT,
-    question_id INT NOT NULL,
-    photo_id INT NOT NULL,
-    CONSTRAINT question_photos_pk PRIMARY KEY (question_photo_id),
-    CONSTRAINT question_photos_fk1 FOREIGN KEY (question_id)
-        REFERENCES questions (question_id),
-    CONSTRAINT question_photos_fk2 FOREIGN KEY (photo_id)
-        REFERENCES photos (photo_id)
-);
-
 -- String values of all kinds of answers
 CREATE TABLE answers (
     answer_id INT NOT NULL,
     answer_txt VARCHAR(600),
+    is_correct BOOLEAN NOT NULL,
+	answer_no INT,
     CONSTRAINT answers_pk PRIMARY KEY (answer_id)
 );
 
@@ -236,8 +226,6 @@ CREATE TABLE answers_to_questions (
     question_answers_id INT AUTO_INCREMENT,
     question_id INT NOT NULL,
     answer_id INT NOT NULL,
-    is_correct BOOLEAN NOT NULL,
-	answer_no INT,
     CONSTRAINT answers_to_questions_pk PRIMARY KEY (question_answers_id),
     CONSTRAINT answers_to_questions_fk1 FOREIGN KEY (question_id)
         REFERENCES questions (question_id),
@@ -308,3 +296,43 @@ CREATE TABLE quiz_stats (
     CONSTRAINT quiz_stats_fk2 FOREIGN KEY (user_id)
         REFERENCES users (user_id)
 );
+
+
+
+-- ---------------------------- TRIGGERS ----------------------------
+
+delimiter $$
+CREATE TRIGGER delete_photos_and_answers_to_deleted_question
+AFTER DELETE
+   ON questions FOR EACH ROW
+
+BEGIN
+
+
+
+END;
+$$
+
+delimiter $$
+CREATE TRIGGER delete_user_from_friend_lists_if_deactivated
+AFTER DELETE
+   ON users FOR EACH ROW
+
+BEGIN
+
+
+
+END;
+$$
+
+delimiter $$
+CREATE TRIGGER delete_old_user_photo_when_updating
+BEFORE UPDATE
+   ON users FOR EACH ROW
+
+BEGIN
+
+   -- remove old photo before changing photo_id to the id of the new photo
+
+END;
+$$

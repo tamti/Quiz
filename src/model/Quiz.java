@@ -1,6 +1,7 @@
 package model;
 
 import java.sql.Date;
+import java.sql.Time;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -9,28 +10,32 @@ public class Quiz implements Comparable<Quiz> {
 	private String quizName;
 	private String description;
 	private boolean isOnePage;
-	private boolean feedback;
+	private boolean showAnswersImmediately;
+	private Time allowedTime;
 	private boolean random;
-	private Date date;
+	private Date dateCreated;
+	private int maxPoints;
 	private SortedSet<Question> questions;
 	private int ownerID;
 
-	public Quiz(int ID, String quizName, Date date) {
+	public Quiz(int ID, String quizName, String description, Date dateCreated, boolean answersImmediately,
+			boolean isOnePage, Time allowedTime, int maxPoints) {
 		this.ID = ID;
 		this.quizName = quizName;
-		this.date = date;
+		this.description = description;
+		this.dateCreated = dateCreated;
+		this.showAnswersImmediately = answersImmediately;
+		this.isOnePage = isOnePage;
+		this.allowedTime = allowedTime;
+		this.maxPoints = maxPoints;
 		questions = new TreeSet<Question>();
-	}
-
-	public Quiz(String quizName, Date date) {
-		this(-1, quizName, date);
 	}
 
 	public int getOwnerID() {
 		return ownerID;
 	}
 
-	public void setOwner(int ownerID) {
+	public void setOwnerID(int ownerID) {
 		this.ownerID = ownerID;
 	}
 
@@ -66,20 +71,28 @@ public class Quiz implements Comparable<Quiz> {
 		this.ID = ID;
 	}
 
+	public boolean showAnswersImmediately() {
+		return showAnswersImmediately;
+	}
+
+	public void setShowAnswersImmediately(boolean showAnswersImmediately) {
+		this.showAnswersImmediately = showAnswersImmediately;
+	}
+
+	public Time getAllowedTime() {
+		return allowedTime;
+	}
+
+	public void setAllowedTime(Time allowedTime) {
+		this.allowedTime = allowedTime;
+	}
+
 	public boolean isOnePage() {
 		return isOnePage;
 	}
 
 	public void setOnePage(boolean isOnePage) {
 		this.isOnePage = isOnePage;
-	}
-
-	public boolean isFeedback() {
-		return feedback;
-	}
-
-	public void setFeedback(boolean feedback) {
-		this.feedback = feedback;
 	}
 
 	public boolean isRandom() {
@@ -91,11 +104,19 @@ public class Quiz implements Comparable<Quiz> {
 	}
 
 	public Date getDate() {
-		return date;
+		return dateCreated;
 	}
 
 	public void setDate(Date date) {
-		this.date = date;
+		this.dateCreated = date;
+	}
+
+	public int getMaxPoints() {
+		return maxPoints;
+	}
+
+	public void setMaxPoints(int maxPoints) {
+		this.maxPoints = maxPoints;
 	}
 
 	public static class QuizHandle {

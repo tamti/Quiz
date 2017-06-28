@@ -4,24 +4,7 @@ public class Answer implements Comparable<Answer> {
 	private int ID;
 	private String answerStr;
 	private boolean isCorrect;
-	private boolean hasNO;
 	private int NO;
-
-	/**
-	 * Constructs an Answer object without specifying it's ID
-	 * 
-	 * @param answerStr
-	 *            String representation of the answer
-	 * @param isCorrect
-	 *            boolean variable specifying whether this is a correct answer
-	 *            to some question or not
-	 */
-	public Answer(String answerStr, boolean isCorrect) {
-		this.answerStr = answerStr;
-		this.isCorrect = isCorrect;
-		hasNO = false;
-		NO = -1;
-	}
 
 	/**
 	 * Constructs an Answer object with specified ID
@@ -35,8 +18,10 @@ public class Answer implements Comparable<Answer> {
 	 *            to some question or not
 	 */
 	public Answer(int ID, String answerStr, boolean isCorrect) {
-		this(answerStr, isCorrect);
+		this.answerStr = answerStr;
+		this.isCorrect = isCorrect;
 		this.ID = ID;
+		NO = -1;
 	}
 
 	/**
@@ -83,7 +68,7 @@ public class Answer implements Comparable<Answer> {
 	 *         question, False otherwise
 	 */
 	public boolean hasNO() {
-		return hasNO;
+		return NO > 0;
 	}
 
 	/**

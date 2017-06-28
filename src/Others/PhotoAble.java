@@ -7,44 +7,30 @@ package others;
 public class PhotoAble {
 	private int photoID;
 	private String photoFile;
-	private String defaultPhoto;
 
-	public void setPhoto(String photoFileName, int photoID, boolean isDefault) {
+	public PhotoAble() {
+		photoID = -1;
+		photoFile = "";
+	}
+
+	public void setPhoto(int photoID, String photoFileName) {
 		this.photoID = photoID;
-		if (isDefault) {
-			defaultPhoto = photoFileName;
-		} else {
-			photoFile = photoFileName;
-		}
-
+		photoFile = photoFileName;
 	}
 
 	public String getPhoto() {
-		if (hasPhoto())
-			return photoFile;
-		else
-			return defaultPhoto;
+		return photoFile;
 	}
 
 	public void removePhoto() {
 		photoFile = "";
-		if (!hasDefaultPhoto())
-			photoID = -1;
 	}
 
 	public boolean hasPhoto() {
 		return !photoFile.isEmpty();
 	}
 
-	public boolean hasDefaultPhoto() {
-		return !defaultPhoto.isEmpty();
-	}
-
 	public int getPhotoID() {
 		return photoID;
-	}
-
-	public boolean equeals(Object other) {
-		return photoID == ((PhotoAble) other).getPhotoID();
 	}
 }
