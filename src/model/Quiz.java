@@ -17,6 +17,7 @@ public class Quiz implements Comparable<Quiz> {
 	private int maxPoints;
 	private SortedSet<Question> questions;
 	private int ownerID;
+	private SortedSet<Statistics> stats;
 
 	public Quiz(int ID, String quizName, String description, Date dateCreated, boolean answersImmediately,
 			boolean isOnePage, Time allowedTime, int maxPoints) {
@@ -29,6 +30,7 @@ public class Quiz implements Comparable<Quiz> {
 		this.allowedTime = allowedTime;
 		this.maxPoints = maxPoints;
 		questions = new TreeSet<Question>();
+		stats = new TreeSet<Statistics>();
 	}
 
 	public int getOwnerID() {
@@ -117,6 +119,14 @@ public class Quiz implements Comparable<Quiz> {
 
 	public void setMaxPoints(int maxPoints) {
 		this.maxPoints = maxPoints;
+	}
+	
+	public SortedSet<Statistics> getStats() {
+		return stats;
+	}
+
+	public void setStats(SortedSet<Statistics> stats) {
+		this.stats = stats;
 	}
 
 	public static class QuizHandle {

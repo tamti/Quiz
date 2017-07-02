@@ -181,7 +181,7 @@ CREATE TABLE categories_of_quizzes (
 
 -- String values of all questions types
 CREATE TABLE question_types (
-	question_type_id NOT NULL,
+	question_type_id INT NOT NULL,
 	question_type_name varchar(50) not null,
 	constraint question_types primary key (question_type_id)
 );
@@ -282,7 +282,7 @@ CREATE TABLE user_answers (
  * respective tables
  */
 CREATE TABLE quiz_stats (
-    stat_id INT NOT NULL,
+    stat_id INT AUTO_INCREMENT,
     quiz_id INT NOT NULL,
     user_id INT NOT NULL,
     taken_on DATETIME NOT NULL,

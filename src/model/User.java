@@ -16,6 +16,7 @@ public class User extends PhotoAble implements Comparable<User> {
 	private boolean isAdmin;
 	private SortedSet<String> friends;
 	private SortedSet<String> friendRequests;
+	private SortedSet<Statistics> stats;
 
 	public User(String firstName, String lastName, String email, String username, String password, String salt,
 			SortedSet<String> friends, SortedSet<String> friendRequests) {
@@ -28,6 +29,7 @@ public class User extends PhotoAble implements Comparable<User> {
 		this.friends = friends;
 		this.friendRequests = friendRequests;
 		isAdmin = false;
+		stats = new TreeSet<Statistics>();
 	}
 
 	public User(String firstName, String lastName, String email, String username, String password, String salt) {
@@ -141,6 +143,14 @@ public class User extends PhotoAble implements Comparable<User> {
 		friends.remove(friend);
 	}
 
+	public SortedSet<Statistics> getStats() {
+		return stats;
+	}
+
+	public void setStats(SortedSet<Statistics> stats) {
+		this.stats = stats;
+	}
+
 	/**
 	 * @return firstName + " " + lastName; Full name of the user
 	 */
@@ -154,18 +164,16 @@ public class User extends PhotoAble implements Comparable<User> {
 	}
 
 	/**
-	 * Compares User objects. Comparison is made with their full names (using
-	 * toString() method which returns exactly user's full name)
+	 * Compares User objects. Comparison is made with their usernames
 	 * 
 	 * @param other
 	 *            User object to compare to
 	 * @return a negative integer, zero, or a positive integer as the
-	 *         other.toString() is greater than, equal to, or less than
-	 *         this.toString(), ignoring case considerations.
+	 *         other.getUsername() is greater than, equal to, or less than
+	 *         this.username, ignoring case considerations.
 	 */
 	@Override
 	public int compareTo(User other) {
-		String fullName = this.toString();
-		return fullName.compareToIgnoreCase(other.toString());
+		return this.username.compareToIgnoreCase(other.getUsername());
 	}
 }

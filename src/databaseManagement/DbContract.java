@@ -65,7 +65,6 @@ public class DbContract {
 	public static final String COL_QUIZ_QUESTION_ID = "quiz_question_id";
 
 	public static final String TABLE_USER_ANSWERS = "user_answers";
-	public static final String COL_USER_ANSWER_ID = "user_answer_id";
 	public static final String COL_USER_ANSWER = "user_answer_txt";
 
 	public static final String TABLE_QUIZ_STATS = "quiz_stats";
