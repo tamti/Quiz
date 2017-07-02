@@ -20,7 +20,20 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	 *         could be found, returns null
 	 */
 	public User getUserByID(int userID) {
-		return getUserWithCondition(DbContract.COL_USER_ID + " = " + userID);
+		PreparedStatement ps = prepareStatementToGetUserWith(DbContract.COL_USER_ID + " = ?");
+
+		try {
+			ps.setInt(1, userID);
+
+			ResultSet rs = ps.executeQuery();
+
+			return setUpUserFullyFrom(rs);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 
 	/**
@@ -35,38 +48,39 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	 *         user could be found, returns null
 	 */
 	public User getUserByUsername(String username) {
-		return getUserWithCondition(DbContract.COL_USERNAME + " = " + username);
-	}
-
-	/*
-	 * Helper function for the public "getUser" functions. Returns a User
-	 * constructed from the parameters returned by the "select query" from the
-	 * table USERS_TABLE. Argument "condition" is a string representing MySQL
-	 * condition syntax ("where COLUMN = VALUE..."). "condition" specifies which
-	 * row of the table we are interested in. This gives us an ability to get
-	 * User by ID or username or other Unique properties of the user.
-	 * 
-	 * If no user could be found, returns null
-	 */
-	private User getUserWithCondition(String condition) {
-		String selectQuery = "select * from " + DbContract.TABLE_USERS + " u, " + DbContract.TABLE_PHOTOS + " p where "
-				+ "u." + DbContract.COL_PHOTO_ID + " = " + "p." + DbContract.COL_PHOTO_ID + " and " + condition + ";";
-
-		ResultSet resultSet = getResultSetWithQuery(selectQuery);
-
-		User res = null;
+		PreparedStatement ps = prepareStatementToGetUserWith(DbContract.COL_USERNAME + " = ?");
 
 		try {
-			if (resultSet.first())
-				res = getUserFromResultSetRow(resultSet);
+			ps.setString(1, username);
+
+			ResultSet rs = ps.executeQuery();
+
+			return setUpUserFullyFrom(rs);
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
-		res.setFriends(getUserFriends(res.getID(), true));
-		res.setFriendRequests(getUserFriends(res.getID(), false));
+		return null;
+	}
 
-		return res;
+	private PreparedStatement prepareStatementToGetUserWith(String condition) {
+		String tables = DbContract.TABLE_USERS + " u, " + DbContract.TABLE_PHOTOS + " p";
+		String where = "u." + DbContract.COL_PHOTO_ID + " = " + "p." + DbContract.COL_PHOTO_ID;
+
+		if (!condition.isEmpty())
+			where = where + " and u." + condition;
+
+		return prepareSelectStatementWith("*", tables, where);
+	}
+
+	private User setUpUserFullyFrom(ResultSet rs) {
+		User result = getUserFromResultSetRow(rs);
+
+		result.setFriends(getUserFriends(result.getID(), true));
+		result.setFriendRequests(getUserFriends(result.getID(), false));
+
+		return result;
 	}
 
 	/*
@@ -107,11 +121,14 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	public SortedSet<User> getAllUsers() {
 		SortedSet<User> result = new TreeSet<User>();
 
-		ResultSet rs = getResultSetWithQuery("select * from " + DbContract.TABLE_USERS);
+		PreparedStatement ps = prepareStatementToGetUserWith("");
 
 		try {
+
+			ResultSet rs = ps.executeQuery();
+
 			while (rs.next()) {
-				User current = getUserFromResultSetRow(rs);
+				User current = setUpUserFullyFrom(rs);
 				result.add(current);
 			}
 		} catch (SQLException e1) {
@@ -127,12 +144,14 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	public int getNumberOfUsers() {
 		int res = 0;
 
-		String countQuery = "select count(1) numberOfUsers from " + DbContract.TABLE_USERS + ";";
+		String col = "count(1) numberOfUsers";
 
-		ResultSet rs = getResultSetWithQuery(countQuery);
+		PreparedStatement ps = prepareSelectStatementWith(col, DbContract.TABLE_USERS, "");
 
 		try {
-			if (rs.first())
+			ResultSet rs = ps.executeQuery();
+
+			if (rs.next())
 				res = rs.getInt("numberOfUsers");
 
 		} catch (SQLException e) {
@@ -153,14 +172,15 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 			String allUserColumns = DbContract.COL_USER_ID + "," + DbContract.COL_FIRST_NAME + ","
 					+ DbContract.COL_LAST_NAME + "," + DbContract.COL_USERNAME + "," + DbContract.COL_PASSWORD + ","
 					+ DbContract.COL_SALT + "," + DbContract.COL_EMAIL + "," + DbContract.COL_PHOTO_ID + ","
-					+ DbContract.COL_IS_ACTIVE + "," + DbContract.COL_IS_ADMIN;
+					+ DbContract.COL_USER_IS_ACTIVE + "," + DbContract.COL_IS_ADMIN;
 
-			String query = "insert into " + DbContract.TABLE_USERS + " (" + allUserColumns
-					+ ") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+			PreparedStatement prepSt = getPreparedStatementForInsertionWith(DbContract.TABLE_USERS, allUserColumns, 10);
 
-			PreparedStatement prepSt = getPreparedStatementWithQuery(query);
-
-			prepSt.setInt(1, newUser.getID());
+			if (newUser.getID() == -1) {
+				//TODO lastID
+			} else {
+				prepSt.setInt(1, newUser.getID());
+			}
 			prepSt.setString(2, newUser.getFirstName());
 			prepSt.setString(3, newUser.getLastName());
 			prepSt.setString(4, newUser.getUsername());
@@ -192,31 +212,40 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	private SortedSet<String> getUserFriends(int userID, boolean friendshipActive) {
 		SortedSet<String> result = new TreeSet<String>();
 
-		String beginning = "select u." + DbContract.COL_USERNAME + " from " + DbContract.TABLE_USERS + " u, "
-				+ DbContract.TABLE_FRIEND_LISTS + "f, where f.";
+		String col = "u." + DbContract.COL_USERNAME;
+		String tables = DbContract.TABLE_USERS + " u, " + DbContract.TABLE_FRIEND_LISTS + " f";
 
-		String end = " = " + userID + " and f." + DbContract.COL_AWAITING_RESPONSE + " = " + !friendshipActive
-				+ " and f." + DbContract.COL_FRIENDSHIP_ACTIVE + " = " + friendshipActive + ";";
+		String condition = "f.? = ?" + " and f." + DbContract.COL_AWAITING_RESPONSE + " = ?" + " and f."
+				+ DbContract.COL_FRIENDSHIP_ACTIVE + " = ?";
 
-		String query1 = beginning + DbContract.COL_FRIEND1 + end;
+		PreparedStatement ps = prepareSelectStatementWith(col, tables, condition);
 
-		ResultSet rs1 = getResultSetWithQuery(query1);
+		String currUsername = "";
 
 		try {
+			ps.setString(1, DbContract.COL_FRIEND1);
+			ps.setInt(2, userID);
+			ps.setBoolean(3, !friendshipActive);
+			ps.setBoolean(4, friendshipActive);
+
+			ResultSet rs1 = ps.executeQuery();
+
 			while (rs1.next()) {
-				result.add(rs1.getString(DbContract.COL_USERNAME));
+				currUsername = rs1.getString(DbContract.COL_USERNAME);
+				result.add(currUsername);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
-		String query2 = beginning + DbContract.COL_FRIEND2 + end;
-
-		ResultSet rs2 = getResultSetWithQuery(query2);
-
 		try {
+			ps.setString(1, DbContract.COL_FRIEND2);
+
+			ResultSet rs2 = ps.executeQuery();
+
 			while (rs2.next()) {
-				result.add(rs2.getString(DbContract.COL_USERNAME));
+				currUsername = rs2.getString(DbContract.COL_USERNAME);
+				result.add(currUsername);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -235,14 +264,21 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	public boolean areFriends(int user1ID, int user2ID) {
 		boolean res = false;
 
-		String query = "select (count(1)>0) areFriends from " + DbContract.TABLE_FRIEND_LISTS + " where (("
-				+ DbContract.COL_FRIEND1 + " = " + user1ID + " AND " + DbContract.COL_FRIEND2 + " = " + user2ID
-				+ ") OR (" + DbContract.COL_FRIEND1 + " = " + user2ID + " and " + DbContract.COL_FRIEND2 + " = "
-				+ user1ID + "))" + " and " + DbContract.COL_FRIENDSHIP_ACTIVE + " = true;";
+		String col = "(count(1)>0) areFriends";
+		String condition = "((" + DbContract.COL_FRIEND1 + " = ?" + " AND " + DbContract.COL_FRIEND2 + " = ?" + ") OR ("
+				+ DbContract.COL_FRIEND1 + " = ?" + " and " + DbContract.COL_FRIEND2 + " = ?))" + " and "
+				+ DbContract.COL_FRIENDSHIP_ACTIVE + " = true;";
 
-		ResultSet rs = getResultSetWithQuery(query);
+		PreparedStatement ps = prepareSelectStatementWith(col, DbContract.TABLE_FRIEND_LISTS, condition);
 
 		try {
+			ps.setInt(1, user1ID);
+			ps.setInt(2, user2ID);
+			ps.setInt(3, user2ID);
+			ps.setInt(4, user1ID);
+
+			ResultSet rs = ps.executeQuery();
+
 			res = rs.getBoolean("areFriends");
 
 		} catch (SQLException e) {
@@ -270,11 +306,10 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	 */
 	public void insertFriendShip(int user1ID, int user2ID, boolean awaitingResponse, boolean friendshipActive) {
 		try {
-			String query = "insert into " + DbContract.TABLE_USERS + " (" + DbContract.COL_FRIEND1
-					+ DbContract.COL_FRIEND2 + DbContract.COL_AWAITING_RESPONSE + DbContract.COL_FRIENDSHIP_ACTIVE
-					+ ") values (?, ?, ?, ?)";
+			String cols = DbContract.COL_FRIEND1 + "," + DbContract.COL_FRIEND2 + "," + DbContract.COL_AWAITING_RESPONSE
+					+ "," + DbContract.COL_FRIENDSHIP_ACTIVE;
 
-			PreparedStatement prepSt = getPreparedStatementWithQuery(query);
+			PreparedStatement prepSt = getPreparedStatementForInsertionWith(DbContract.TABLE_USERS, cols, 4);
 
 			prepSt.setInt(1, user1ID);
 			prepSt.setInt(2, user2ID);
@@ -307,14 +342,27 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	 *            from his "friend list"
 	 */
 	public void updateFriendshipStatus(int user1ID, int user2ID, boolean awaitingResponse, boolean friendshipActive) {
-		String where = "where (" + DbContract.COL_FRIEND1 + " = " + user1ID + " AND " + DbContract.COL_FRIEND2 + " = "
-				+ user2ID + ") OR (" + DbContract.COL_FRIEND1 + " = " + user2ID + " and " + DbContract.COL_FRIEND2
-				+ " = " + user1ID + ")";
+		String condition = "(" + DbContract.COL_FRIEND1 + " = ? AND " + DbContract.COL_FRIEND2 + " = ?) OR ("
+				+ DbContract.COL_FRIEND1 + " = ? AND " + DbContract.COL_FRIEND2 + " = ?)";
 
-		String setCol = DbContract.COL_AWAITING_RESPONSE + " = " + awaitingResponse + ", "
-				+ DbContract.COL_FRIENDSHIP_ACTIVE + friendshipActive;
+		String setCol = DbContract.COL_AWAITING_RESPONSE + " = ?, " + DbContract.COL_FRIENDSHIP_ACTIVE + " = ?";
 
-		updateWithQuery(DbContract.TABLE_FRIEND_LISTS, setCol, where);
+		PreparedStatement ps = prepareUpdateStatementWith(DbContract.TABLE_FRIEND_LISTS, setCol, condition);
+
+		try {
+			ps.setBoolean(1, awaitingResponse);
+			ps.setBoolean(2, friendshipActive);
+			ps.setInt(3, user1ID);
+			ps.setInt(4, user2ID);
+			ps.setInt(5, user2ID);
+			ps.setInt(6, user1ID);
+
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	/**
@@ -327,12 +375,17 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	public boolean usernameExists(String username) {
 		boolean res = false;
 
-		String query = "select (count(1)>0) userExists from " + DbContract.TABLE_USERS + " u where u."
-				+ DbContract.COL_USERNAME + " = " + username + ";";
+		String col = "(count(1)>0) userExists";
+		String table = DbContract.TABLE_USERS + " u";
+		String condition = "u." + DbContract.COL_USERNAME + " = ?";
 
-		ResultSet rs = getResultSetWithQuery(query);
+		PreparedStatement ps = prepareSelectStatementWith(col, table, condition);
 
 		try {
+			ps.setString(1, username);
+
+			ResultSet rs = ps.executeQuery();
+
 			if (rs.first())
 				res = rs.getBoolean("userExists");
 
@@ -356,17 +409,24 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	public boolean passwordIsValid(int userID, String password) {
 		boolean res = false;
 
-		String query = "select (count(1)>0) userCanPass from " + DbContract.TABLE_USERS + " u where u."
-				+ DbContract.COL_USER_ID + " = " + userID + "and u." + DbContract.COL_PASSWORD + " = " + password + ";";
+		String col = "(count(1)>0) userCanPass";
+		String table = DbContract.TABLE_USERS + " u";
+		String condition = "u." + DbContract.COL_USER_ID + " = ? and u." + DbContract.COL_PASSWORD + " = ?";
 
-		ResultSet rs = getResultSetWithQuery(query);
+		PreparedStatement ps = prepareSelectStatementWith(col, table, condition);
 
 		try {
-			if (rs.first())
+			ps.setInt(1, userID);
+			ps.setString(2, password);
+
+			ResultSet rs = ps.executeQuery();
+
+			if (rs.next())
 				res = rs.getBoolean("userCanPass");
 
 		} catch (SQLException e) {
 			e.printStackTrace();
+			System.out.println("Error in Class: UserDAO, Method : passwordIsValid");
 		}
 
 		return res;
@@ -383,12 +443,17 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	public String getUserSalt(int userID) {
 		String res = "";
 
-		String query = "select " + DbContract.COL_SALT + " from " + DbContract.TABLE_USERS + " u where u."
-				+ DbContract.COL_USER_ID + " = " + userID + ";";
+		String col = "u." + DbContract.COL_SALT;
+		String table = DbContract.TABLE_USERS + " u";
+		String condition = "u." + DbContract.COL_USER_ID + " = ?";
 
-		ResultSet rs = getResultSetWithQuery(query);
+		PreparedStatement ps = prepareSelectStatementWith(col, table, condition);
 
 		try {
+			ps.setInt(1, userID);
+
+			ResultSet rs = ps.executeQuery();
+
 			if (rs.first())
 				res = rs.getString(DbContract.COL_SALT);
 
@@ -399,33 +464,53 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 		return res;
 	}
 
-	/**
-	 * TODO Sets photo of the user with the given ID to the provided new photo
+	/*	*//**
+			 * TODO Sets photo of the user with the given ID to the provided new
+			 * photo
+			 * 
+			 * @param userID
+			 * @param newPhotoFileName
+			 */
+	/*
+	 * public void updateUserPhoto(int userID, String newPhotoFileName) { String
+	 * table = DbContract.TABLE_USERS + " u, "; String col = "(u." +
+	 * DbContract.COL_PHOTO_ID + " = " + DbContract.DEFAULT_USER_PHOTO_ID +
+	 * ") hasDefaultPhoto"; String condition = DbContract.COL_USER_ID + " = ?";
 	 * 
-	 * @param userID
-	 * @param newPhotoFileName
-	 * @return id of the new photo in the database
-	 */
-	/*public int updateUserPhoto(int userID, String newPhotoFileName) {
-		String selectQuery = "select " + DbContract.COL_PHOTO_ID + " from " + DbContract.TABLE_USERS + " where "
-				+ DbContract.COL_USER_ID + " = " + userID;
-
-		ResultSet rs = getResultSetWithQuery(selectQuery);
-
-		updateWithQuery(DbContract.TABLE_USERS,"","");
-		return 0;
-	}*/
-
-	/**
-	 * Removes photo of the user with the given ID and sets it to the default
-	 * photo
+	 * PreparedStatement ps = prepareSelectStatementWith(col, table, condition);
 	 * 
-	 * @param userID
-	 */
-	public void removeUserPhoto(int userID) {
-		updateWithQuery(DbContract.TABLE_USERS, DbContract.COL_PHOTO_ID + " = " + DbContract.DEFAULT_USER_PHOTO_ID,
-				DbContract.COL_USER_ID + " = " + userID);
-	}
+	 * try { ps.setInt(1, userID);
+	 * 
+	 * ResultSet rs = ps.executeQuery();
+	 * 
+	 * if (rs.next()) { rs.getBoolean("hasDefaultPhoto"); }
+	 * 
+	 * ps.executeUpdate();
+	 * 
+	 * } catch (SQLException e) { e.printStackTrace(); }
+	 * 
+	 * // ps = prepareUpdateStatementWith(, "", ""); }
+	 * 
+	 *//**
+		 * TODO Removes photo of the user with the given ID and sets it to the
+		 * default photo
+		 * 
+		 * @param userID
+		 *//*
+		 * public void removeUserPhoto(int userID) { String setCols =
+		 * DbContract.COL_PHOTO_ID + " = " + DbContract.DEFAULT_USER_PHOTO_ID;
+		 * String condition = DbContract.COL_USER_ID + " = ?";
+		 * 
+		 * PreparedStatement ps =
+		 * prepareUpdateStatementWith(DbContract.TABLE_USERS, setCols,
+		 * condition);
+		 * 
+		 * try { ps.setInt(1, userID);
+		 * 
+		 * ps.executeUpdate();
+		 * 
+		 * } catch (SQLException e) { e.printStackTrace(); } }
+		 */
 
 	/**
 	 * Sets username of the user with the given ID to the provided new username
@@ -434,7 +519,7 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	 * @param newUsername
 	 */
 	public void updateUsername(int userID, String newUsername) {
-		updateUserColWhereIdIs(userID, DbContract.COL_USERNAME, newUsername);
+		updateUsersStringColWith(userID, DbContract.COL_USERNAME, newUsername);
 	}
 
 	/**
@@ -444,7 +529,7 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	 * @param newPassword
 	 */
 	public void updateUserPassword(int userID, String newPassword) {
-		updateUserColWhereIdIs(userID, DbContract.COL_PASSWORD, newPassword);
+		updateUsersStringColWith(userID, DbContract.COL_PASSWORD, newPassword);
 	}
 
 	/**
@@ -454,7 +539,29 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	 * @param newEmail
 	 */
 	public void updateUserEmail(int userID, String newEmail) {
-		updateUserColWhereIdIs(userID, DbContract.COL_EMAIL, newEmail);
+		updateUsersStringColWith(userID, DbContract.COL_EMAIL, newEmail);
+	}
+
+	/*
+	 * Sets some String type column value of the user with ID "userID" in User's
+	 * table to "newVal"
+	 */
+	private void updateUsersStringColWith(int userID, String col, String newVal) {
+		String setCol = col + " = ?";
+		String condition = DbContract.COL_USER_ID + " = ?";
+
+		PreparedStatement ps = prepareUpdateStatementWith(DbContract.TABLE_USERS, setCol, condition);
+
+		try {
+			ps.setString(1, newVal);
+			ps.setInt(2, userID);
+
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	/**
@@ -464,12 +571,63 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	 *            ID of the user in the database
 	 */
 	public void deactivateUserAccount(int userID) {
-		updateUserColWhereIdIs(userID, DbContract.COL_IS_ACTIVE, "false");
+		changeUserAccountStatus(userID, false);
 	}
 
-	private void updateUserColWhereIdIs(int userID, String col, String newVal) {
-		updateWithQuery(DbContract.TABLE_USERS, col + " = " + newVal,
-				"where " + DbContract.COL_USER_ID + " = " + userID);
+	/**
+	 * Reactivates account of the user with the given ID
+	 * 
+	 * @param userID
+	 *            ID of the user in the database
+	 */
+	public void reactivateUserAccount(int userID) {
+		changeUserAccountStatus(userID, true);
+	}
+
+	/*
+	 * Deactivates or reactivates the user account with the ID "userID"
+	 * (depending on the boolean parameter "isActive" respectively)
+	 */
+	private void changeUserAccountStatus(int userID, boolean isActive) {
+		String setCol = DbContract.COL_USER_IS_ACTIVE + " = ?";
+
+		updateUsersBooleanColWith(userID, setCol, isActive);
+	}
+
+	/**
+	 * Turns the user with ID "userID" into an admin or removes him from this
+	 * position
+	 * 
+	 * @param userID
+	 * @param isAdmin
+	 *            If true the user will become an admin. Or will stop being an
+	 *            admin if the value is false
+	 */
+	public void updateAdminStatus(int userID, boolean isAdmin) {
+		String col = DbContract.COL_IS_ADMIN + " = ?";
+
+		updateUsersBooleanColWith(userID, col, isAdmin);
+	}
+
+	/*
+	 * Sets some boolean type column value of the user with ID "userID" in
+	 * User's table to "newVal"
+	 */
+	private void updateUsersBooleanColWith(int userID, String col, Boolean newVal) {
+		String setCol = col + " = ?";
+		String condition = DbContract.COL_USER_ID + " = ?";
+
+		PreparedStatement ps = prepareUpdateStatementWith(DbContract.TABLE_USERS, setCol, condition);
+
+		try {
+			ps.setBoolean(1, newVal);
+			ps.setInt(2, userID);
+
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
