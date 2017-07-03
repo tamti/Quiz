@@ -147,11 +147,11 @@ public class StatisticsDAO extends BasicQuizWebSiteDAO {
 	 */
 	public void insertStatistics(Statistics stat) {
 		String table = DbContract.TABLE_QUIZ_STATS;
-		String cols = DbContract.COL_QUIZ_ID + ", " + DbContract.COL_USER_ID + ", " + DbContract.COL_TAKE_ON + ", "
-				+ DbContract.COL_USED_TIME + ", " + DbContract.COL_NUM_CORRECT_ANSWERS + ", "
-				+ DbContract.COL_NUM_RECIEVED_POINTS + ", " + DbContract.COL_HAS_ANSWERS_TO_CHECK;
+		String[] cols = { DbContract.COL_QUIZ_ID, DbContract.COL_USER_ID, DbContract.COL_TAKE_ON,
+				DbContract.COL_USED_TIME, DbContract.COL_NUM_CORRECT_ANSWERS, DbContract.COL_NUM_RECIEVED_POINTS,
+				DbContract.COL_HAS_ANSWERS_TO_CHECK };
 
-		PreparedStatement ps = getPreparedStatementForInsertionWith(table, cols, 7);
+		PreparedStatement ps = prepareInsertStatementWith(table, cols);
 
 		try {
 			ps.setInt(1, stat.getQuizID());

@@ -174,31 +174,25 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	 */
 	public void insertUser(User newUser) {
 		try {
-			String allUserColumns = DbContract.COL_USER_ID + "," + DbContract.COL_FIRST_NAME + ","
-					+ DbContract.COL_LAST_NAME + "," + DbContract.COL_USERNAME + "," + DbContract.COL_PASSWORD + ","
-					+ DbContract.COL_EMAIL + "," + DbContract.COL_PHOTO_ID + "," + DbContract.COL_USER_IS_ACTIVE + ","
-					+ DbContract.COL_IS_ADMIN;
+			String[] allUserColumns = { DbContract.COL_FIRST_NAME, DbContract.COL_LAST_NAME,
+					DbContract.COL_USERNAME, DbContract.COL_PASSWORD, DbContract.COL_EMAIL, DbContract.COL_PHOTO_ID,
+					DbContract.COL_USER_IS_ACTIVE, DbContract.COL_IS_ADMIN };
 
-			PreparedStatement prepSt = getPreparedStatementForInsertionWith(DbContract.TABLE_USERS, allUserColumns, 10);
+			PreparedStatement prepSt = prepareInsertStatementWith(DbContract.TABLE_USERS, allUserColumns);
 
-			if (newUser.getID() == -1) {
-				// TODO lastID
-			} else {
-				prepSt.setInt(1, newUser.getID());
-			}
-			prepSt.setString(2, newUser.getFirstName());
-			prepSt.setString(3, newUser.getLastName());
-			prepSt.setString(4, newUser.getUsername());
-			prepSt.setString(5, newUser.getPassword());
-			prepSt.setString(6, newUser.getEmail());
+			prepSt.setString(1, newUser.getFirstName());
+			prepSt.setString(2, newUser.getLastName());
+			prepSt.setString(3, newUser.getUsername());
+			prepSt.setString(4, newUser.getPassword());
+			prepSt.setString(5, newUser.getEmail());
 
 			if (newUser.hasPhoto()) {
-				prepSt.setInt(7, newUser.getPhotoID());
+				prepSt.setInt(6, newUser.getPhotoID());
 			} else {
-				prepSt.setNull(7, DbContract.DEFAULT_USER_PHOTO_ID);
+				prepSt.setNull(6, DbContract.DEFAULT_USER_PHOTO_ID);
 			}
-			prepSt.setBoolean(8, true);
-			prepSt.setBoolean(9, newUser.isAdmin());
+			prepSt.setBoolean(7, true);
+			prepSt.setBoolean(8, newUser.isAdmin());
 
 			prepSt.executeUpdate();
 
@@ -310,10 +304,10 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	 */
 	public void insertFriendShip(int user1ID, int user2ID, boolean awaitingResponse, boolean friendshipActive) {
 		try {
-			String cols = DbContract.COL_FRIEND1 + "," + DbContract.COL_FRIEND2 + "," + DbContract.COL_AWAITING_RESPONSE
-					+ "," + DbContract.COL_FRIENDSHIP_ACTIVE;
+			String[] cols = { DbContract.COL_FRIEND1, DbContract.COL_FRIEND2, DbContract.COL_AWAITING_RESPONSE,
+					DbContract.COL_FRIENDSHIP_ACTIVE };
 
-			PreparedStatement prepSt = getPreparedStatementForInsertionWith(DbContract.TABLE_USERS, cols, 4);
+			PreparedStatement prepSt = prepareInsertStatementWith(DbContract.TABLE_USERS, cols);
 
 			prepSt.setInt(1, user1ID);
 			prepSt.setInt(2, user2ID);

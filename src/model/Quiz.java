@@ -16,12 +16,13 @@ public class Quiz implements Comparable<Quiz> {
 	private Date dateCreated;
 	private int maxPoints;
 	private SortedSet<Question> questions;
-	private String ownerUsername;
+	private int ownerID;
 	private SortedSet<Statistics> stats;
 
-	public Quiz(int ID, String quizName, String description, Date dateCreated, boolean answersImmediately,
+	public Quiz(int ID, int ownerID, String quizName, String description, Date dateCreated, boolean answersImmediately,
 			boolean isOnePage, Time allowedTime, int maxPoints) {
 		this.ID = ID;
+		this.ownerID = ownerID;
 		this.quizName = quizName;
 		this.description = description;
 		this.dateCreated = dateCreated;
@@ -33,12 +34,12 @@ public class Quiz implements Comparable<Quiz> {
 		stats = new TreeSet<Statistics>();
 	}
 
-	public String getOwner() {
-		return ownerUsername;
+	public int getOwnerID() {
+		return ownerID;
 	}
 
-	public void setOwner(String ownerUsername) {
-		this.ownerUsername = ownerUsername;
+	public void setOwnerID(int ownerID) {
+		this.ownerID = ownerID;
 	}
 
 	public SortedSet<Question> getQuestions() {
@@ -127,20 +128,6 @@ public class Quiz implements Comparable<Quiz> {
 
 	public void setStats(SortedSet<Statistics> stats) {
 		this.stats = stats;
-	}
-
-	public static class QuizHandle {
-		public int ID;
-		public String name;
-		public int score;
-
-		public QuizHandle(int iD, String name, int score) {
-			super();
-			ID = iD;
-			this.name = name;
-			this.score = score;
-		}
-
 	}
 
 	/**

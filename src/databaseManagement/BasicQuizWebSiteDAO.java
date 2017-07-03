@@ -61,7 +61,7 @@ public class BasicQuizWebSiteDAO {
 	 * @param condition
 	 *            String representing condition of update
 	 * @return a PreparedStatement for update made with the query: "update
-	 *         [table] set [setCols] (where [condition])
+	 *         [table] set [setCols] (where [condition])"
 	 */
 	protected PreparedStatement prepareUpdateStatementWith(String table, String setCols, String condition) {
 		PreparedStatement res = null;
@@ -91,24 +91,21 @@ public class BasicQuizWebSiteDAO {
 	 * Client should set all parameters (if any) for the execution of the query
 	 * by himself and than use executeQuery()
 	 * 
-	 * @param cols
-	 *            string representing all columns into which we wish to insert
-	 *            some values (separated by commas)
 	 * @param table
 	 *            a table into which we wish to insert some values
-	 * @param numValues
-	 *            number of columns we wish to insert into (used for determining
-	 *            number of needed question marks)
+	 * @param cols
+	 *            array of string representing all columns into which we wish to
+	 *            insert some values
 	 * 
 	 * @Return a PreparedStatement for insertion into database with the query:
-	 *         "insert into [table] (cols) values (?*numValues)
+	 *         "insert into [table] ( [cols[i],..] ) values ( [?,..] )"
 	 */
-	protected PreparedStatement getPreparedStatementForInsertionWith(String table, String cols, int numValues) {
+	protected PreparedStatement prepareInsertStatementWith(String table, String[] cols) {
 		PreparedStatement res = null;
 
-		String query = "insert into " + table + " (" + cols + ") values (?";
+		String query = "insert into " + table + " (" + String.join(",", cols) + ") values (?";
 
-		for (int i = 0; i < numValues - 1; i++) {
+		for (int i = 0; i < cols.length - 1; i++) {
 			query += ", ?";
 		}
 
@@ -156,6 +153,34 @@ public class BasicQuizWebSiteDAO {
 		}
 
 		return res;
+	}
+
+	/**
+	 * 
+	 * Should be used to find primary key (ID) of last insert into specified
+	 * table
+	 * 
+	 * @param table
+	 * @param idColumnName
+	 *            name of the primary key (ID) column
+	 * @return "select Max([idColumnName]) from [table]"
+	 */
+	protected int getLastIdOf(String table, String idColumnName) {
+		String col = "max(?) as lastID";
+		PreparedStatement ps = prepareSelectStatementWith(col, "?", "");
+
+		ps.setString(1, idColumnName);
+		ps.setString(2, table);
+
+		ResultSet rs = ps.executeQuery();
+
+		int result = 0;
+
+		if (rs.next()) {
+			result = rs.getInt("lastID");
+		}
+
+		return result;
 	}
 
 }

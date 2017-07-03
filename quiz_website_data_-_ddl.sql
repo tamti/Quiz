@@ -11,7 +11,7 @@ USE quiz_website;
 
 -- List of names of all photo files avaliable on the website
 CREATE TABLE photos (
-    photo_id INT NOT NULL,
+    photo_id INT AUTO_INCREMENT,
     photo_file VARCHAR(150) NOT NULL,
     CONSTRAINT photos_pk PRIMARY KEY (photo_id)
 );
@@ -25,7 +25,7 @@ CREATE TABLE photos (
  * to the user's "profile picture"
  */
 CREATE TABLE users (
-    user_id INT NOT NULL,
+    user_id INT AUTO_INCREMENT,
     first_name VARCHAR(30) NOT NULL,
     last_name VARCHAR(40) NOT NULL,
     username VARCHAR(30) NOT NULL,
@@ -139,7 +139,7 @@ CREATE TABLE user_achievements (
  * respective table ("users")
  */
 CREATE TABLE quizzes (
-    quiz_id INT NOT NULL,
+    quiz_id INT AUTO_INCREMENT,
     quiz_name VARCHAR(100),
     quiz_description VARCHAR(1500),
     quiz_author_id INT,
@@ -179,7 +179,7 @@ CREATE TABLE categories_of_quizzes (
 
 -- String values of all questions types
 CREATE TABLE question_types (
-	question_type_id INT NOT NULL,
+	question_type_id INT AUTO_INCREMENT,
 	question_type_name varchar(50) not null,
 	constraint question_types primary key (question_type_id)
 );
@@ -192,7 +192,7 @@ CREATE TABLE question_types (
  * respective table
  */
 CREATE TABLE questions (
-    question_id INT NOT NULL,
+    question_id INT AUTO_INCREMENT,
     question_txt VARCHAR(2000) NOT NULL,
     question_type_id INT NOT NULL,
     photo_id INT,
@@ -204,7 +204,7 @@ CREATE TABLE questions (
 
 -- String values of all kinds of answers
 CREATE TABLE answers (
-    answer_id INT NOT NULL,
+    answer_id INT AUTO_INCREMENT,
     answer_txt VARCHAR(600),
     is_correct BOOLEAN NOT NULL,
 	answer_no INT,
@@ -303,6 +303,18 @@ delimiter $$
 CREATE TRIGGER delete_photos_and_answers_to_deleted_question
 AFTER DELETE
    ON questions FOR EACH ROW
+
+BEGIN
+
+
+
+END;
+$$
+
+delimiter $$
+CREATE TRIGGER delete_answers_to_questions_after_deleting_answers
+AFTER DELETE
+   ON answers FOR EACH ROW
 
 BEGIN
 
