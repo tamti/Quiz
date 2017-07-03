@@ -1,9 +1,5 @@
 package others;
 
-/**
- * @author Vazha
- *
- */
 public class PhotoAble {
 	private int photoID;
 	private String photoFile;
