@@ -1,7 +1,11 @@
 package databaseManagement;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import model.User;
@@ -97,11 +101,10 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 			String lastName = resultSet.getString(DbContract.COL_LAST_NAME);
 			String username = resultSet.getString(DbContract.COL_USERNAME);
 			String password = resultSet.getString(DbContract.COL_PASSWORD);
-			String salt = resultSet.getString(DbContract.COL_SALT);
 			String email = resultSet.getString(DbContract.COL_EMAIL);
 			int photoID = resultSet.getInt(DbContract.COL_PHOTO_ID);
 
-			res = new User(firstName, lastName, email, username, password, salt, userID);
+			res = new User(firstName, lastName, email, username, password, userID);
 
 			String photo = resultSet.getString(DbContract.COL_PHOTO_FILE);
 			res.setPhoto(photoID, photo);
@@ -116,10 +119,12 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	/**
 	 * Constructs User objects for all USERS_TABLE rows
 	 * 
-	 * @return sorted set of all users from the database(SortedSet<User>)
+	 * @return sorted Map of all users from the database (SortedMap<String,
+	 *         User>). Keys of the map are the username's of users and the
+	 *         values are User objects themselves
 	 */
-	public SortedSet<User> getAllUsers() {
-		SortedSet<User> result = new TreeSet<User>();
+	public SortedMap<String, User> getAllUsers() {
+		SortedMap<String, User> result = new TreeMap<String, User>();
 
 		PreparedStatement ps = prepareStatementToGetUserWith("");
 
@@ -129,7 +134,7 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 
 			while (rs.next()) {
 				User current = setUpUserFullyFrom(rs);
-				result.add(current);
+				result.put(current.getUsername(), current);
 			}
 		} catch (SQLException e1) {
 			e1.printStackTrace();
@@ -171,13 +176,13 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 		try {
 			String allUserColumns = DbContract.COL_USER_ID + "," + DbContract.COL_FIRST_NAME + ","
 					+ DbContract.COL_LAST_NAME + "," + DbContract.COL_USERNAME + "," + DbContract.COL_PASSWORD + ","
-					+ DbContract.COL_SALT + "," + DbContract.COL_EMAIL + "," + DbContract.COL_PHOTO_ID + ","
-					+ DbContract.COL_USER_IS_ACTIVE + "," + DbContract.COL_IS_ADMIN;
+					+ DbContract.COL_EMAIL + "," + DbContract.COL_PHOTO_ID + "," + DbContract.COL_USER_IS_ACTIVE + ","
+					+ DbContract.COL_IS_ADMIN;
 
 			PreparedStatement prepSt = getPreparedStatementForInsertionWith(DbContract.TABLE_USERS, allUserColumns, 10);
 
 			if (newUser.getID() == -1) {
-				//TODO lastID
+				// TODO lastID
 			} else {
 				prepSt.setInt(1, newUser.getID());
 			}
@@ -185,16 +190,15 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 			prepSt.setString(3, newUser.getLastName());
 			prepSt.setString(4, newUser.getUsername());
 			prepSt.setString(5, newUser.getPassword());
-			prepSt.setString(6, newUser.getSalt());
-			prepSt.setString(7, newUser.getEmail());
+			prepSt.setString(6, newUser.getEmail());
 
 			if (newUser.hasPhoto()) {
-				prepSt.setInt(8, newUser.getPhotoID());
+				prepSt.setInt(7, newUser.getPhotoID());
 			} else {
-				prepSt.setNull(8, DbContract.DEFAULT_USER_PHOTO_ID);
+				prepSt.setNull(7, DbContract.DEFAULT_USER_PHOTO_ID);
 			}
-			prepSt.setBoolean(9, true);
-			prepSt.setBoolean(10, newUser.isAdmin());
+			prepSt.setBoolean(8, true);
+			prepSt.setBoolean(9, newUser.isAdmin());
 
 			prepSt.executeUpdate();
 
@@ -427,38 +431,6 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			System.out.println("Error in Class: UserDAO, Method : passwordIsValid");
-		}
-
-		return res;
-	}
-
-	/**
-	 * Return "salt" for hashing password of the user with the given ID
-	 * 
-	 * @param userID
-	 *            ID of the user whose password "salt" we need
-	 * @return "salt" for hashing password of the user with the given ID. Empty
-	 *         string if no such user exists or his password doesn't use salt
-	 */
-	public String getUserSalt(int userID) {
-		String res = "";
-
-		String col = "u." + DbContract.COL_SALT;
-		String table = DbContract.TABLE_USERS + " u";
-		String condition = "u." + DbContract.COL_USER_ID + " = ?";
-
-		PreparedStatement ps = prepareSelectStatementWith(col, table, condition);
-
-		try {
-			ps.setInt(1, userID);
-
-			ResultSet rs = ps.executeQuery();
-
-			if (rs.first())
-				res = rs.getString(DbContract.COL_SALT);
-
-		} catch (SQLException e) {
-			e.printStackTrace();
 		}
 
 		return res;

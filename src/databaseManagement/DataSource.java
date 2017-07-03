@@ -9,8 +9,6 @@ import org.apache.commons.dbcp2.BasicDataSource;
 
 /**
  * DataSource class is for connection pooling
- * 
- * @author Vazha
  *
  */
 public class DataSource {
@@ -49,8 +47,7 @@ public class DataSource {
 	}
 
 	/**
-	 * Returns one of available connections
-	 * to the database
+	 * Returns one of available connections to the database
 	 * 
 	 * @return Connection
 	 * @throws SQLException

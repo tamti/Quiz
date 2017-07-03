@@ -1,6 +1,8 @@
 package model;
 
+import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import others.PhotoAble;
@@ -11,35 +13,32 @@ public class User extends PhotoAble implements Comparable<User> {
 	private String lastName;
 	private String email;
 	private String username;
-	private String password;
-	private String salt;
+	private String passwordHash;
 	private boolean isAdmin;
 	private SortedSet<String> friends;
 	private SortedSet<String> friendRequests;
-	private SortedSet<Statistics> stats;
+	private SortedMap<String, Statistics> stats;
 
-	public User(String firstName, String lastName, String email, String username, String password, String salt,
+	public User(String firstName, String lastName, String email, String username, String password,
 			SortedSet<String> friends, SortedSet<String> friendRequests) {
 		this.ID = -1;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
 		this.username = username;
-		this.password = password;
-		this.salt = salt;
+		this.passwordHash = password;
 		this.friends = friends;
 		this.friendRequests = friendRequests;
 		isAdmin = false;
-		stats = new TreeSet<Statistics>();
+		stats = new TreeMap<String, Statistics>();
 	}
 
-	public User(String firstName, String lastName, String email, String username, String password, String salt) {
-		this(firstName, lastName, email, username, password, salt, new TreeSet<String>(), new TreeSet<String>());
+	public User(String firstName, String lastName, String email, String username, String password) {
+		this(firstName, lastName, email, username, password, new TreeSet<String>(), new TreeSet<String>());
 	}
 
-	public User(String firstName, String lastName, String email, String username, String password, String salt,
-			int ID) {
-		this(firstName, lastName, email, username, password, salt);
+	public User(String firstName, String lastName, String email, String username, String password, int ID) {
+		this(firstName, lastName, email, username, password);
 		this.ID = ID;
 	}
 
@@ -113,19 +112,11 @@ public class User extends PhotoAble implements Comparable<User> {
 	}
 
 	public String getPassword() {
-		return password;
+		return passwordHash;
 	}
 
 	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getSalt() {
-		return salt;
-	}
-
-	public void setSalt(String salt) {
-		this.salt = salt;
+		this.passwordHash = password;
 	}
 
 	public void makeAdmin() {
@@ -144,11 +135,11 @@ public class User extends PhotoAble implements Comparable<User> {
 		friends.remove(friend);
 	}
 
-	public SortedSet<Statistics> getStats() {
+	public SortedMap<String, Statistics> getStats() {
 		return stats;
 	}
 
-	public void setStats(SortedSet<Statistics> stats) {
+	public void setStats(SortedMap<String, Statistics> stats) {
 		this.stats = stats;
 	}
 

@@ -16,7 +16,7 @@ public class Quiz implements Comparable<Quiz> {
 	private Date dateCreated;
 	private int maxPoints;
 	private SortedSet<Question> questions;
-	private int ownerID;
+	private String ownerUsername;
 	private SortedSet<Statistics> stats;
 
 	public Quiz(int ID, String quizName, String description, Date dateCreated, boolean answersImmediately,
@@ -33,12 +33,12 @@ public class Quiz implements Comparable<Quiz> {
 		stats = new TreeSet<Statistics>();
 	}
 
-	public int getOwnerID() {
-		return ownerID;
+	public String getOwner() {
+		return ownerUsername;
 	}
 
-	public void setOwnerID(int ownerID) {
-		this.ownerID = ownerID;
+	public void setOwner(String ownerUsername) {
+		this.ownerUsername = ownerUsername;
 	}
 
 	public SortedSet<Question> getQuestions() {
@@ -120,7 +120,7 @@ public class Quiz implements Comparable<Quiz> {
 	public void setMaxPoints(int maxPoints) {
 		this.maxPoints = maxPoints;
 	}
-	
+
 	public SortedSet<Statistics> getStats() {
 		return stats;
 	}

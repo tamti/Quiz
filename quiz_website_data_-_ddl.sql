@@ -17,11 +17,10 @@ CREATE TABLE photos (
 );
 
 /*
- * This table stores string values of nicknames and passwords (hash-values)
- * of all users of the website. String values of the column "salt"
- * (which are optional) are used for ensuring the avoidance of repeting
- * the hash values of same passwords of different users. Column "is_active"
- * indicates wether the account has been deactivated. Value of the column "is_admin" 
+ * This table stores string values of nicknames and passwords 
+ * (all necessary info for verifying user's password hash-values plus "salt")
+ * of all users of the website. Column "is_active" indicates wether 
+ * the account has been deactivated. Value of the column "is_admin" 
  * is set to true if the user is an admin. Column photo_id is a reference 
  * to the user's "profile picture"
  */
@@ -31,7 +30,6 @@ CREATE TABLE users (
     last_name VARCHAR(40) NOT NULL,
     username VARCHAR(30) NOT NULL,
     password VARCHAR(60) NOT NULL,
-    salt varchar(20),
 	email varchar(50) NOT NULL,
 	photo_id int NOT NULL,
 	is_active BOOLEAN NOT NULL,
