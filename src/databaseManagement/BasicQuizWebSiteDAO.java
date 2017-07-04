@@ -169,15 +169,24 @@ public class BasicQuizWebSiteDAO {
 		String col = "max(?) as lastID";
 		PreparedStatement ps = prepareSelectStatementWith(col, "?", "");
 
-		ps.setString(1, idColumnName);
-		ps.setString(2, table);
+		try {
+			ps.setString(1, idColumnName);
+			ps.setString(2, table);
 
-		ResultSet rs = ps.executeQuery();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
 		int result = 0;
 
-		if (rs.next()) {
-			result = rs.getInt("lastID");
+		try {
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+				result = rs.getInt("lastID");
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 
 		return result;
