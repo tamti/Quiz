@@ -2,7 +2,9 @@ package model;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 public class Quiz implements Comparable<Quiz> {
@@ -15,7 +17,7 @@ public class Quiz implements Comparable<Quiz> {
 	private boolean random;
 	private Date dateCreated;
 	private int maxPoints;
-	private SortedSet<Question> questions;
+	private SortedMap<Integer, Question> questions;
 	private int ownerID;
 	private SortedSet<Statistics> stats;
 
@@ -30,8 +32,13 @@ public class Quiz implements Comparable<Quiz> {
 		this.isOnePage = isOnePage;
 		this.allowedTime = allowedTime;
 		this.maxPoints = maxPoints;
-		questions = new TreeSet<Question>();
+		questions = new TreeMap<Integer, Question>();
 		stats = new TreeSet<Statistics>();
+	}
+
+	public Quiz(int ownerID, String quizName, String description, Date dateCreated, boolean answersImmediately,
+			boolean isOnePage, Time allowedTime, int maxPoints) {
+		this(-1, ownerID, quizName, description, dateCreated, answersImmediately, isOnePage, allowedTime, maxPoints);
 	}
 
 	public int getOwnerID() {
@@ -42,11 +49,11 @@ public class Quiz implements Comparable<Quiz> {
 		this.ownerID = ownerID;
 	}
 
-	public SortedSet<Question> getQuestions() {
+	public SortedMap<Integer, Question> getQuestions() {
 		return questions;
 	}
 
-	public void setQuestions(SortedSet<Question> questions) {
+	public void setQuestions(SortedMap<Integer, Question> questions) {
 		this.questions = questions;
 	}
 
@@ -128,6 +135,14 @@ public class Quiz implements Comparable<Quiz> {
 
 	public void setStats(SortedSet<Statistics> stats) {
 		this.stats = stats;
+	}
+
+	public void addQuestion(Question newQuestion) {
+		questions.put(newQuestion.getID(), newQuestion);
+	}
+
+	public void removeQuestion(Integer questionID) {
+		questions.remove(questionID);
 	}
 
 	/**

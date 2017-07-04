@@ -68,6 +68,10 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 		return null;
 	}
 
+	/*
+	 * Helper function for getUser methods. Returns PreparedStatement
+	 * constructed with necessary select query + given condition
+	 */
 	private PreparedStatement prepareStatementToGetUserWith(String condition) {
 		String tables = DbContract.TABLE_USERS + " u, " + DbContract.TABLE_PHOTOS + " p";
 		String where = "u." + DbContract.COL_PHOTO_ID + " = " + "p." + DbContract.COL_PHOTO_ID;
@@ -78,6 +82,10 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 		return prepareSelectStatementWith("*", tables, where);
 	}
 
+	/*
+	 * Constructs User with the data taken from given ResultSet and sets its
+	 * friend list and friend requests
+	 */
 	private User setUpUserFullyFrom(ResultSet rs) {
 		User result = getUserFromResultSetRow(rs);
 
@@ -171,11 +179,12 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	 * 
 	 * @param newUser
 	 *            User object
+	 * @return ID of the new User in the database
 	 */
-	public void insertUser(User newUser) {
+	public int insertUser(User newUser) {
 		try {
-			String[] allUserColumns = { DbContract.COL_FIRST_NAME, DbContract.COL_LAST_NAME,
-					DbContract.COL_USERNAME, DbContract.COL_PASSWORD, DbContract.COL_EMAIL, DbContract.COL_PHOTO_ID,
+			String[] allUserColumns = { DbContract.COL_FIRST_NAME, DbContract.COL_LAST_NAME, DbContract.COL_USERNAME,
+					DbContract.COL_PASSWORD, DbContract.COL_EMAIL, DbContract.COL_PHOTO_ID,
 					DbContract.COL_USER_IS_ACTIVE, DbContract.COL_IS_ADMIN };
 
 			PreparedStatement prepSt = prepareInsertStatementWith(DbContract.TABLE_USERS, allUserColumns);
@@ -199,6 +208,8 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+
+		return getLastIdOf(DbContract.TABLE_USERS, DbContract.COL_USER_ID);
 	}
 
 	/*
@@ -430,16 +441,15 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 		return res;
 	}
 
-	/*	*//**
-			 * TODO Sets photo of the user with the given ID to the provided new
-			 * photo
-			 * 
-			 * @param userID
-			 * @param newPhotoFileName
-			 */
+	/**
+	 * Sets photo of the user with the given ID to the provided new photo
+	 * 
+	 * @param userID
+	 * @param newPhotoFileName
+	 */
 	/*
-	 * public void updateUserPhoto(int userID, String newPhotoFileName) { String
-	 * table = DbContract.TABLE_USERS + " u, "; String col = "(u." +
+	 * TODO public void updateUserPhoto(int userID, String newPhotoFileName) {
+	 * String table = DbContract.TABLE_USERS + " u, "; String col = "(u." +
 	 * DbContract.COL_PHOTO_ID + " = " + DbContract.DEFAULT_USER_PHOTO_ID +
 	 * ") hasDefaultPhoto"; String condition = DbContract.COL_USER_ID + " = ?";
 	 * 
@@ -455,28 +465,29 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	 * 
 	 * } catch (SQLException e) { e.printStackTrace(); }
 	 * 
-	 * // ps = prepareUpdateStatementWith(, "", ""); }
+	 * ps = prepareUpdateStatementWith(, "", ""); }
+	 */
+
+	/**
+	 * Removes photo of the user with the given ID and sets it to the default
+	 * photo
 	 * 
-	 *//**
-		 * TODO Removes photo of the user with the given ID and sets it to the
-		 * default photo
-		 * 
-		 * @param userID
-		 *//*
-		 * public void removeUserPhoto(int userID) { String setCols =
-		 * DbContract.COL_PHOTO_ID + " = " + DbContract.DEFAULT_USER_PHOTO_ID;
-		 * String condition = DbContract.COL_USER_ID + " = ?";
-		 * 
-		 * PreparedStatement ps =
-		 * prepareUpdateStatementWith(DbContract.TABLE_USERS, setCols,
-		 * condition);
-		 * 
-		 * try { ps.setInt(1, userID);
-		 * 
-		 * ps.executeUpdate();
-		 * 
-		 * } catch (SQLException e) { e.printStackTrace(); } }
-		 */
+	 * @param userID
+	 */
+	/*
+	 * TODO public void removeUserPhoto(int userID) { String setCols =
+	 * DbContract.COL_PHOTO_ID + " = " + DbContract.DEFAULT_USER_PHOTO_ID;
+	 * String condition = DbContract.COL_USER_ID + " = ?";
+	 * 
+	 * PreparedStatement ps = prepareUpdateStatementWith(DbContract.TABLE_USERS,
+	 * setCols, condition);
+	 * 
+	 * try { ps.setInt(1, userID);
+	 * 
+	 * ps.executeUpdate();
+	 * 
+	 * } catch (SQLException e) { e.printStackTrace(); } }
+	 */
 
 	/**
 	 * Sets username of the user with the given ID to the provided new username

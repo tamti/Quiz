@@ -25,6 +25,19 @@ public class Answer implements Comparable<Answer> {
 	}
 
 	/**
+	 * Constructs an Answer object without ID
+	 * 
+	 * @param answerStr
+	 *            String representation of the answer
+	 * @param isCorrect
+	 *            boolean variable specifying whether this is a correct answer
+	 *            to some question or not
+	 */
+	public Answer(String answerStr, boolean isCorrect) {
+		this(-1, answerStr, isCorrect);
+	}
+
+	/**
 	 * returns Answer's ID in the database
 	 * 
 	 * @return int value of the Answers's ID in the database

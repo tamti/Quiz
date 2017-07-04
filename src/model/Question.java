@@ -1,6 +1,8 @@
 package model;
 
+import java.util.SortedMap;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import others.PhotoAble;
@@ -10,7 +12,7 @@ public class Question extends PhotoAble implements Comparable<Question> {
 	private int ID;
 	private QuestionType type;
 	private String questionStr;
-	private SortedSet<Answer> answers;
+	private SortedMap<Integer, Answer> answers;
 	private double maxPoints;
 
 	/**
@@ -22,13 +24,12 @@ public class Question extends PhotoAble implements Comparable<Question> {
 	 * @param type
 	 *            Of which type is this question
 	 * @param answers
-	 *            set of answers (Answer objects) to this question
-	 * 
 	 * @param maxPoints
 	 *            a real number - max number of points a user will get for
 	 *            answering correctly
 	 */
-	public Question(int ID, String questionStr, QuestionType type, double maxPoints, SortedSet<Answer> answers) {
+	public Question(int ID, String questionStr, QuestionType type, double maxPoints,
+			SortedMap<Integer, Answer> answers) {
 		this.ID = ID;
 		this.questionStr = questionStr;
 		this.type = type;
@@ -37,8 +38,7 @@ public class Question extends PhotoAble implements Comparable<Question> {
 	}
 
 	/**
-	 * Constructs Question object without initial set of answers (Answer
-	 * objects)to it
+	 * Constructs Question object without answers to it
 	 * 
 	 * @param ID
 	 *            ID of the question in the database
@@ -51,7 +51,23 @@ public class Question extends PhotoAble implements Comparable<Question> {
 	 *            answering correctly
 	 */
 	public Question(int ID, String questionStr, QuestionType type, double maxPoints) {
-		this(ID, questionStr, type, maxPoints, new TreeSet<Answer>());
+		this(ID, questionStr, type, maxPoints, new TreeMap<Integer, Answer>());
+	}
+
+	/**
+	 * Constructs Question object without its ID and answers (Answer objects)to
+	 * it
+	 * 
+	 * @param questionStr
+	 *            a string representing question's text
+	 * @param type
+	 *            Of which type is this question
+	 * @param maxPoints
+	 *            a real number - max number of points a user will get for
+	 *            answering correctly
+	 */
+	public Question(String questionStr, QuestionType type, double maxPoints) {
+		this(-1, questionStr, type, maxPoints, new TreeMap<Integer, Answer>());
 	}
 
 	/**
@@ -92,32 +108,28 @@ public class Question extends PhotoAble implements Comparable<Question> {
 	}
 
 	/**
-	 * Adds a new answer to the set of answers to this Question
 	 * 
 	 * @param newAnswer
 	 *            Answer - an object representing Answer to this question (with
 	 *            all needed components)
 	 */
 	public void addAnswer(Answer newAnswer) {
-		answers.add(newAnswer);
-	}
-
-	/**
-	 * Removes an answer from the set of answers to this Question
-	 * 
-	 * @param newAnswer
-	 *            Answer - an object representing Answer to this question (with
-	 *            all needed components)
-	 */
-	public void removeAnswer(Answer a) {
-		answers.remove(a);
+		answers.put(newAnswer.getID(), newAnswer);
 	}
 
 	/**
 	 * 
-	 * @return Sorted set of all answers (Answer objects) to this question
+	 * @param answerID
 	 */
-	public SortedSet<Answer> getAnswers() {
+	public void removeAnswer(Integer answerID) {
+		answers.remove(answerID);
+	}
+
+	/**
+	 * 
+	 * @return SortedMap<answerID, Answer>
+	 */
+	public SortedMap<Integer, Answer> getAnswers() {
 		return answers;
 	}
 
@@ -125,7 +137,7 @@ public class Question extends PhotoAble implements Comparable<Question> {
 	 * 
 	 * @param answers
 	 */
-	public void setAnswers(SortedSet<Answer> answers) {
+	public void setAnswers(SortedMap<Integer, Answer> answers) {
 		this.answers = answers;
 	}
 
@@ -160,5 +172,9 @@ public class Question extends PhotoAble implements Comparable<Question> {
 	@Override
 	public int compareTo(Question other) {
 		return Integer.compare(this.ID, other.getID());
+	}
+
+	public void setID(int ID) {
+		this.ID = ID;
 	}
 }

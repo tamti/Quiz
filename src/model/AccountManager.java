@@ -44,7 +44,9 @@ public class AccountManager {
 
 		User newUser = new User(firstName, lastName, email, username, passwordHash);
 
-		uDao.insertUser(newUser);
+		int idOfNewUser = uDao.insertUser(newUser);
+		
+		newUser.setID(idOfNewUser);
 
 		users.put(username, newUser);
 
@@ -81,13 +83,14 @@ public class AccountManager {
 	}
 
 	// TODO
-	public void addProfilePictureTo(String username, String profilePictureName) {
-		User u = users.get(username);
+	// public void addProfilePictureTo(String username, String
+	// profilePictureName) {
+	// User u = users.get(username);
 
-		// uDao.updatePhoto();
-		// u.setPhoto(0, profilePictureName);
+	// uDao.updatePhoto();
+	// u.setPhoto(0, profilePictureName);
 
-	}
+	// }
 
 	/**
 	 * 

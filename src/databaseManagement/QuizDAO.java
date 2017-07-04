@@ -4,13 +4,10 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLType;
 import java.sql.Time;
 import java.sql.Types;
 import java.util.SortedMap;
-import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import model.Answer;
 import model.Question;
@@ -93,7 +90,7 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 			result = new Quiz(quizID, ownerID, quizName, description, dateCreated, answersImmediately, isOnePage,
 					allowedTime, maxPoints);
 
-			SortedSet<Question> questions = getAllQuestionsFromResultSet(quizID);
+			SortedMap<Integer, Question> questions = getAllQuestionsFromResultSet(quizID);
 
 			result.setQuestions(questions);
 
@@ -108,8 +105,8 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 	 * Selects all necessary info from the database and returns SortedSet of all
 	 * Questions that belong to the specified quiz
 	 */
-	private SortedSet<Question> getAllQuestionsFromResultSet(int quizID) {
-		SortedSet<Question> res = new TreeSet<Question>();
+	private SortedMap<Integer, Question> getAllQuestionsFromResultSet(int quizID) {
+		SortedMap<Integer, Question> res = new TreeMap<Integer, Question>();
 
 		String tables = DbContract.TABLE_QUESTIONS + " q, " + DbContract.TABLE_QUIZ_QUESTIONS + " qq";
 
@@ -130,7 +127,7 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 
 			while (rs.next()) {
 				Question curr = getQuestionFromResultSet(rs);
-				res.add(curr);
+				res.put(curr.getID(), curr);
 			}
 
 		} catch (SQLException e) {
@@ -164,7 +161,7 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 				result.setPhoto(photoID, photoFileName);
 			}
 
-			SortedSet<Answer> answers = getAllAnswersFromResultSet(questionID);
+			SortedMap<Integer, Answer> answers = getAllAnswersFromResultSet(questionID);
 			result.setAnswers(answers);
 
 		} catch (SQLException e) {
@@ -178,8 +175,8 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 	 * Selects all necessary info from the database and returns SortedSet of all
 	 * Answers that belong to the specified question
 	 */
-	private SortedSet<Answer> getAllAnswersFromResultSet(int questionID) {
-		SortedSet<Answer> res = new TreeSet<Answer>();
+	private SortedMap<Integer, Answer> getAllAnswersFromResultSet(int questionID) {
+		SortedMap<Integer, Answer> res = new TreeMap<Integer, Answer>();
 
 		String tables = DbContract.TABLE_ANSWERS + " a, " + DbContract.TABLE_ANSWERS_TO_QUESTIONS + " aq";
 		String condition = "aq." + DbContract.COL_QUESTION_ID + " = ? and aq." + DbContract.COL_ANSWER_ID + " = a."
@@ -198,7 +195,7 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 
 			while (rs.next()) {
 				Answer curr = getAnswerFromResultSet(rs);
-				res.add(curr);
+				res.put(curr.getID(), curr);
 			}
 
 		} catch (SQLException e) {
@@ -274,10 +271,11 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 
 	/**
 	 * 
-	 * @return
+	 * @return SortedMap containing names of quizzes as keys and Quizzes
+	 *         themselves as values
 	 */
-	public SortedMap<String, Quiz> getAllQuizzes() {
-		SortedMap<String, Quiz> result = new TreeMap<String, Quiz>();
+	public SortedMap<Integer, Quiz> getAllQuizzes() {
+		SortedMap<Integer, Quiz> result = new TreeMap<Integer, Quiz>();
 
 		PreparedStatement ps = prepareSelectStatementWith("*", DbContract.TABLE_QUIZZES, "");
 
@@ -287,7 +285,7 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 			while (rs.next()) {
 				Quiz current = getQuizFromResultSet(rs);
 
-				result.put(current.getQuizName(), current);
+				result.put(current.getID(), current);
 			}
 
 		} catch (SQLException e) {
@@ -301,8 +299,9 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 	 * Inserts all properties of the given Quiz to the database
 	 * 
 	 * @param Quiz
+	 * @return ID of the new Quiz in the database
 	 */
-	public void insertQuiz(Quiz newQuiz) {
+	public int insertQuiz(Quiz newQuiz) {
 		String[] cols = { DbContract.COL_QUIZ_NAME, DbContract.COL_QUIZ_DESCRIPTION, DbContract.COL_AUTHOR_ID,
 				DbContract.COL_DATE_CREATED, DbContract.COL_SHOW_ANSWERS_IMMEDIATELY,
 				DbContract.COL_QUESTIONS_ON_SAME_PAGE, DbContract.COL_MAX_ALLOWED_TIME, DbContract.COL_MAX_POINTS };
@@ -328,6 +327,8 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+
+		return getLastIdOf(DbContract.TABLE_QUIZZES, DbContract.COL_QUIZ_ID);
 	}
 
 	/**
@@ -336,8 +337,9 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 	 * 
 	 * @param quizID
 	 * @param newQuestion
+	 * @return ID of the new Question in the database
 	 */
-	public void insertQuestion(int quizID, Question newQuestion) {
+	public int insertQuestion(int quizID, Question newQuestion) {
 		String[] questionCols = { DbContract.COL_QUESTION, DbContract.COL_QUESTION_TYPE_ID, DbContract.COL_PHOTO_ID,
 				DbContract.COL_MAX_POINTS };
 
@@ -345,7 +347,7 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 
 		try {
 			ps1.setString(1, newQuestion.getQuestionStr());
-			// TODO ps.setInt(2, newQuestion.getType());
+			ps1.setInt(2, newQuestion.getType().getID());
 
 			if (newQuestion.hasPhoto()) {
 				ps1.setInt(3, newQuestion.getPhotoID());
@@ -365,15 +367,19 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 
 		PreparedStatement ps2 = prepareInsertStatementWith(DbContract.TABLE_QUIZ_QUESTIONS, quizQuestionsCols);
 
+		int IdOfNewQuestion = getLastIdOf(DbContract.TABLE_QUESTIONS, DbContract.COL_QUESTION_ID);
+
 		try {
 			ps2.setInt(1, quizID);
-			ps2.setInt(2, getLastIdOf(DbContract.TABLE_QUESTIONS, DbContract.COL_QUESTION_ID));
+			ps2.setInt(2, IdOfNewQuestion);
 
 			ps2.executeUpdate();
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+
+		return IdOfNewQuestion;
 	}
 
 	/**
@@ -382,8 +388,9 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 	 * 
 	 * @param questionID
 	 * @param newAnswer
+	 * @return ID of the new Answer in the database
 	 */
-	public void insertAnswer(int questionID, Answer newAnswer) {
+	public int insertAnswer(int questionID, Answer newAnswer) {
 		String[] answerCols = { DbContract.COL_ANSWER, DbContract.COL_ANSWER_IS_CORRECT, DbContract.COL_ANSWER_NO };
 
 		PreparedStatement ps1 = prepareInsertStatementWith(DbContract.TABLE_ANSWERS, answerCols);
@@ -408,15 +415,19 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 
 		PreparedStatement ps2 = prepareInsertStatementWith(DbContract.TABLE_ANSWERS_TO_QUESTIONS, questionAnswersCols);
 
+		int idOfNewAnswer = getLastIdOf(DbContract.TABLE_ANSWERS, DbContract.COL_ANSWER_ID);
+
 		try {
 			ps2.setInt(1, questionID);
-			ps2.setInt(2, getLastIdOf(DbContract.TABLE_ANSWERS, DbContract.COL_ANSWER_ID));
+			ps2.setInt(2, idOfNewAnswer);
 
 			ps2.executeUpdate();
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+
+		return idOfNewAnswer;
 	}
 
 	/**
