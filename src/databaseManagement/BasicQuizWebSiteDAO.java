@@ -5,6 +5,24 @@ import java.sql.*;
 public class BasicQuizWebSiteDAO {
 
 	/**
+	 * 
+	 * @param query
+	 * @return PreparedStatement prepared with given [query]
+	 */
+	protected PreparedStatement getPreparedStatementWith(String query) {
+		try {
+			Connection connection = DataSource.getDataSource().getConnection();
+
+			return connection.prepareStatement(query);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return null;
+	}
+
+	/**
 	 * Returns a PreparedStatement with select query constructed with the given
 	 * parameters. "condition" is optional, "where" condition will be omitted,
 	 * if "condition" is set to empty string.
@@ -25,8 +43,6 @@ public class BasicQuizWebSiteDAO {
 	 *         [table] where [condition];"
 	 */
 	protected PreparedStatement prepareSelectStatementWith(String columns, String tables, String condition) {
-		PreparedStatement res = null;
-
 		String query = "select " + columns + " from " + tables;
 
 		if (!condition.isEmpty())
@@ -34,15 +50,7 @@ public class BasicQuizWebSiteDAO {
 
 		query += ";";
 
-		try {
-			Connection connection = DataSource.getDataSource().getConnection();
-			res = connection.prepareStatement(query);
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return res;
+		return getPreparedStatementWith(query);
 	}
 
 	/**
@@ -64,8 +72,6 @@ public class BasicQuizWebSiteDAO {
 	 *         [table] set [setCols] (where [condition])"
 	 */
 	protected PreparedStatement prepareUpdateStatementWith(String table, String setCols, String condition) {
-		PreparedStatement res = null;
-
 		String query = "update " + table + " set " + setCols;
 
 		if (!condition.isEmpty())
@@ -73,15 +79,7 @@ public class BasicQuizWebSiteDAO {
 
 		query += ";";
 
-		try {
-			Connection connection = DataSource.getDataSource().getConnection();
-			res = connection.prepareStatement(query);
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return res;
+		return getPreparedStatementWith(query);
 	}
 
 	/**
@@ -101,8 +99,6 @@ public class BasicQuizWebSiteDAO {
 	 *         "insert into [table] ( [cols[i],..] ) values ( [?,..] )"
 	 */
 	protected PreparedStatement prepareInsertStatementWith(String table, String[] cols) {
-		PreparedStatement res = null;
-
 		String query = "insert into " + table + " (" + String.join(",", cols) + ") values (?";
 
 		for (int i = 0; i < cols.length - 1; i++) {
@@ -111,15 +107,7 @@ public class BasicQuizWebSiteDAO {
 
 		query += ");";
 
-		try {
-			Connection connection = DataSource.getDataSource().getConnection();
-			res = connection.prepareStatement(query);
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return res;
+		return getPreparedStatementWith(query);
 	}
 
 	/**
@@ -140,19 +128,9 @@ public class BasicQuizWebSiteDAO {
 	 *         "delete from [table] where [condition]
 	 */
 	protected PreparedStatement prepareDeleteStatementWith(String table, String condition) {
-		PreparedStatement res = null;
-
 		String query = "delete from " + table + " where " + condition + ";";
 
-		try {
-			Connection connection = DataSource.getDataSource().getConnection();
-			res = connection.prepareStatement(query);
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return res;
+		return getPreparedStatementWith(query);
 	}
 
 	/**
@@ -166,16 +144,8 @@ public class BasicQuizWebSiteDAO {
 	 * @return "select Max([idColumnName]) from [table]"
 	 */
 	protected int getLastIdOf(String table, String idColumnName) {
-		String col = "max(?) as lastID";
-		PreparedStatement ps = prepareSelectStatementWith(col, "?", "");
-
-		try {
-			ps.setString(1, idColumnName);
-			ps.setString(2, table);
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		String col = "max(" + idColumnName + ") as lastID";
+		PreparedStatement ps = prepareSelectStatementWith(col, table, "");
 
 		int result = 0;
 

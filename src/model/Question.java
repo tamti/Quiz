@@ -1,9 +1,7 @@
 package model;
 
 import java.util.SortedMap;
-import java.util.SortedSet;
 import java.util.TreeMap;
-import java.util.TreeSet;
 
 import others.PhotoAble;
 import others.QuestionType;
@@ -174,6 +172,9 @@ public class Question extends PhotoAble implements Comparable<Question> {
 		return Integer.compare(this.ID, other.getID());
 	}
 
+	/**
+	 * @param ID
+	 */
 	public void setID(int ID) {
 		this.ID = ID;
 	}

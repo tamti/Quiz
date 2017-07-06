@@ -349,3 +349,4 @@ gradle-app.setting
 # End of https://www.gitignore.io/api/windows,java,netbeans,intellij,osx,eclipse,vim,emacs,sublimetext,linux,maven,gradle
 src/databaseManagement/MyDbInfo.java
 src/databaseManagement/DBCPDataSourceExample.java
+src/others/DaoTester.java

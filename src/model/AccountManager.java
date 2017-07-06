@@ -1,6 +1,7 @@
 package model;
 
 import java.util.SortedMap;
+import java.util.TreeMap;
 
 import databaseManagement.UserDAO;
 import others.PasswordStorage;
@@ -16,7 +17,7 @@ public class AccountManager {
 	 */
 	public AccountManager() {
 		uDao = new UserDAO();
-		users = uDao.getAllUsers();
+		users = new TreeMap<String, User>();
 	}
 
 	/**
@@ -30,27 +31,57 @@ public class AccountManager {
 	 * @param email
 	 * @param username
 	 * @param password
-	 * @return User object of the newly created user, constructed with the given
-	 *         parameters
+	 * @return True if new User account was created with no problems. False if
+	 *         user with such username already existed or given password had
+	 *         less than 6 characters or other errors occurred
 	 */
-	public User createAccount(String firstName, String lastName, String email, String username, String password) {
-		String passwordHash = "";
+	public boolean createAccount(String firstName, String lastName, String email, String username, String password) {
+		if (!usernameExists(username) && password.length() >= 6) {
+			String passwordHash = "";
 
-		try {
-			passwordHash = PasswordStorage.createHash(password);
-		} catch (CannotPerformOperationException e) {
-			e.printStackTrace();
+			try {
+				passwordHash = PasswordStorage.createHash(password);
+			} catch (CannotPerformOperationException e) {
+				e.printStackTrace();
+				return false;
+			}
+
+			User newUser = new User(firstName, lastName, email, username, passwordHash);
+
+			int idOfNewUser = uDao.insertUser(newUser);
+
+			if (idOfNewUser < 1)
+				return false;
+
+			newUser.setID(idOfNewUser);
+
+			users.put(username, newUser);
+
+			return true;
 		}
 
-		User newUser = new User(firstName, lastName, email, username, passwordHash);
+		return false;
+	}
 
-		int idOfNewUser = uDao.insertUser(newUser);
-		
-		newUser.setID(idOfNewUser);
+	/**
+	 * 
+	 * @param username
+	 * @return User object corresponding to the user with given username
+	 */
+	public User getUser(String username) {
+		if (users.containsKey(username))
+			return users.get(username);
 
-		users.put(username, newUser);
+		User u = uDao.getUserByUsername(username);
 
-		return newUser;
+		if (u != null) {
+			u.setFriends(uDao.getUserFriends(u.getID(), true));
+			u.setFriendRequests(uDao.getUserFriends(u.getID(), false));
+
+			users.put(u.getUsername(), u);
+		}
+
+		return u;
 	}
 
 	/**
@@ -65,9 +96,9 @@ public class AccountManager {
 	public boolean canPass(String username, String password) {
 		boolean result = false;
 
-		if (users.containsKey(username)) {
+		if (usernameExists(username)) {
 
-			User u = users.get(username);
+			User u = getUser(username);
 
 			String correctHash = u.getPassword();
 
@@ -80,6 +111,10 @@ public class AccountManager {
 		}
 
 		return result;
+	}
+
+	public boolean usernameExists(String username) {
+		return users.containsKey(username) || uDao.usernameExists(username);
 	}
 
 	// TODO
@@ -99,7 +134,7 @@ public class AccountManager {
 	 * @param username
 	 */
 	public void deactivateAccount(String username) {
-		int userID = users.get(username).getID();
+		int userID = getUser(username).getID();
 
 		uDao.deactivateUserAccount(userID);
 
@@ -116,8 +151,8 @@ public class AccountManager {
 	 * @param receiverUsername
 	 */
 	public void sendFriendRequest(String senderUsername, String receiverUsername) {
-		User sender = users.get(senderUsername);
-		User reciever = users.get(receiverUsername);
+		User sender = getUser(senderUsername);
+		User reciever = getUser(receiverUsername);
 
 		uDao.insertFriendShip(sender.getID(), reciever.getID(), true, false);
 
@@ -133,8 +168,8 @@ public class AccountManager {
 	 * @param friend2Username
 	 */
 	public void makeFriends(String friend1Username, String friend2Username) {
-		User user1 = users.get(friend1Username);
-		User user2 = users.get(friend2Username);
+		User user1 = getUser(friend1Username);
+		User user2 = getUser(friend2Username);
 
 		uDao.updateFriendshipStatus(user1.getID(), user2.getID(), false, true);
 
@@ -152,9 +187,9 @@ public class AccountManager {
 	 * @param friendUsername
 	 *            username of the user who will be removed from the friend list
 	 */
-	public void removeFromFriends(String username, String friendUsername) {
-		User user = users.get(username);
-		User friend = users.get(friendUsername);
+	public void removeFromFriendsOf(String username, String friendUsername) {
+		User user = getUser(username);
+		User friend = getUser(friendUsername);
 
 		uDao.updateFriendshipStatus(user.getID(), friend.getID(), false, false);
 
@@ -170,7 +205,7 @@ public class AccountManager {
 	 * @param username
 	 */
 	public void makeAdmin(String username) {
-		User newAdmin = users.get(username);
+		User newAdmin = getUser(username);
 		uDao.updateAdminStatus(newAdmin.getID(), true);
 	}
 
@@ -181,7 +216,7 @@ public class AccountManager {
 	 * @param username
 	 */
 	public void removeFromAdminPost(String username) {
-		User oldAdmin = users.get(username);
+		User oldAdmin = getUser(username);
 		uDao.updateAdminStatus(oldAdmin.getID(), false);
 	}
 

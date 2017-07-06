@@ -13,9 +13,9 @@ import org.apache.commons.dbcp2.BasicDataSource;
  */
 public class DataSource {
 	private static final String DRIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
-	private static final int MIN_IDLE = 3;
-	private static final int MAX_IDLE = 15;
-	private static final int MAX_OPEN_PREP_ST = 100;
+	private static final int MIN_IDLE = 5;
+	private static final int MAX_IDLE = 20;
+	private static final int MAX_OPEN_PREP_ST = 200;
 
 	private static DataSource dataSource;
 	private BasicDataSource ds;
@@ -23,7 +23,7 @@ public class DataSource {
 	private DataSource() throws IOException, SQLException, PropertyVetoException {
 		ds = new BasicDataSource();
 		ds.setDriverClassName(DRIVER_CLASS_NAME);
-		ds.setUrl(MyDbInfo.MYSQL_DATABASE_SERVER + MyDbInfo.MYSQL_DATABASE_NAME);
+		ds.setUrl(MyDbInfo.MYSQL_DATABASE_SERVER + MyDbInfo.MYSQL_DATABASE_NAME + "?autoReconnect=true&useSSL=false");
 		ds.setUsername(MyDbInfo.MYSQL_USERNAME);
 		ds.setPassword(MyDbInfo.MYSQL_PASSWORD);
 		ds.setMinIdle(MIN_IDLE);

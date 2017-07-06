@@ -1,17 +1,17 @@
 insert into question_types
-	(question_type_name)
+	(question_type_id, question_type_name)
 values
-	('basicResponse'),
-    ('fillInTheBlank'),
-    ('multipleChoice'),
-    ('pictureResponse'),
-    ('multiAnswer'),
-    ('multiChoiceWithMultiAnswers'),
-    ('matching'),
-    ('graded'),
-    ('timed');
+	(1, 'basicResponse'),
+    (2, 'fillInTheBlank'),
+    (3, 'multipleChoice'),
+    (4, 'pictureResponse'),
+    (5, 'multiAnswer'),
+    (6, 'multiChoiceWithMultiAnswers'),
+    (7, 'matching'),
+    (8, 'graded'),
+    (9, 'timed');
 	
 insert into photos
-	(photo_id, photo_file, is_default);
+	(photo_id, photo_file)
 values
-	(1, "no_profile_picture.jpg", true);
+	(1, "no_profile_picture.jpg");

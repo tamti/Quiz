@@ -28,13 +28,15 @@ CREATE TABLE users (
     user_id INT AUTO_INCREMENT,
     first_name VARCHAR(30) NOT NULL,
     last_name VARCHAR(40) NOT NULL,
-    username VARCHAR(30) NOT NULL,
-    password VARCHAR(60) NOT NULL,
+    username VARCHAR(50) NOT NULL,
+    password VARCHAR(80) NOT NULL,
 	email varchar(50) NOT NULL,
-	photo_id int NOT NULL,
+	photo_id int,
 	is_active BOOLEAN NOT NULL,
     is_admin BOOLEAN NOT NULL,
     CONSTRAINT users_pk PRIMARY KEY (user_id),
+    CONSTRAINT users_uk1 UNIQUE KEY (username),
+    CONSTRAINT users_uk2 UNIQUE KEY (email),
     CONSTRAINT users_fk FOREIGN KEY (photo_id) references photos (photo_id)
 );
 
@@ -77,7 +79,7 @@ CREATE TABLE messages (
     receiver_id INT NOT NULL,
     message_type ENUM('friend_request', 'challange', 'note'),
     time_sent DATETIME NOT NULL,
-    text VARCHAR(1000) NOT NULL,
+    text TEXT NOT NULL,
     CONSTRAINT messages_pk PRIMARY KEY (message_id),
     CONSTRAINT messages_fk1 FOREIGN KEY (sender_id)
         REFERENCES users (user_id),
@@ -96,7 +98,7 @@ CREATE TABLE announcements (
     announcement_id INT AUTO_INCREMENT,
     author_id INT NOT NULL,
     time_announced DATETIME NOT NULL,
-    text VARCHAR(1000) NOT NULL,
+    text TEXT NOT NULL,
     CONSTRAINT announcements_pk PRIMARY KEY (announcement_id),
     CONSTRAINT announcements_fk FOREIGN KEY (author_id)
         REFERENCES users (user_id)
@@ -141,15 +143,16 @@ CREATE TABLE user_achievements (
 CREATE TABLE quizzes (
     quiz_id INT AUTO_INCREMENT,
     quiz_name VARCHAR(100),
-    quiz_description VARCHAR(1500),
+    quiz_description TEXT,
     quiz_author_id INT,
     date_created DATE,
     show_correct_answer_immediately BOOLEAN NOT NULL,
 	show_questions_on_one_page BOOlEAN NOT NULL,
 	max_allowed_time TIME,
     max_points INT NOT NULL,
-    CONSTRAINT quizes_pk PRIMARY KEY (quiz_id),
-    CONSTRAINT quizes_fk FOREIGN KEY (quiz_author_id)
+    CONSTRAINT quizzes_pk PRIMARY KEY (quiz_id),
+    CONSTRAINT quizzes_uk UNIQUE KEY (quiz_name),
+    CONSTRAINT quizzes_fk FOREIGN KEY (quiz_author_id)
         REFERENCES users (user_id)
 );
 
@@ -157,7 +160,8 @@ CREATE TABLE quizzes (
 CREATE TABLE all_quiz_categories (
 	quiz_category_id INT AUTO_INCREMENT,
 	category_name VARCHAR(100) NOT NULL,
-	CONSTRAINT all_quiz_categories_pk PRIMARY KEY (quiz_category_id)
+	CONSTRAINT all_quiz_categories_pk PRIMARY KEY (quiz_category_id),
+    CONSTRAINT all_quiz_categories_uk UNIQUE KEY (category_name)
 );
 
 /*
@@ -179,9 +183,10 @@ CREATE TABLE categories_of_quizzes (
 
 -- String values of all questions types
 CREATE TABLE question_types (
-	question_type_id INT AUTO_INCREMENT,
-	question_type_name varchar(50) not null,
-	constraint question_types primary key (question_type_id)
+    question_type_id INT AUTO_INCREMENT,
+    question_type_name VARCHAR(50) NOT NULL,
+    CONSTRAINT question_types_pk PRIMARY KEY (question_type_id),
+    CONSTRAINT question_types_uk UNIQUE KEY (question_type_name)
 );
 
 /*
@@ -193,7 +198,7 @@ CREATE TABLE question_types (
  */
 CREATE TABLE questions (
     question_id INT AUTO_INCREMENT,
-    question_txt VARCHAR(2000) NOT NULL,
+    question_txt TEXT NOT NULL,
     question_type_id INT NOT NULL,
     photo_id INT,
     max_points DECIMAL NOT NULL,
@@ -205,7 +210,7 @@ CREATE TABLE questions (
 -- String values of all kinds of answers
 CREATE TABLE answers (
     answer_id INT AUTO_INCREMENT,
-    answer_txt VARCHAR(600),
+    answer_txt TEXT,
     is_correct BOOLEAN NOT NULL,
 	answer_no INT,
     CONSTRAINT answers_pk PRIMARY KEY (answer_id)
@@ -260,7 +265,7 @@ CREATE TABLE user_answers (
     user_answer_id INT AUTO_INCREMENT,
     question_id INT NOT NULL,
     user_id INT NOT NULL,
-    user_answer_txt VARCHAR(1000) NOT NULL,
+    user_answer_txt TEXT NOT NULL,
     CONSTRAINT user_answers_pk PRIMARY KEY (user_answer_id),
     CONSTRAINT user_answers_fk1 FOREIGN KEY (question_id)
         REFERENCES questions (question_id),
