@@ -304,50 +304,80 @@ CREATE TABLE quiz_stats (
 
 -- ---------------------------- TRIGGERS ----------------------------
 
+/*
+ * If data from the table "questions" is deleted, this trigger will delete 
+ * other related data from tables "photos" and "answers_to_questions"
+ */
 delimiter $$
 CREATE TRIGGER delete_photos_and_answers_to_deleted_question
-AFTER DELETE
-   ON questions FOR EACH ROW
+
+	AFTER DELETE ON questions 
+    FOR EACH ROW
 
 BEGIN
 
+	DELETE FROM photos 
+	WHERE old.photo_id = photos.photo_id;
 
+	DELETE FROM answers_to_questions 
+	WHERE old.question_id = answers_to_questions.question_id;
 
 END;
 $$
 
+/*
+ * If data from the table "answers_to_questions" is deleted, 
+ * this trigger will delete related data from table "answers"
+ */
 delimiter $$
-CREATE TRIGGER delete_answers_to_questions_after_deleting_answers
-AFTER DELETE
-   ON answers FOR EACH ROW
+CREATE TRIGGER delete_answers_after_deleting_answers_to_questions
+
+	AFTER DELETE ON answers_to_questions 
+    FOR EACH ROW
 
 BEGIN
 
-
+	DELETE FROM answers 
+	WHERE old.answer_id = answers.answer_id;
 
 END;
 $$
 
+/*
+ * If a value of column "is_active" from table "users" is set to false, 
+ * this trigger will delete all related data from table "friend_lists"
+ */
 delimiter $$
 CREATE TRIGGER delete_user_from_friend_lists_if_deactivated
-AFTER DELETE
-   ON users FOR EACH ROW
+
+	AFTER UPDATE ON users 
+    FOR EACH ROW
 
 BEGIN
 
-
+	DELETE FROM friend_lists 
+	WHERE old.is_active = FALSE
+		AND (old.user_id = friend_lists.user1_id
+			OR old.user_id = friend_lists.user2_id);
 
 END;
 $$
 
+/*
+ * If value of the column "photo_id" from table "users" is updated
+ * (and is not set to default picture value: 1), this trigger will
+ * delete related data from table "photos"
+ */
 delimiter $$
 CREATE TRIGGER delete_old_user_photo_when_updating
-BEFORE UPDATE
-   ON users FOR EACH ROW
+
+	AFTER UPDATE ON users 
+    FOR EACH ROW
 
 BEGIN
 
-   -- remove old photo before changing photo_id to the id of the new photo
+   DELETE FROM photos
+   WHERE old.photo_id > 1 AND old.photo_id = photos.photo_id;
 
 END;
 $$
