@@ -344,21 +344,24 @@ END;
 $$
 
 /*
- * If a value of column "is_active" from table "users" is set to false, 
- * this trigger will delete all related data from table "friend_lists"
+ * If data from table "users" is deleted, this trigger will 
+ * delete all related data from table "friend_lists"
  */
 delimiter $$
-CREATE TRIGGER delete_user_from_friend_lists_if_deactivated
+CREATE TRIGGER delete_photo_and_friend_lists_of_deleted_user
 
-	AFTER UPDATE ON users 
+	AFTER DELETE ON users 
     FOR EACH ROW
 
 BEGIN
 
 	DELETE FROM friend_lists 
-	WHERE old.is_active = FALSE
-		AND (old.user_id = friend_lists.user1_id
-			OR old.user_id = friend_lists.user2_id);
+	WHERE old.user_id = friend_lists.user1_id
+		OR old.user_id = friend_lists.user2_id;
+			
+	DELETE FROM photos
+	WHERE old.photo_id > 1
+		AND old.photo_id = photos.photo_id;
 
 END;
 $$
@@ -376,8 +379,9 @@ CREATE TRIGGER delete_old_user_photo_when_updating
 
 BEGIN
 
-   DELETE FROM photos
-   WHERE old.photo_id > 1 AND old.photo_id = photos.photo_id;
+	DELETE FROM photos
+	WHERE old.photo_id <> new.photo_id AND old.photo_id > 1
+		AND old.photo_id = photos.photo_id;
 
 END;
 $$
