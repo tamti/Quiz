@@ -43,22 +43,21 @@ public class RegistrationServlet extends HttpServlet {
 		String username = request.getParameter("Username");
 		String password = request.getParameter("Password");
 
-		if (accountMan.usernameExists(username)) {
+		/*if (accountMan.usernameExists(username)) {
 
 			RequestDispatcher dispatch = request.getRequestDispatcher("welcome.html");
 			dispatch.forward(request, response);
 
-		} else if (accountMan.createAccount(firstName, lastName, email, username, password)) {
+		}*/ if (accountMan.createAccount(firstName, lastName, email, username, password)) {
 			RequestDispatcher dispatch = request.getRequestDispatcher("welcome.html");
 			dispatch.forward(request, response);
 
-		} else {
+		} /*else {
 
 			RequestDispatcher dispatch = request.getRequestDispatcher("welcome.html");
 
 			dispatch.forward(request, response);
-		}
-
+		} */
 	}
 
 }
