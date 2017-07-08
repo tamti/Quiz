@@ -17,7 +17,7 @@ public class User extends PhotoAble implements Comparable<User> {
 	private boolean isAdmin;
 	private SortedSet<String> friends;
 	private SortedSet<String> friendRequests;
-	private SortedMap<String, Statistics> stats;
+	private SortedMap<Integer, Statistics> stats;
 
 	public User(String firstName, String lastName, String email, String username, String password,
 			SortedSet<String> friends, SortedSet<String> friendRequests) {
@@ -30,7 +30,7 @@ public class User extends PhotoAble implements Comparable<User> {
 		this.friends = friends;
 		this.friendRequests = friendRequests;
 		isAdmin = false;
-		stats = new TreeMap<String, Statistics>();
+		stats = new TreeMap<Integer, Statistics>();
 	}
 
 	public User(String firstName, String lastName, String email, String username, String password) {
@@ -135,11 +135,11 @@ public class User extends PhotoAble implements Comparable<User> {
 		friends.remove(friend);
 	}
 
-	public SortedMap<String, Statistics> getStats() {
+	public SortedMap<Integer, Statistics> getStats() {
 		return stats;
 	}
 
-	public void setStats(SortedMap<String, Statistics> stats) {
+	public void setStats(SortedMap<Integer, Statistics> stats) {
 		this.stats = stats;
 	}
 

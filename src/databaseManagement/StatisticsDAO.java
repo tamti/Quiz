@@ -63,6 +63,8 @@ public class StatisticsDAO extends BasicQuizWebSiteDAO {
 	 * containing desired values of the columns from "idCols"
 	 */
 	private SortedSet<Statistics> getStatsByIdOf(String[] idCols, int[] IDs) {
+		SortedSet<Statistics> result = new TreeSet<Statistics>();
+
 		String table = DbContract.TABLE_QUIZ_STATS + "s";
 
 		String condition = "1 = 1";
@@ -85,57 +87,26 @@ public class StatisticsDAO extends BasicQuizWebSiteDAO {
 		try {
 			ResultSet rs = ps.executeQuery();
 
-			return getAllStatsFromResultSet(rs);
+			while (rs.next()) {
+				int quizID = rs.getInt(DbContract.COL_QUIZ_ID);
+				int userID = rs.getInt(DbContract.COL_USER_ID);
+				Date takenOn = rs.getDate(DbContract.COL_TAKE_ON);
+				Time usedTime = rs.getTime(DbContract.COL_USED_TIME);
+				int numCorrectAnswers = rs.getInt(DbContract.COL_NUM_CORRECT_ANSWERS);
+				double numEarnedPoints = rs.getDouble(DbContract.COL_NUM_RECIEVED_POINTS);
+				boolean notYetFullyGraded = rs.getBoolean(DbContract.COL_HAS_ANSWERS_TO_CHECK);
+
+				Statistics current = new Statistics(quizID, userID, takenOn, usedTime, numCorrectAnswers,
+						numEarnedPoints, notYetFullyGraded);
+
+				result.add(current);
+			}
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
 		return new TreeSet<Statistics>();
-	}
-
-	/*
-	 * Returns a SortedSet of Statistic objects containing all statistical info
-	 * taken from the give ResultSet
-	 */
-	private SortedSet<Statistics> getAllStatsFromResultSet(ResultSet rs) {
-		SortedSet<Statistics> result = new TreeSet<Statistics>();
-
-		try {
-			while (rs.next()) {
-				Statistics curr = getStatFromResultSet(rs);
-				result.add(curr);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return result;
-	}
-
-	/*
-	 * Returns a Statistic objects containing info taken from the give ResultSet
-	 */
-	private Statistics getStatFromResultSet(ResultSet rs) {
-		Statistics result = null;
-
-		try {
-			int quizID = rs.getInt(DbContract.COL_QUIZ_ID);
-			int userID = rs.getInt(DbContract.COL_USER_ID);
-			Date takenOn = rs.getDate(DbContract.COL_TAKE_ON);
-			Time usedTime = rs.getTime(DbContract.COL_USED_TIME);
-			int numCorrectAnswers = rs.getInt(DbContract.COL_NUM_CORRECT_ANSWERS);
-			double numEarnedPoints = rs.getDouble(DbContract.COL_NUM_RECIEVED_POINTS);
-			boolean notYetFullyGraded = rs.getBoolean(DbContract.COL_HAS_ANSWERS_TO_CHECK);
-
-			result = new Statistics(quizID, userID, takenOn, usedTime, numCorrectAnswers, numEarnedPoints,
-					notYetFullyGraded);
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return result;
 	}
 
 	/**

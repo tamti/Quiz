@@ -178,4 +178,8 @@ public class Question extends PhotoAble implements Comparable<Question> {
 	public void setID(int ID) {
 		this.ID = ID;
 	}
+	
+	public void setQuestion(String newQuestionStr) {
+		this.questionStr = newQuestionStr;
+	}
 }

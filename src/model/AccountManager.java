@@ -83,6 +83,25 @@ public class AccountManager {
 
 		return u;
 	}
+	
+	/**
+	 * 
+	 * @param email
+	 * @return  User object corresponding to the user with given username
+	 */
+	/*public User getUserByEmail(String email) {
+		User u = uDao.getUserByEmail(email);
+		
+		if (u != null) {
+			
+			u.setFriends(uDao.getUserFriends(u.getID(), true));
+			u.setFriendRequests(uDao.getUserFriends(u.getID(), false));
+
+			users.put(u.getUsername(), u);
+		}
+
+		return u;
+	}*/
 
 	/**
 	 * 

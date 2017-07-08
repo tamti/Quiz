@@ -23,77 +23,44 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 	 * @param ID
 	 * @return Quiz object
 	 */
-	public Quiz getQuizByID(int ID) throws SQLException {
+	public Quiz getQuizByID(int ID) {
+		Quiz result = null;
+
+		PreparedStatement ps = null;
+
 		String condition = DbContract.COL_QUIZ_ID + " = ?";
 
-		PreparedStatement ps = prepareSelectStatementWith("*", DbContract.TABLE_QUIZZES, condition);
+		ps = prepareSelectStatementWith("*", DbContract.TABLE_QUIZZES, condition);
 
 		try {
 			ps.setInt(1, ID);
 
-			ResultSet rs = ps.executeQuery();
-
-			return getQuizFromResultSet(rs);
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
-		return null;
-	}
-
-	/**
-	 * Selects from the database all the necessary parameters filtered with the
-	 * given quizName and returns a Quiz object constructed with those
-	 * parameters.
-	 * 
-	 * @param quizName
-	 * @return Quiz object
-	 */
-	public Quiz getQuizByName(String quizName) {
-		String condition = DbContract.COL_QUIZ_NAME + " = ?";
-
-		PreparedStatement ps = prepareSelectStatementWith("*", DbContract.TABLE_QUIZZES, condition);
-
 		try {
-			ps.setString(1, quizName);
-
 			ResultSet rs = ps.executeQuery();
 
-			return getQuizFromResultSet(rs);
+			if (rs.next()) {
+				int quizID = rs.getInt(DbContract.COL_QUIZ_ID);
+				int ownerID = rs.getInt(DbContract.COL_AUTHOR_ID);
+				String quizName = rs.getString(DbContract.COL_QUIZ_NAME);
+				String description = rs.getString(DbContract.COL_QUIZ_DESCRIPTION);
+				Date dateCreated = rs.getDate(DbContract.COL_DATE_CREATED);
+				boolean answersImmediately = rs.getBoolean(DbContract.COL_SHOW_ANSWERS_IMMEDIATELY);
+				boolean isOnePage = rs.getBoolean(DbContract.COL_QUESTIONS_ON_SAME_PAGE);
+				Time allowedTime = rs.getTime(DbContract.COL_MAX_ALLOWED_TIME);
+				int maxPoints = rs.getInt(DbContract.COL_MAX_POINTS);
 
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+				result = new Quiz(quizID, ownerID, quizName, description, dateCreated, answersImmediately, isOnePage,
+						allowedTime, maxPoints);
 
-		return null;
-	}
+				SortedMap<Integer, Question> questions = getAllQuestionsFor(quizID);
 
-	/*
-	 * Returns Quiz object constructed from the data taken from the given
-	 * ResultSet
-	 */
-	private Quiz getQuizFromResultSet(ResultSet rs) {
-		Quiz result = null;
+				result.setQuestions(questions);
 
-		try {
-			int quizID = rs.getInt(DbContract.COL_QUIZ_ID);
-			int ownerID = rs.getInt(DbContract.COL_AUTHOR_ID);
-			String quizName = rs.getString(DbContract.COL_QUIZ_NAME);
-			String description = rs.getString(DbContract.COL_QUIZ_DESCRIPTION);
-			Date dateCreated = rs.getDate(DbContract.COL_DATE_CREATED);
-			boolean answersImmediately = rs.getBoolean(DbContract.COL_SHOW_ANSWERS_IMMEDIATELY);
-			boolean isOnePage = rs.getBoolean(DbContract.COL_QUESTIONS_ON_SAME_PAGE);
-			Time allowedTime = rs.getTime(DbContract.COL_MAX_ALLOWED_TIME);
-			int maxPoints = rs.getInt(DbContract.COL_MAX_POINTS);
-
-			result = new Quiz(quizID, ownerID, quizName, description, dateCreated, answersImmediately, isOnePage,
-					allowedTime, maxPoints);
-
-			SortedMap<Integer, Question> questions = getAllQuestionsFromResultSet(quizID);
-
-			result.setQuestions(questions);
-
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -105,7 +72,7 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 	 * Selects all necessary info from the database and returns SortedSet of all
 	 * Questions that belong to the specified quiz
 	 */
-	private SortedMap<Integer, Question> getAllQuestionsFromResultSet(int quizID) {
+	private SortedMap<Integer, Question> getAllQuestionsFor(int quizID) {
 		SortedMap<Integer, Question> res = new TreeMap<Integer, Question>();
 
 		String tables = DbContract.TABLE_QUESTIONS + " q, " + DbContract.TABLE_QUIZ_QUESTIONS + " qq";
@@ -126,8 +93,28 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 			ResultSet rs = ps.executeQuery();
 
 			while (rs.next()) {
-				Question curr = getQuestionFromResultSet(rs);
-				res.put(curr.getID(), curr);
+				int questionID = rs.getInt(DbContract.COL_QUESTION_ID);
+				String questionStr = rs.getString(DbContract.COL_QUESTION);
+
+				String qTypeName = rs.getString(DbContract.COL_QUESTION_TYPE);
+				QuestionType qType = QuestionType.valueOf(qTypeName);
+
+				double maxPoints = rs.getDouble(DbContract.COL_MAX_POINTS);
+				int photoID = rs.getInt(DbContract.COL_PHOTO_ID);
+
+				Question current = new Question(questionID, questionStr, qType, maxPoints);
+
+				if (photoID > 0) {
+					// String photoFileName =
+					// rs.getString(DbContract.COL_PHOTO_FILE);
+					current.setPhotoID(photoID);
+				}
+
+				SortedMap<Integer, Answer> answers = getAllAnswersFor(questionID);
+
+				current.setAnswers(answers);
+
+				res.put(current.getID(), current);
 			}
 
 		} catch (SQLException e) {
@@ -138,44 +125,10 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 	}
 
 	/*
-	 * Returns Question object constructed from the data taken from the given
-	 * ResultSet
-	 */
-	private Question getQuestionFromResultSet(ResultSet rs) {
-		Question result = null;
-
-		try {
-			int questionID = rs.getInt(DbContract.COL_QUESTION_ID);
-			String questionStr = rs.getString(DbContract.COL_QUESTION);
-
-			String qTypeName = rs.getString(DbContract.COL_QUESTION_TYPE);
-			QuestionType qType = QuestionType.valueOf(qTypeName);
-
-			double maxPoints = rs.getDouble(DbContract.COL_MAX_POINTS);
-			int photoID = rs.getInt(DbContract.COL_PHOTO_ID);
-
-			result = new Question(questionID, questionStr, qType, maxPoints);
-
-			if (photoID > 0) {
-				String photoFileName = rs.getString(DbContract.COL_PHOTO_FILE);
-				result.setPhoto(photoID, photoFileName);
-			}
-
-			SortedMap<Integer, Answer> answers = getAllAnswersFromResultSet(questionID);
-			result.setAnswers(answers);
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return result;
-	}
-
-	/*
 	 * Selects all necessary info from the database and returns SortedSet of all
 	 * Answers that belong to the specified question
 	 */
-	private SortedMap<Integer, Answer> getAllAnswersFromResultSet(int questionID) {
+	private SortedMap<Integer, Answer> getAllAnswersFor(int questionID) {
 		SortedMap<Integer, Answer> res = new TreeMap<Integer, Answer>();
 
 		String tables = DbContract.TABLE_ANSWERS + " a, " + DbContract.TABLE_ANSWERS_TO_QUESTIONS + " aq";
@@ -194,8 +147,19 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 			ResultSet rs = ps.executeQuery();
 
 			while (rs.next()) {
-				Answer curr = getAnswerFromResultSet(rs);
-				res.put(curr.getID(), curr);
+				int answerID = rs.getInt(DbContract.COL_ANSWER_ID);
+				String answerStr = rs.getString(DbContract.COL_ANSWER);
+				boolean isCorrect = rs.getBoolean(DbContract.COL_ANSWER_IS_CORRECT);
+
+				Answer current = new Answer(answerID, answerStr, isCorrect);
+
+				int answerNO = rs.getInt(DbContract.COL_ANSWER_NO);
+
+				if (answerNO > 0) {
+					current.setNO(answerNO);
+				}
+
+				res.put(current.getID(), current);
 			}
 
 		} catch (SQLException e) {
@@ -203,33 +167,6 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 		}
 
 		return res;
-	}
-
-	/*
-	 * Returns Answer object constructed from the data taken from the given
-	 * ResultSet
-	 */
-	private Answer getAnswerFromResultSet(ResultSet rs) {
-		Answer result = null;
-
-		try {
-			int answerID = rs.getInt(DbContract.COL_ANSWER_ID);
-			String answerStr = rs.getString(DbContract.COL_ANSWER);
-			boolean isCorrect = rs.getBoolean(DbContract.COL_ANSWER_IS_CORRECT);
-
-			result = new Answer(answerID, answerStr, isCorrect);
-
-			int answerNO = rs.getInt(DbContract.COL_ANSWER_NO);
-
-			if (answerNO > 0) {
-				result.setNO(answerNO);
-			}
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return result;
 	}
 
 	/**
@@ -271,27 +208,29 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 
 	/**
 	 * 
-	 * @return SortedMap containing names of quizzes as keys and Quizzes
-	 *         themselves as values
+	 * @return SortedMap containing names of quizzes as keys and ID's as values
 	 */
-	public SortedMap<Integer, Quiz> getAllQuizzes() {
-		SortedMap<Integer, Quiz> result = new TreeMap<Integer, Quiz>();
-
-		PreparedStatement ps = prepareSelectStatementWith("*", DbContract.TABLE_QUIZZES, "");
-
+	public SortedMap<String, Integer> getAllQuizInfo() {
+		SortedMap<String, Integer> result = new TreeMap<String, Integer>();
+		
+		String columns = DbContract.COL_QUIZ_ID + ", " + DbContract.COL_QUIZ_NAME;
+		
+		PreparedStatement ps = prepareSelectStatementWith(columns, DbContract.TABLE_QUIZZES, "");
+		
 		try {
 			ResultSet rs = ps.executeQuery();
-
+			
 			while (rs.next()) {
-				Quiz current = getQuizFromResultSet(rs);
-
-				result.put(current.getID(), current);
+				int ID = rs.getInt(DbContract.COL_QUIZ_ID);
+				String name = rs.getString(DbContract.COL_QUIZ_NAME);
+				
+				result.put(name, ID);
 			}
-
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
+		
 		return result;
 	}
 

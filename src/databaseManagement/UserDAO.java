@@ -23,31 +23,49 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	 *         such user could be found
 	 */
 	public User getUserByUsername(String username) {
-		SortedMap<String, User> map = getUserMap(username);
+		SortedMap<String, User> map = getUserMap(DbContract.COL_USERNAME, username);
 
 		User result = map.get(username);
 
 		return result;
 	}
 
-	/*
-	 * Helper function for "getUser..." methods. If parameter "uName" is an
-	 * empty string returns a Map keys of which are usernames and values are
-	 * User objects. If "uName" is not an empty string returns Map with only one
-	 * entry: User whose username is [uName]
+	/**
+	 * Selects from the database all the necessary parameters for the user
+	 * filtered with the given email and returns a User object constructed with
+	 * those parameters.
+	 * 
+	 * @param email
+	 *
+	 * @return User object representing user who has this email. Null if no such
+	 *         user could be found
 	 */
-	private SortedMap<String, User> getUserMap(String uName) {
+	public User getUserByEmail(String Email) {
+		SortedMap<String, User> map = getUserMap(DbContract.COL_EMAIL, Email);
+
+		User result = map.get(Email);
+
+		return result;
+	}
+
+	/*
+	 * Helper function for "getUser..." methods. If parameter "val" is an empty
+	 * string returns a Map keys of which are usernames and values are User
+	 * objects. If "val" is not an empty string returns Map with only one entry:
+	 * User whose value of the column [col] is [val]
+	 */
+	private SortedMap<String, User> getUserMap(String col, String val) {
 		SortedMap<String, User> result = new TreeMap<String, User>();
 
 		PreparedStatement ps = null;
 
-		if (!uName.isEmpty()) {
-			String condition = DbContract.COL_USERNAME + " = ?";
+		if (!val.isEmpty()) {
+			String condition = col + " = ?";
 
 			ps = prepareSelectStatementWith("*", DbContract.TABLE_USERS, condition);
 
 			try {
-				ps.setString(1, uName);
+				ps.setString(1, val);
 
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -93,7 +111,7 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	 *         themselves
 	 */
 	public SortedMap<String, User> getAllUsers() {
-		return getUserMap("");
+		return getUserMap("", "");
 	}
 
 	/**
