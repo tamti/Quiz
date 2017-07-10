@@ -3,11 +3,14 @@ package databaseManagement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import model.Challenge;
+import model.Message;
 import model.User;
 
 public class UserDAO extends BasicQuizWebSiteDAO {
@@ -530,4 +533,154 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 		}
 	}
 
+	/**
+	 * 
+	 * Returns all messages sent to the specified user
+	 * 
+	 * @param receiverID
+	 * @return SortedSet of Messages sent to the specified user
+	 */
+	public SortedSet<Message> getMessage(int receiverID) {
+		SortedSet<Message> result = new TreeSet<Message>();
+
+		String condition = DbContract.COL_RECEIVER_ID + " = ?";
+		PreparedStatement ps = prepareSelectStatementWith("*", DbContract.TABLE_MESSAGES, condition);
+
+		try {
+			ps.setInt(1, receiverID);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				int senderID = rs.getInt(DbContract.COL_SENDER_ID);
+				String txt = rs.getString(DbContract.COL_MESSAGE_TEXT);
+				Timestamp sentOn = rs.getTimestamp(DbContract.COL_TIME_SENT);
+
+				Message msg = new Message(senderID, receiverID, txt, sentOn);
+
+				result.add(msg);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return result;
+	}
+
+	/**
+	 * 
+	 * Returns all challenges sent to the specified user with specified
+	 * condition
+	 * 
+	 * @param receiverID
+	 * @param challangeSeen
+	 *            whether the challenge has already been accepted or declined by
+	 *            the user or not he still hasn't respond/seen it
+	 * @param challangeAccepted
+	 *            whether the challenge has been accepted (and therefore
+	 *            completed as well) or not
+	 * @return if challangeSeen is false returns all challenges which user
+	 *         hasn't respond to yet; if challangeSeen is true and
+	 *         challangeAccepted is true as well returns all challenges which
+	 *         user has already accepted and therefore completed
+	 */
+	public SortedSet<Challenge> getChallangeRequest(int receiverID, boolean challangeSeen, boolean challangeAccepted) {
+		SortedSet<Challenge> result = new TreeSet<Challenge>();
+
+		String tables = DbContract.TABLE_CHALLENGES + " c, " + DbContract.TABLE_MESSAGES + " m";
+		String condition = "m." + DbContract.COL_MESSAGE_ID + " = c." + DbContract.COL_MESSAGE_ID + " AND m."
+				+ DbContract.COL_RECEIVER_ID + " = ? AND c." + DbContract.COL_CHALLANGE_SEEN + " = ? AND c."
+				+ DbContract.COL_CHALLANGE_ACCEPTED + " = ?";
+
+		PreparedStatement ps = prepareSelectStatementWith("*", tables, condition);
+
+		try {
+			ps.setInt(1, receiverID);
+			ps.setBoolean(2, challangeSeen);
+			ps.setBoolean(3, challangeAccepted);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				int senderID = rs.getInt(DbContract.COL_SENDER_ID);
+				int quizID = rs.getInt(DbContract.COL_QUIZ_ID);
+				String txt = rs.getString(DbContract.COL_MESSAGE_TEXT);
+				Timestamp sentOn = rs.getTimestamp(DbContract.COL_TIME_SENT);
+
+				Challenge msg = new Challenge(senderID, receiverID, quizID, txt, sentOn, challangeSeen,
+						challangeAccepted);
+
+				result.add(msg);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return result;
+	}
+
+	public int insertMessage(Message msg) {
+		String[] cols = { DbContract.COL_SENDER_ID, DbContract.COL_RECEIVER_ID, DbContract.COL_TIME_SENT,
+				DbContract.COL_MESSAGE_TEXT };
+		PreparedStatement ps = prepareInsertStatementWith(DbContract.TABLE_MESSAGES, cols);
+
+		try {
+			ps.setInt(1, msg.getSender());
+			ps.setInt(2, msg.getReceiver());
+			ps.setTimestamp(3, msg.getTime());
+			ps.setString(4, msg.getText());
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return getLastIdOf(DbContract.TABLE_MESSAGES, DbContract.COL_MESSAGE_ID);
+	}
+
+	public void insertChallenge(Challenge challenge) {
+		int msgID = insertMessage(challenge);
+		challenge.setMsgID(msgID);
+		insertChallengePart(challenge);
+	}
+
+	private void insertChallengePart(Challenge challenge) {
+		String[] cols = { DbContract.COL_MESSAGE_ID, DbContract.COL_QUIZ_ID, DbContract.COL_CHALLANGE_SEEN,
+				DbContract.COL_CHALLANGE_ACCEPTED };
+		PreparedStatement ps = prepareInsertStatementWith(DbContract.TABLE_CHALLENGES, cols);
+
+		try {
+			ps.setInt(1, challenge.getMsgID());
+			ps.setInt(2, challenge.getQuiz());
+			ps.setBoolean(3, challenge.challengeSeen());
+			ps.setBoolean(4, challenge.challengeAccepted());
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			ps.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 }

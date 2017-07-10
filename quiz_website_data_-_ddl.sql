@@ -77,14 +77,26 @@ CREATE TABLE messages (
     message_id INT AUTO_INCREMENT,
     sender_id INT NOT NULL,
     receiver_id INT NOT NULL,
-    message_type ENUM('friend_request', 'challange', 'note'),
     time_sent DATETIME NOT NULL,
-    text TEXT NOT NULL,
+    txt TEXT NOT NULL,
     CONSTRAINT messages_pk PRIMARY KEY (message_id),
     CONSTRAINT messages_fk1 FOREIGN KEY (sender_id)
         REFERENCES users (user_id),
     CONSTRAINT messages_fk2 FOREIGN KEY (receiver_id)
         REFERENCES users (user_id)
+);
+
+CREATE TABLE challanges (
+	challange_id INT AUTO_INCREMENT,
+	message_id INT NOT NULL,
+	quiz_id INT NOT NULL,
+	challange_seen BOOLEAN NOT NULL,
+	challange_accepted BOOLEAN NOT NULL,
+	CONSTRAINT challanges_pk PRIMARY KEY (challange_id),
+    CONSTRAINT challanges_fk1 FOREIGN KEY (message_id)
+        REFERENCES messages (message_id),
+    CONSTRAINT challanges_fk2 FOREIGN KEY (quiz_id)
+        REFERENCES quizzes (quiz_id)
 );
 
 /*
@@ -96,9 +108,9 @@ CREATE TABLE messages (
  */
 CREATE TABLE announcements (
     announcement_id INT AUTO_INCREMENT,
-    author_id INT NOT NULL,
+    announcer_id INT NOT NULL,
     time_announced DATETIME NOT NULL,
-    text TEXT NOT NULL,
+    txt TEXT NOT NULL,
     CONSTRAINT announcements_pk PRIMARY KEY (announcement_id),
     CONSTRAINT announcements_fk FOREIGN KEY (author_id)
         REFERENCES users (user_id)
@@ -148,7 +160,7 @@ CREATE TABLE quizzes (
     date_created DATE,
     show_correct_answer_immediately BOOLEAN NOT NULL,
 	show_questions_on_one_page BOOlEAN NOT NULL,
-	max_allowed_time TIME,
+	max_allowed_time_in_minutes INT NOT NULL,
     max_points INT NOT NULL,
     CONSTRAINT quizzes_pk PRIMARY KEY (quiz_id),
     CONSTRAINT quizzes_uk UNIQUE KEY (quiz_name),
@@ -289,10 +301,10 @@ CREATE TABLE quiz_stats (
     quiz_id INT NOT NULL,
     user_id INT NOT NULL,
     taken_on DATETIME NOT NULL,
-    used_time TIME NOT NULL,
+    used_time_in_seconds INT NOT NULL,
     num_correct_answers INT NOT NULL,
-    num_recieved_points decimal NOT NULL,
-	some_answers_need_checking boolean not null,
+    num_recieved_points DECIMAL NOT NULL,
+	some_answers_need_checking BOOLEAN NOT null,
     CONSTRAINT quiz_stats_pk PRIMARY KEY (stat_id),
     CONSTRAINT quiz_stats_fk1 FOREIGN KEY (quiz_id)
         REFERENCES quizzes (quiz_id),
@@ -305,14 +317,17 @@ CREATE TABLE quiz_stats (
 -- ---------------------------- TRIGGERS ----------------------------
 
 /*
+
+/*
  * If data from the table "questions" is deleted, this trigger will delete 
  * other related data from tables "photos" and "answers_to_questions"
  */
 delimiter $$
 CREATE TRIGGER delete_photos_and_answers_to_deleted_question
 
-	AFTER DELETE ON questions 
-    FOR EACH ROW
+AFTER DELETE ON questions 
+
+FOR EACH ROW
 
 BEGIN
 
@@ -332,8 +347,9 @@ $$
 delimiter $$
 CREATE TRIGGER delete_answers_after_deleting_answers_to_questions
 
-	AFTER DELETE ON answers_to_questions 
-    FOR EACH ROW
+AFTER DELETE ON answers 
+
+FOR EACH ROW
 
 BEGIN
 
@@ -350,8 +366,9 @@ $$
 delimiter $$
 CREATE TRIGGER delete_photo_and_friend_lists_of_deleted_user
 
-	AFTER DELETE ON users 
-    FOR EACH ROW
+AFTER DELETE ON users 
+
+FOR EACH ROW
 
 BEGIN
 
@@ -374,8 +391,9 @@ $$
 delimiter $$
 CREATE TRIGGER delete_old_user_photo_when_updating
 
-	AFTER UPDATE ON users 
-    FOR EACH ROW
+AFTER UPDATE ON users 
+
+FOR EACH ROW
 
 BEGIN
 
@@ -385,3 +403,5 @@ BEGIN
 
 END;
 $$
+
+*/

@@ -34,7 +34,7 @@ public class DbContract {
 	public static final String COL_DATE_CREATED = "date_created";
 	public static final String COL_SHOW_ANSWERS_IMMEDIATELY = "show_correct_answer_immediately";
 	public static final String COL_QUESTIONS_ON_SAME_PAGE = "show_questions_on_one_page";
-	public static final String COL_MAX_ALLOWED_TIME = "max_allowed_time";
+	public static final String COL_MAX_ALLOWED_TIME = "max_allowed_time_in_minutes";
 	public static final String COL_MAX_POINTS = "max_points";
 
 	public static final String TABLE_CATEGORIES = "all_quiz_categories";
@@ -69,9 +69,25 @@ public class DbContract {
 	public static final String TABLE_QUIZ_STATS = "quiz_stats";
 	public static final String COL_STAT_ID = "stat_id";
 	public static final String COL_TAKE_ON = "taken_on";
-	public static final String COL_USED_TIME = "used_time";
+	public static final String COL_USED_TIME = "used_time_in_seconds";
 	public static final String COL_NUM_CORRECT_ANSWERS = "num_correct_answers";
 	public static final String COL_NUM_RECIEVED_POINTS = "num_recieved_points";
 	public static final String COL_HAS_ANSWERS_TO_CHECK = "some_answers_need_checking";
-
+	
+	public static final String TABLE_MESSAGES = "messages";
+	public static final String COL_MESSAGE_ID = "message_id";
+	public static final String COL_SENDER_ID = "sender_id";
+	public static final String COL_RECEIVER_ID = "receiver_id";
+	public static final String COL_TIME_SENT = "time_sent";
+	public static final String COL_MESSAGE_TEXT = "txt";
+	
+	public static final String TABLE_CHALLENGES = "challanges";
+	public static final String COL_CHALLANGE_ACCEPTED = "challange_accepted";
+	public static final String COL_CHALLANGE_SEEN = "challange_seen";
+	
+	public static final String TABLE_ANNOUNCEMENTS = "announcements";
+	public static final String COL_ANNOUNCER_ID = "announcer_id";
+	public static final String COL_ANNOUNCED_ON = "time_announced";
+	public static final String COL_ANNOUNCEMENT_TEXT = "txt";
+	
 }

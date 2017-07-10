@@ -1,84 +1,40 @@
 package model;
 
-public class Challenge {
-	int quizid;
-	int id;
-	User sender;
-	User reciever;
-	int firstScore;
-	int secondScore;
-	String msg;
-	boolean challengeSeen;
-	
-	public Challenge(int id,User sender, User reciever, int firstScore,
-			int secondScore, String msg, boolean challengeSeen, int quizid) {
-		super();
-		this.quizid =quizid;
-		this.id = id;
-		this.sender = sender;
-		this.reciever = reciever;
-		this.firstScore = firstScore;
-		this.secondScore = secondScore;
-		this.msg = msg;
+import java.sql.Timestamp;
+
+public class Challenge extends Message {
+	private int quizID;
+	private boolean challengeSeen;
+	private boolean challengeAccepted;
+
+	public Challenge(int senderID, int receiverID, int quizID, String msg, boolean challengeSeen, boolean challengeAccepted) {
+		super(senderID, receiverID, msg);
+		this.quizID = quizID;
 		this.challengeSeen = challengeSeen;
+		this.challengeAccepted = challengeAccepted;
 	}
 	
-	public int getQuizid() {
-		return quizid;
+	public Challenge(int senderID, int receiverID, int quizID, String msg, Timestamp sentOn, boolean challengeSeen, boolean challengeAccepted) {
+		super(senderID, receiverID, msg, sentOn);
+		this.quizID = quizID;
+		this.challengeSeen = challengeSeen;
+		this.challengeAccepted = challengeAccepted;
 	}
 
-	public void setQuizid(int quizid) {
-		this.quizid = quizid;
-	}
-	
-	public int getId() {
-		return id;
+	public int getQuiz() {
+		return quizID;
 	}
 
-	public void setId(int id) {
-		this.id = id;
-	}
-
-	public User getSender() {
-		return sender;
-	}
-
-	public void setSender(User sender) {
-		this.sender = sender;
-	}
-
-	public User getReciever() {
-		return reciever;
-	}
-
-	public void setReciever(User reciever) {
-		this.reciever = reciever;
-	}
-
-	public int getFirstScore() {
-		return firstScore;
-	}
-	public void setFirstScore(int firstScore) {
-		this.firstScore = firstScore;
-	}
-	public int getSecondScore() {
-		return secondScore;
-	}
-	public void setSecondScore(int secondScore) {
-		this.secondScore = secondScore;
-	}
-	public String getMsg() {
-		return msg;
-	}
-	public void setMsg(String msg) {
-		this.msg = msg;
-	}
-	public boolean isChallengeSeen() {
+	public boolean challengeSeen() {
 		return challengeSeen;
 	}
+
 	public void setChallengeSeen(boolean challengeSeen) {
 		this.challengeSeen = challengeSeen;
 	}
 	
-
+	public boolean challengeAccepted() {
+		return challengeAccepted;
+	}
+	
 }
