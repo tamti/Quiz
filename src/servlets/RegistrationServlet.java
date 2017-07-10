@@ -9,6 +9,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import model.AccountManager;
 
@@ -42,17 +43,21 @@ public class RegistrationServlet extends HttpServlet {
 		String email = request.getParameter("Mail");
 		String username = request.getParameter("Username");
 		String password = request.getParameter("Password");
+		
+		HttpSession session = request.getSession();
 
-		if (accountMan.usernameExists(username)) {
+		session.setAttribute("name",firstName);
+		session.setAttribute("username",username);
+
+		/**if (accountMan.usernameExists(username)) {
 
 			RequestDispatcher dispatch = request.getRequestDispatcher("nameInUse.html");
 			dispatch.forward(request, response);
 
-		} else if (password.length() < 6) {
-			
-			RequestDispatcher dispatch = request.getRequestDispatcher("");
-			dispatch.forward(request, response);
-			
+		}*/  if (password.length() < 6) {
+
+			request.setAttribute("signupPasError","Short password, It must be at least 6 characters!");
+			request.getRequestDispatcher("signup.html").forward(request, response);
 		} else if (accountMan.createAccount(firstName, lastName, email, username, password)) {
 			
 			RequestDispatcher dispatch = request.getRequestDispatcher("welcome.html");
