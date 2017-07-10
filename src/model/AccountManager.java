@@ -36,31 +36,28 @@ public class AccountManager {
 	 *         less than 6 characters or other errors occurred
 	 */
 	public boolean createAccount(String firstName, String lastName, String email, String username, String password) {
-		if (!usernameExists(username) && password.length() >= 6) {
-			String passwordHash = "";
 
-			try {
-				passwordHash = PasswordStorage.createHash(password);
-			} catch (CannotPerformOperationException e) {
-				e.printStackTrace();
-				return false;
-			}
+		String passwordHash = "";
 
-			User newUser = new User(firstName, lastName, email, username, passwordHash);
-
-			int idOfNewUser = uDao.insertUser(newUser);
-
-			if (idOfNewUser < 1)
-				return false;
-
-			newUser.setID(idOfNewUser);
-
-			users.put(username, newUser);
-
-			return true;
+		try {
+			passwordHash = PasswordStorage.createHash(password);
+		} catch (CannotPerformOperationException e) {
+			e.printStackTrace();
+			return false;
 		}
 
-		return false;
+		User newUser = new User(firstName, lastName, email, username, passwordHash);
+
+		int idOfNewUser = uDao.insertUser(newUser);
+
+		if (idOfNewUser < 1)
+			return false;
+
+		newUser.setID(idOfNewUser);
+
+		users.put(username, newUser);
+
+		return true;
 	}
 
 	/**
@@ -83,25 +80,25 @@ public class AccountManager {
 
 		return u;
 	}
-	
+
 	/**
 	 * 
 	 * @param email
-	 * @return  User object corresponding to the user with given username
+	 * @return User object corresponding to the user with given username
 	 */
-	/*public User getUserByEmail(String email) {
-		User u = uDao.getUserByEmail(email);
-		
-		if (u != null) {
-			
-			u.setFriends(uDao.getUserFriends(u.getID(), true));
-			u.setFriendRequests(uDao.getUserFriends(u.getID(), false));
-
-			users.put(u.getUsername(), u);
-		}
-
-		return u;
-	}*/
+	/*
+	 * public User getUserByEmail(String email) { User u =
+	 * uDao.getUserByEmail(email);
+	 * 
+	 * if (u != null) {
+	 * 
+	 * u.setFriends(uDao.getUserFriends(u.getID(), true));
+	 * u.setFriendRequests(uDao.getUserFriends(u.getID(), false));
+	 * 
+	 * users.put(u.getUsername(), u); }
+	 * 
+	 * return u; }
+	 */
 
 	/**
 	 * 

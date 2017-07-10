@@ -4,7 +4,6 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Time;
 import java.sql.Types;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -50,7 +49,7 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 				Date dateCreated = rs.getDate(DbContract.COL_DATE_CREATED);
 				boolean answersImmediately = rs.getBoolean(DbContract.COL_SHOW_ANSWERS_IMMEDIATELY);
 				boolean isOnePage = rs.getBoolean(DbContract.COL_QUESTIONS_ON_SAME_PAGE);
-				Time allowedTime = rs.getTime(DbContract.COL_MAX_ALLOWED_TIME);
+				int allowedTime = rs.getInt(DbContract.COL_MAX_ALLOWED_TIME);
 				int maxPoints = rs.getInt(DbContract.COL_MAX_POINTS);
 
 				result = new Quiz(quizID, ownerID, quizName, description, dateCreated, answersImmediately, isOnePage,
@@ -212,25 +211,25 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 	 */
 	public SortedMap<String, Integer> getAllQuizInfo() {
 		SortedMap<String, Integer> result = new TreeMap<String, Integer>();
-		
+
 		String columns = DbContract.COL_QUIZ_ID + ", " + DbContract.COL_QUIZ_NAME;
-		
+
 		PreparedStatement ps = prepareSelectStatementWith(columns, DbContract.TABLE_QUIZZES, "");
-		
+
 		try {
 			ResultSet rs = ps.executeQuery();
-			
+
 			while (rs.next()) {
 				int ID = rs.getInt(DbContract.COL_QUIZ_ID);
 				String name = rs.getString(DbContract.COL_QUIZ_NAME);
-				
+
 				result.put(name, ID);
 			}
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+
 		return result;
 	}
 
@@ -254,7 +253,7 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 			ps.setDate(4, newQuiz.getDate());
 			ps.setBoolean(5, newQuiz.showAnswersImmediately());
 			ps.setBoolean(6, newQuiz.isOnePage());
-			ps.setTime(7, newQuiz.getAllowedTime());
+			ps.setInt(7, newQuiz.getAllowedTime());
 			ps.setInt(8, newQuiz.getMaxPoints());
 
 		} catch (SQLException e) {

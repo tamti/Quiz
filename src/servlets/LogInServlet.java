@@ -45,12 +45,12 @@ public class LogInServlet extends HttpServlet {
 
 		if (accountMan.canPass(login, password)) {
 			
-			RequestDispatcher dispatch = request.getRequestDispatcher("");
+			RequestDispatcher dispatch = request.getRequestDispatcher("welcome.html");
 			dispatch.forward(request, response);
 			
 		} else {
 			
-			RequestDispatcher dispatch = request.getRequestDispatcher("");
+			RequestDispatcher dispatch = request.getRequestDispatcher("noSuchUser.html");
 			dispatch.forward(request, response);
 		}
 	}

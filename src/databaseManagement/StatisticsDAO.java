@@ -4,7 +4,6 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Time;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -91,7 +90,7 @@ public class StatisticsDAO extends BasicQuizWebSiteDAO {
 				int quizID = rs.getInt(DbContract.COL_QUIZ_ID);
 				int userID = rs.getInt(DbContract.COL_USER_ID);
 				Date takenOn = rs.getDate(DbContract.COL_TAKE_ON);
-				Time usedTime = rs.getTime(DbContract.COL_USED_TIME);
+				int usedTime = rs.getInt(DbContract.COL_USED_TIME);
 				int numCorrectAnswers = rs.getInt(DbContract.COL_NUM_CORRECT_ANSWERS);
 				double numEarnedPoints = rs.getDouble(DbContract.COL_NUM_RECIEVED_POINTS);
 				boolean notYetFullyGraded = rs.getBoolean(DbContract.COL_HAS_ANSWERS_TO_CHECK);
@@ -128,7 +127,7 @@ public class StatisticsDAO extends BasicQuizWebSiteDAO {
 			ps.setInt(1, stat.getQuizID());
 			ps.setInt(2, stat.getUserID());
 			ps.setDate(3, stat.getDate());
-			ps.setTime(4, stat.getUsedTime());
+			ps.setInt(4, stat.getUsedTime());
 			ps.setInt(5, stat.getNumCorrectAnswers());
 			ps.setDouble(6, stat.getpoints());
 			ps.setBoolean(7, stat.needsGrading());

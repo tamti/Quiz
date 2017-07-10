@@ -1,7 +1,7 @@
 package model;
 
 import java.sql.Date;
-import java.sql.Time;
+import java.util.Calendar;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -13,7 +13,7 @@ public class Quiz implements Comparable<Quiz> {
 	private String description;
 	private boolean isOnePage;
 	private boolean showAnswersImmediately;
-	private Time allowedTime;
+	private int allowedTimeInMinutes;
 	private boolean random;
 	private Date dateCreated;
 	private int maxPoints;
@@ -22,7 +22,7 @@ public class Quiz implements Comparable<Quiz> {
 	private SortedSet<Statistics> stats;
 
 	public Quiz(int ID, int ownerID, String quizName, String description, Date dateCreated, boolean answersImmediately,
-			boolean isOnePage, Time allowedTime, int maxPoints) {
+			boolean isOnePage, int allowedTimeInMinutes, int maxPoints) {
 		this.ID = ID;
 		this.ownerID = ownerID;
 		this.quizName = quizName;
@@ -30,15 +30,18 @@ public class Quiz implements Comparable<Quiz> {
 		this.dateCreated = dateCreated;
 		this.showAnswersImmediately = answersImmediately;
 		this.isOnePage = isOnePage;
-		this.allowedTime = allowedTime;
+		this.allowedTimeInMinutes = allowedTimeInMinutes;
 		this.maxPoints = maxPoints;
+
 		questions = new TreeMap<Integer, Question>();
 		stats = new TreeSet<Statistics>();
 	}
 
-	public Quiz(int ownerID, String quizName, String description, Date dateCreated, boolean answersImmediately,
-			boolean isOnePage, Time allowedTime, int maxPoints) {
-		this(-1, ownerID, quizName, description, dateCreated, answersImmediately, isOnePage, allowedTime, maxPoints);
+	public Quiz(int ownerID, String quizName, String description, boolean answersImmediately, boolean isOnePage,
+			int allowedTimeInMinutes, int maxPoints) {
+
+		this(-1, ownerID, quizName, description, new Date(Calendar.getInstance().getTimeInMillis()), answersImmediately,
+				isOnePage, allowedTimeInMinutes, maxPoints);
 	}
 
 	public int getOwnerID() {
@@ -89,12 +92,12 @@ public class Quiz implements Comparable<Quiz> {
 		this.showAnswersImmediately = showAnswersImmediately;
 	}
 
-	public Time getAllowedTime() {
-		return allowedTime;
+	public int getAllowedTime() {
+		return allowedTimeInMinutes;
 	}
 
-	public void setAllowedTime(Time allowedTime) {
-		this.allowedTime = allowedTime;
+	public void setAllowedTime(int allowedTimeInMinutes) {
+		this.allowedTimeInMinutes = allowedTimeInMinutes;
 	}
 
 	public boolean isOnePage() {

@@ -45,19 +45,24 @@ public class RegistrationServlet extends HttpServlet {
 
 		if (accountMan.usernameExists(username)) {
 
-			RequestDispatcher dispatch = request.getRequestDispatcher("welcome.html");
+			RequestDispatcher dispatch = request.getRequestDispatcher("nameInUse.html");
 			dispatch.forward(request, response);
 
-		} if (accountMan.createAccount(firstName, lastName, email, username, password)) {
+		} else if (password.length() < 6) {
+			
+			RequestDispatcher dispatch = request.getRequestDispatcher("");
+			dispatch.forward(request, response);
+			
+		} else if (accountMan.createAccount(firstName, lastName, email, username, password)) {
+			
 			RequestDispatcher dispatch = request.getRequestDispatcher("welcome.html");
 			dispatch.forward(request, response);
 
 		} else {
 
-			RequestDispatcher dispatch = request.getRequestDispatcher("welcome.html");
-
+			RequestDispatcher dispatch = request.getRequestDispatcher("");
 			dispatch.forward(request, response);
-		} 
+		}
 	}
 
 }
