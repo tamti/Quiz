@@ -1,7 +1,5 @@
 package model;
 
-import java.sql.Date;
-import java.sql.Time;
 import java.util.SortedMap;
 
 import databaseManagement.QuizDAO;
@@ -29,14 +27,15 @@ public class QuizManager {
 	 * @param dateCreated
 	 * @param answersImmediately
 	 * @param isOnePage
-	 * @param allowedTime
+	 * @param allowedTimeInMinutes
 	 * @param maxPoints
 	 * @return newly created Quiz object
 	 */
-	public Quiz createQuiz(int ownerID, String quizName, String description, Date dateCreated,
-			boolean answersImmediately, boolean isOnePage, Time allowedTime, int maxPoints) {
-		Quiz newQuiz = new Quiz(ownerID, quizName, description, dateCreated, answersImmediately, isOnePage, allowedTime,
-				maxPoints);
+	public Quiz createQuiz(int ownerID, String quizName, String description, boolean answersImmediately,
+			boolean isOnePage, int allowedTimeInMinutes, int maxPoints) {
+		
+		Quiz newQuiz = new Quiz(ownerID, quizName, description, answersImmediately, isOnePage,
+				allowedTimeInMinutes, maxPoints);
 
 		int newQuizID = qDao.insertQuiz(newQuiz);
 		newQuiz.setID(newQuizID);
@@ -46,6 +45,11 @@ public class QuizManager {
 		return newQuiz;
 	}
 
+	/**
+	 * 
+	 * @param quizName
+	 * @return Quiz object corresponding to the given name
+	 */
 	public Quiz getQuiz(String quizName) {
 		Quiz result = null;
 
@@ -97,31 +101,43 @@ public class QuizManager {
 	 *            Integer more than 0 if answers to this question have order
 	 * @return Answer object constructed with given parameters
 	 */
-	public Answer addAnswerToQuestion(int questionID, String answer, boolean isCorrect, int NO) {
+	/*public Answer addAnswerToQuestion(int questionID, String answer, boolean isCorrect, int NO) {
 		Answer newAnswer = new Answer(answer, isCorrect);
-		
+
 		if (NO > 0)
 			newAnswer.setNO(NO);
-		
-		int answerID = qDao.insertAnswer(questionID, newAnswer);
-		
-		newAnswer.setID(answerID);
-		
-		return newAnswer;
-	}
 
-	
+		int answerID = qDao.insertAnswer(questionID, newAnswer);
+
+		newAnswer.setID(answerID);
+
+		return newAnswer;
+	}*/
+
 	public String getUserAnswerToQuestion(int userID, int questionID) {
 		return qDao.getUserAnswerToCheck(questionID, userID);
 	}
-	
-	public void updateQuestion(Question question, String updatedQuestionStr) {
+
+	public void updateQuestionTxt(Question question, String updatedQuestionStr) {
 		question.setQuestion(updatedQuestionStr);
 		qDao.updateQuestion(question.getID(), updatedQuestionStr, question.getMaxPoints());
 	}
-	
+
 	public void updateQuestionMaxPoints(Question question, double newMaxPoints) {
 		question.setMaxPoints(newMaxPoints);
 		qDao.updateQuestion(question.getID(), question.getQuestionStr(), newMaxPoints);
+	}
+
+	public void removeQuestion(String quizName, int questionID) {
+		Quiz q = getQuiz(quizName);
+		q.removeQuestion(questionID);
+		qDao.removeQuestion(questionID);
+	}
+
+	public void removeAnswer(int answerID) {
+		//Quiz quiz = getQuiz(quizName);
+		//Question question = quiz.getQuestions().get(questionID);
+		//question.removeAnswer(answerID);
+		qDao.removeAnswer(answerID);
 	}
 }
