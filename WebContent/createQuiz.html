@@ -6,7 +6,7 @@
 HttpSession ses = request.getSession();
 User user = (User) ses.getAttribute("user");
 if(user == null){
-	response.sendRedirect("index.html");
+	response.sendRedirect("login.html");
 }else{
 </script>
 <head>

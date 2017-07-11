@@ -5,25 +5,24 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Hello <% out.print(request.getSession().getAttribute("username")); %></title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 <style>
- #cover{
- display:table;
- }
- #nrmbt{
-  display:table-cell;
- }
+body{
+   background-image: url("topography.png");
+}
  
 </style>
 </head>
 <body>
 
 				
-<div id = "cover">
- <input id = "nrmbt" type="button" onclick="location.href='createQuiz.html'" value="All about quizes" />
- <input id = "nrmbt" type="button" onclick="location.href='friends.html'" value = "Friends">
- <input id = "nrmbt" type="button" value = "Announcements" />  	
+<div align="center" id = "cover">
+ <input  class="btn btn-warning hell" style="width:25%" type="button" onclick="location.href='createQuiz.html'" value="All about quizes" />
+ <input class="btn btn-warning hell" style="width:25%" type="button" onclick="location.href='friends.html'" value = "Friends">
+ <input  class="btn btn-warning hell" style="width:25%" type="button" value = "Announcements" />
+ <input class="btn btn-warning hell" style="width:25%" type="button" value = "Sign out" />
 </div>		
- <form method="post" action="RegistrationServlet" type="text/css" style="margin-top:80px; padding-left:300px;">
+ <form align="center" method="post" action="RegistrationServlet" type="text/css" style="margin-top:10%; ">
  		  <p>Welcome <% out.print(request.getSession().getAttribute("username")); %> !</p>
  		  
      </form>
