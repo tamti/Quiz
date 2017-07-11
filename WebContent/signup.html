@@ -4,6 +4,8 @@
 <meta charset="ISO-8859-1">
 	<title>Registration </title>
 		<link rel="stylesheet" href="css/signUpStyle.css">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+		
 </head>
 <body>
 				
@@ -15,8 +17,18 @@
 				        <p><input type="text" name="LastName"  placeholder="Last Name"></p>
 				        <p><input type="text" name="Username"  placeholder="Username"></p>
 				        <p><input type="text" name="Mail"  placeholder="E-Mail"></p>
-				        <p><input type="password" name="Password"  placeholder="Password"></p>
+				        <p ><input id = 'pwd' type="password" name="Password"  placeholder="Password"></p>
 				        
+				         <script>
+				         $('#pwd').on('blur', function(){
+				        	    if(this.value.length < 6){ 
+				        	       alert('You have entered less than 6 characters for password');
+				        	       $(this).focus(); 
+				        	       return false;
+				        	    }
+				        	});
+				        
+						 </script>
 				       	
 				        <p class="submit"><input type="submit" name="commit" value="Sign Up"></p>
 				      </form>

@@ -60,7 +60,7 @@ public class RegistrationServlet extends HttpServlet {
 			request.getRequestDispatcher("signup.html").forward(request, response);
 		} else if (accountMan.createAccount(firstName, lastName, email, username, password)) {
 			
-			RequestDispatcher dispatch = request.getRequestDispatcher("welcome.html");
+			RequestDispatcher dispatch = request.getRequestDispatcher("homepage.jsp");
 			dispatch.forward(request, response);
 
 		} else {

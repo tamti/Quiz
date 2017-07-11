@@ -9,6 +9,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import model.AccountManager;
 
@@ -42,14 +43,14 @@ public class LogInServlet extends HttpServlet {
 
 		String login = request.getParameter("login");
 		String password = request.getParameter("password");
+		
+		HttpSession session = request.getSession();
+		session.setAttribute("username",login);
 
-		if (accountMan.canPass(login, password)) {
-			
-			RequestDispatcher dispatch = request.getRequestDispatcher("welcome.html");
+		if (accountMan.canPass(login, password)) {	
+			RequestDispatcher dispatch = request.getRequestDispatcher("homepage.jsp");
 			dispatch.forward(request, response);
-			
 		} else {
-			
 			RequestDispatcher dispatch = request.getRequestDispatcher("noSuchUser.html");
 			dispatch.forward(request, response);
 		}
