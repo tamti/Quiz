@@ -86,19 +86,6 @@ CREATE TABLE messages (
         REFERENCES users (user_id)
 );
 
-CREATE TABLE challanges (
-	challange_id INT AUTO_INCREMENT,
-	message_id INT NOT NULL,
-	quiz_id INT NOT NULL,
-	challange_seen BOOLEAN NOT NULL,
-	challange_accepted BOOLEAN NOT NULL,
-	CONSTRAINT challanges_pk PRIMARY KEY (challange_id),
-    CONSTRAINT challanges_fk1 FOREIGN KEY (message_id)
-        REFERENCES messages (message_id),
-    CONSTRAINT challanges_fk2 FOREIGN KEY (quiz_id)
-        REFERENCES quizzes (quiz_id)
-);
-
 /*
  * Stores String values of all announcements,
  * their authors and times when the announcements were made
@@ -112,7 +99,7 @@ CREATE TABLE announcements (
     time_announced DATETIME NOT NULL,
     txt TEXT NOT NULL,
     CONSTRAINT announcements_pk PRIMARY KEY (announcement_id),
-    CONSTRAINT announcements_fk FOREIGN KEY (author_id)
+    CONSTRAINT announcements_fk FOREIGN KEY (announcer_id)
         REFERENCES users (user_id)
 );
 
@@ -191,6 +178,19 @@ CREATE TABLE categories_of_quizzes (
         REFERENCES quizzes (quiz_id),
     CONSTRAINT categories_of_quizes_fk2 FOREIGN KEY (quiz_category_id)
         REFERENCES all_quiz_categories (quiz_category_id)
+);
+
+CREATE TABLE challenges (
+	challenge_id INT AUTO_INCREMENT,
+	message_id INT NOT NULL,
+	quiz_id INT NOT NULL,
+	challange_seen BOOLEAN NOT NULL,
+	challange_accepted BOOLEAN NOT NULL,
+	CONSTRAINT challenges_pk PRIMARY KEY (challenge_id),
+    CONSTRAINT challenges_fk1 FOREIGN KEY (message_id)
+        REFERENCES messages (message_id),
+    CONSTRAINT challenges_fk2 FOREIGN KEY (quiz_id)
+        REFERENCES quizzes (quiz_id)
 );
 
 -- String values of all questions types
@@ -317,11 +317,9 @@ CREATE TABLE quiz_stats (
 -- ---------------------------- TRIGGERS ----------------------------
 
 /*
-
-/*
  * If data from the table "questions" is deleted, this trigger will delete 
  * other related data from tables "photos" and "answers_to_questions"
- */
+
 delimiter $$
 CREATE TRIGGER delete_photos_and_answers_to_deleted_question
 
@@ -339,11 +337,11 @@ BEGIN
 
 END;
 $$
-
+ */
 /*
  * If data from the table "answers_to_questions" is deleted, 
  * this trigger will delete related data from table "answers"
- */
+
 delimiter $$
 CREATE TRIGGER delete_answers_after_deleting_answers_to_questions
 
@@ -358,11 +356,11 @@ BEGIN
 
 END;
 $$
-
+ */
 /*
  * If data from table "users" is deleted, this trigger will 
  * delete all related data from table "friend_lists"
- */
+ 
 delimiter $$
 CREATE TRIGGER delete_photo_and_friend_lists_of_deleted_user
 
@@ -382,12 +380,12 @@ BEGIN
 
 END;
 $$
-
+*/
 /*
  * If value of the column "photo_id" from table "users" is updated
  * (and is not set to default picture value: 1), this trigger will
  * delete related data from table "photos"
- */
+
 delimiter $$
 CREATE TRIGGER delete_old_user_photo_when_updating
 
@@ -402,6 +400,4 @@ BEGIN
 		AND old.photo_id = photos.photo_id;
 
 END;
-$$
-
-*/
+$$ */
