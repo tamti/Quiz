@@ -220,6 +220,11 @@ public class AccountManager {
 	 * 
 	 * @param username
 	 */
+	public boolean isAdminAcc(String username){
+		User user = getUser(username);
+		return uDao.getAdminStatus(user.getID());
+	}
+	
 	public void makeAdmin(String username) {
 		User newAdmin = getUser(username);
 		uDao.updateAdminStatus(newAdmin.getID(), true);

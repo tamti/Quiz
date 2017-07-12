@@ -12,8 +12,18 @@ body{
 </style>
 </head>
 <body>
- <p> I'm the one who knocks </p>
 
+<form method="post" action="AdminServlet" >
+
+ <p> I'm the one who knocks </p>
  <input class="btn btn-warning hell" style="width:25%" type="button" value = "Create announcement" />
+ <div>
+ <textarea rows="4" cols="50" name = "announcement">
+	 Admin is going to knock 
+	</textarea>
+	<input class="btn btn-warning hell" style="width:25%"  type="submit" value = "Post" />
+ </div>
+</form>
+
 </body>
 </html>

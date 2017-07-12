@@ -19,37 +19,47 @@ import model.AccountManager;
 @WebServlet("/LogInServlet")
 public class LogInServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public LogInServlet() {
-        super();
-    }
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#HttpServlet()
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public LogInServlet() {
+		super();
+	}
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+	 *      response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		ServletContext servletCont = getServletContext();
 		AccountManager accountMan = (AccountManager) servletCont.getAttribute("accountManager");
 
 		String login = request.getParameter("login");
 		String password = request.getParameter("password");
-		
-		HttpSession session = request.getSession();
-		session.setAttribute("username",login);
 
-		if (accountMan.canPass(login, password)) {	
-			RequestDispatcher dispatch = request.getRequestDispatcher("homepage.jsp");
-			dispatch.forward(request, response);
+		HttpSession session = request.getSession();
+		session.setAttribute("username", login);
+
+		if (accountMan.canPass(login, password)) {
+			if (accountMan.isAdminAcc(login)) {
+				RequestDispatcher dispatch = request.getRequestDispatcher("adminpage.html");
+				dispatch.forward(request, response);
+			} else {
+				RequestDispatcher dispatch = request.getRequestDispatcher("homepage.jsp");
+				dispatch.forward(request, response);
+			}
+
 		} else {
 			RequestDispatcher dispatch = request.getRequestDispatcher("noSuchUser.html");
 			dispatch.forward(request, response);

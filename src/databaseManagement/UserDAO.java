@@ -511,6 +511,33 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	public void updateAdminStatus(int userID, boolean isAdmin) {
 		updateUsersBooleanColWith(userID, DbContract.COL_IS_ADMIN, isAdmin);
 	}
+	
+	//getting info is user admin or not
+	public boolean getAdminStatus(int userID) {
+		boolean res = false;
+		
+		String col = DbContract.COL_IS_ADMIN;
+		String table = DbContract.TABLE_USERS;
+		String condition = DbContract.COL_USER_ID + " = ?";
+
+		PreparedStatement ps = prepareSelectStatementWith(col, table, condition);
+		
+		try {
+			ps.setInt(1, userID);
+
+			ResultSet rs = ps.executeQuery();
+
+			if (rs.first())
+				res = rs.getBoolean(DbContract.COL_IS_ADMIN);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return res;
+	}
+	
+	
 
 	/*
 	 * Sets some boolean type column [col] value of the specified user entry in
