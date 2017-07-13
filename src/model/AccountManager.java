@@ -11,7 +11,7 @@ import others.PasswordStorage.CannotPerformOperationException;
 import others.PasswordStorage.InvalidHashException;
 
 public class AccountManager {
-	private UserDAO uDao;
+	protected UserDAO uDao;
 	private StatisticsDAO sDao;
 	private SortedMap<String, User> users;
 
@@ -232,10 +232,6 @@ public class AccountManager {
 		return uDao.getAdminStatus(user.getID());
 	}
 	
-	public void makeAdmin(String username) {
-		User newAdmin = getUser(username);
-		uDao.updateAdminStatus(newAdmin.getID(), true);
-	}
 
 	/**
 	 * 

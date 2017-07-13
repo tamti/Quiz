@@ -9,6 +9,7 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import model.Announcement;
 import model.Challenge;
 import model.Message;
 import model.User;
@@ -710,4 +711,26 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 		}
 	}
 	
+	public void addAnnouncement(Announcement ann){
+		System.out.println("Entered DAO");
+		String[] cols = { DbContract.COL_ANNOUNCER_ID, DbContract.COL_ANNOUNCED_ON, DbContract.COL_ANNOUNCEMENT_TEXT};
+		
+		PreparedStatement ps = prepareInsertStatementWith(DbContract.TABLE_ANNOUNCEMENTS, cols);
+		try {
+			ps.setInt(1, ann.getSender());
+			ps.setTimestamp(2, ann.getTime());
+			ps.setString(3, ann.getText());
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			ps.executeUpdate();
+			System.out.println("Success! announcement inseted");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
 }

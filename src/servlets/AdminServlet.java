@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import model.AccountManager;
+import model.Administration;
 
 /**
  * Servlet implementation class AdminServlet
@@ -41,10 +42,16 @@ public class AdminServlet extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		ServletContext servletCont = getServletContext();
-		AccountManager accountMan = (AccountManager) servletCont.getAttribute("accountManager");
+		Administration admin = (Administration) servletCont.getAttribute("admin");
 		String announcement = request.getParameter("announcement");
 		HttpSession session = request.getSession();
-		session.setAttribute("announcement",announcement);
+		//session.setAttribute("announcement",announcement);
+		System.out.println(announcement);
+		String username = (String) session.getAttribute("username");
+		System.out.println(username);
+
+		admin.addAnnouncement(announcement,username);
+		
 		RequestDispatcher dispatch = request.getRequestDispatcher("adminpage.html");
 		dispatch.forward(request, response);
 		
