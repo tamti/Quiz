@@ -1,5 +1,6 @@
 package databaseManagement;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -59,28 +60,44 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	 * User whose value of the column [col] is [val]
 	 */
 	private SortedMap<String, User> getUserMap(String col, String val) {
-		SortedMap<String, User> result = new TreeMap<String, User>();
-
-		PreparedStatement ps = null;
+		SortedMap<String, User> result = null;
 
 		if (!val.isEmpty()) {
 			String condition = col + " = ?";
 
-			ps = prepareSelectStatementWith("*", DbContract.TABLE_USERS, condition);
+			String query = prepareSelectStatementWith("*", DbContract.TABLE_USERS, condition);
 
-			try {
+			try (Connection con = DataSource.getDataSource().getConnection();
+					PreparedStatement ps = con.prepareStatement(query)) {
+
 				ps.setString(1, val);
+
+				result = getUserWithPreparedStatement(ps);
 
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
 
 		} else {
-			ps = prepareSelectStatementWith("*", DbContract.TABLE_USERS, "");
+
+			String query = prepareSelectStatementWith("*", DbContract.TABLE_USERS, "");
+
+			try (Connection con = DataSource.getDataSource().getConnection();
+					PreparedStatement ps = con.prepareStatement(query)) {
+
+				result = getUserWithPreparedStatement(ps);
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 		}
 
-		try {
-			ResultSet rs = ps.executeQuery();
+		return result;
+	}
+
+	private SortedMap<String, User> getUserWithPreparedStatement(PreparedStatement ps) {
+		SortedMap<String, User> result = new TreeMap<String, User>();
+		try (ResultSet rs = ps.executeQuery()) {
 
 			while (rs.next()) {
 				int userID = rs.getInt(DbContract.COL_USER_ID);
@@ -99,7 +116,6 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 
 				result.put(u.getUsername(), u);
 			}
-
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -126,10 +142,11 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 
 		String col = "count(1) numberOfUsers";
 
-		PreparedStatement ps = prepareSelectStatementWith(col, DbContract.TABLE_USERS, "");
+		String query = prepareSelectStatementWith(col, DbContract.TABLE_USERS, "");
 
-		try {
-			ResultSet rs = ps.executeQuery();
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query);
+				ResultSet rs = ps.executeQuery()) {
 
 			if (rs.next())
 				res = rs.getInt("numberOfUsers");
@@ -149,23 +166,25 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	 * @return ID of the new User in the database
 	 */
 	public int insertUser(User newUser) {
-		try {
-			String[] allUserColumns = { DbContract.COL_FIRST_NAME, DbContract.COL_LAST_NAME, DbContract.COL_USERNAME,
-					DbContract.COL_PASSWORD, DbContract.COL_EMAIL, DbContract.COL_PHOTO_ID,
-					DbContract.COL_USER_IS_ACTIVE, DbContract.COL_IS_ADMIN };
+		String[] allUserColumns = { DbContract.COL_FIRST_NAME, DbContract.COL_LAST_NAME, DbContract.COL_USERNAME,
+				DbContract.COL_PASSWORD, DbContract.COL_EMAIL, DbContract.COL_PHOTO_ID, DbContract.COL_USER_IS_ACTIVE,
+				DbContract.COL_IS_ADMIN };
 
-			PreparedStatement prepSt = prepareInsertStatementWith(DbContract.TABLE_USERS, allUserColumns);
+		String query = prepareInsertStatementWith(DbContract.TABLE_USERS, allUserColumns);
 
-			prepSt.setString(1, newUser.getFirstName());
-			prepSt.setString(2, newUser.getLastName());
-			prepSt.setString(3, newUser.getUsername());
-			prepSt.setString(4, newUser.getPassword());
-			prepSt.setString(5, newUser.getEmail());
-			prepSt.setInt(6, DbContract.DEFAULT_USER_PHOTO_ID);
-			prepSt.setBoolean(7, true);
-			prepSt.setBoolean(8, newUser.isAdmin());
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
 
-			prepSt.executeUpdate();
+			ps.setString(1, newUser.getFirstName());
+			ps.setString(2, newUser.getLastName());
+			ps.setString(3, newUser.getUsername());
+			ps.setString(4, newUser.getPassword());
+			ps.setString(5, newUser.getEmail());
+			ps.setInt(6, DbContract.DEFAULT_USER_PHOTO_ID);
+			ps.setBoolean(7, true);
+			ps.setBoolean(8, newUser.isAdmin());
+
+			ps.executeUpdate();
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -208,21 +227,27 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 		String condition = "u." + DbContract.COL_USER_ID + " = f." + otherSideCol + " AND f." + sideCol + " = ? AND f."
 				+ DbContract.COL_AWAITING_RESPONSE + " = ?" + " AND f." + DbContract.COL_FRIENDSHIP_ACTIVE + " = ?";
 
-		PreparedStatement ps = prepareSelectStatementWith(col, tables, condition);
+		String query = prepareSelectStatementWith(col, tables, condition);
 
 		String currUsername = "";
 
-		try {
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
 			ps.setInt(1, userID);
 			ps.setBoolean(2, !friendshipActive);
 			ps.setBoolean(3, friendshipActive);
 
-			ResultSet rs = ps.executeQuery();
+			try (ResultSet rs = ps.executeQuery()) {
 
-			while (rs.next()) {
-				currUsername = rs.getString("u." + DbContract.COL_USERNAME);
-				result.add(currUsername);
+				while (rs.next()) {
+					currUsername = rs.getString("u." + DbContract.COL_USERNAME);
+					result.add(currUsername);
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -245,18 +270,23 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 				+ DbContract.COL_FRIEND1 + " = ?" + " and " + DbContract.COL_FRIEND2 + " = ?))" + " and "
 				+ DbContract.COL_FRIENDSHIP_ACTIVE + " = true;";
 
-		PreparedStatement ps = prepareSelectStatementWith(col, DbContract.TABLE_FRIEND_LISTS, condition);
+		String query = prepareSelectStatementWith(col, DbContract.TABLE_FRIEND_LISTS, condition);
 
-		try {
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
 			ps.setInt(1, user1ID);
 			ps.setInt(2, user2ID);
 			ps.setInt(3, user2ID);
 			ps.setInt(4, user1ID);
 
-			ResultSet rs = ps.executeQuery();
-
-			if (rs.next())
-				res = rs.getBoolean("areFriends");
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					res = rs.getBoolean("areFriends");
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -282,18 +312,20 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	 *            If this is true than the friendship relation is active
 	 */
 	public void insertFriendShip(int user1ID, int user2ID, boolean awaitingResponse, boolean friendshipActive) {
-		try {
-			String[] cols = { DbContract.COL_FRIEND1, DbContract.COL_FRIEND2, DbContract.COL_AWAITING_RESPONSE,
-					DbContract.COL_FRIENDSHIP_ACTIVE };
+		String[] cols = { DbContract.COL_FRIEND1, DbContract.COL_FRIEND2, DbContract.COL_AWAITING_RESPONSE,
+				DbContract.COL_FRIENDSHIP_ACTIVE };
 
-			PreparedStatement prepSt = prepareInsertStatementWith(DbContract.TABLE_FRIEND_LISTS, cols);
+		String query = prepareInsertStatementWith(DbContract.TABLE_FRIEND_LISTS, cols);
 
-			prepSt.setInt(1, user1ID);
-			prepSt.setInt(2, user2ID);
-			prepSt.setBoolean(3, awaitingResponse);
-			prepSt.setBoolean(4, friendshipActive);
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
 
-			prepSt.executeUpdate();
+			ps.setInt(1, user1ID);
+			ps.setInt(2, user2ID);
+			ps.setBoolean(3, awaitingResponse);
+			ps.setBoolean(4, friendshipActive);
+
+			ps.executeUpdate();
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -324,9 +356,11 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 
 		String setCol = DbContract.COL_AWAITING_RESPONSE + " = ?, " + DbContract.COL_FRIENDSHIP_ACTIVE + " = ?";
 
-		PreparedStatement ps = prepareUpdateStatementWith(DbContract.TABLE_FRIEND_LISTS, setCol, condition);
+		String query = prepareUpdateStatementWith(DbContract.TABLE_FRIEND_LISTS, setCol, condition);
 
-		try {
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
 			ps.setBoolean(1, awaitingResponse);
 			ps.setBoolean(2, friendshipActive);
 			ps.setInt(3, user1ID);
@@ -356,15 +390,17 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 		String table = DbContract.TABLE_USERS + " u";
 		String condition = "u." + DbContract.COL_USERNAME + " = ?";
 
-		PreparedStatement ps = prepareSelectStatementWith(col, table, condition);
+		String query = prepareSelectStatementWith(col, table, condition);
 
-		try {
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
 			ps.setString(1, username);
 
-			ResultSet rs = ps.executeQuery();
-
-			if (rs.first())
-				res = rs.getBoolean("userExists");
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.first())
+					res = rs.getBoolean("userExists");
+			}
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -459,9 +495,11 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 		String setCol = col + " = ?";
 		String condition = DbContract.COL_USER_ID + " = ?";
 
-		PreparedStatement ps = prepareUpdateStatementWith(DbContract.TABLE_USERS, setCol, condition);
+		String query = prepareUpdateStatementWith(DbContract.TABLE_USERS, setCol, condition);
 
-		try {
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
 			ps.setString(1, newVal);
 			ps.setInt(2, userID);
 
@@ -512,24 +550,29 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	public void updateAdminStatus(int userID, boolean isAdmin) {
 		updateUsersBooleanColWith(userID, DbContract.COL_IS_ADMIN, isAdmin);
 	}
-	
-	//getting info is user admin or not
+
+	// getting info is user admin or not
 	public boolean getAdminStatus(int userID) {
 		boolean res = false;
-		
+
 		String col = DbContract.COL_IS_ADMIN;
 		String table = DbContract.TABLE_USERS;
 		String condition = DbContract.COL_USER_ID + " = ?";
 
-		PreparedStatement ps = prepareSelectStatementWith(col, table, condition);
-		
-		try {
+		String query = prepareSelectStatementWith(col, table, condition);
+
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
 			ps.setInt(1, userID);
 
-			ResultSet rs = ps.executeQuery();
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.first())
+					res = rs.getBoolean(DbContract.COL_IS_ADMIN);
 
-			if (rs.first())
-				res = rs.getBoolean(DbContract.COL_IS_ADMIN);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -537,8 +580,6 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 
 		return res;
 	}
-	
-	
 
 	/*
 	 * Sets some boolean type column [col] value of the specified user entry in
@@ -548,9 +589,11 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 		String setCol = col + " = ?";
 		String condition = DbContract.COL_USER_ID + " = ?";
 
-		PreparedStatement ps = prepareUpdateStatementWith(DbContract.TABLE_USERS, setCol, condition);
+		String query = prepareUpdateStatementWith(DbContract.TABLE_USERS, setCol, condition);
 
-		try {
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
 			ps.setBoolean(1, newVal);
 			ps.setInt(2, userID);
 
@@ -572,25 +615,28 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 		SortedSet<Message> result = new TreeSet<Message>();
 
 		String condition = DbContract.COL_RECEIVER_ID + " = ?";
-		PreparedStatement ps = prepareSelectStatementWith("*", DbContract.TABLE_MESSAGES, condition);
 
-		try {
+		String query = prepareSelectStatementWith("*", DbContract.TABLE_MESSAGES, condition);
+
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
 			ps.setInt(1, receiverID);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
 
-		try {
-			ResultSet rs = ps.executeQuery();
+			try (ResultSet rs = ps.executeQuery()) {
 
-			while (rs.next()) {
-				int senderID = rs.getInt(DbContract.COL_SENDER_ID);
-				String txt = rs.getString(DbContract.COL_MESSAGE_TEXT);
-				Timestamp sentOn = rs.getTimestamp(DbContract.COL_TIME_SENT);
+				while (rs.next()) {
+					int senderID = rs.getInt(DbContract.COL_SENDER_ID);
+					String txt = rs.getString(DbContract.COL_MESSAGE_TEXT);
+					Timestamp sentOn = rs.getTimestamp(DbContract.COL_TIME_SENT);
 
-				Message msg = new Message(senderID, receiverID, txt, sentOn);
+					Message msg = new Message(senderID, receiverID, txt, sentOn);
 
-				result.add(msg);
+					result.add(msg);
+				}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
 
 		} catch (SQLException e) {
@@ -625,30 +671,31 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 				+ DbContract.COL_RECEIVER_ID + " = ? AND c." + DbContract.COL_CHALLANGE_SEEN + " = ? AND c."
 				+ DbContract.COL_CHALLANGE_ACCEPTED + " = ?";
 
-		PreparedStatement ps = prepareSelectStatementWith("*", tables, condition);
+		String query = prepareSelectStatementWith("*", tables, condition);
 
-		try {
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
 			ps.setInt(1, receiverID);
 			ps.setBoolean(2, challangeSeen);
 			ps.setBoolean(3, challangeAccepted);
 
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+			try (ResultSet rs = ps.executeQuery()) {
 
-		try {
-			ResultSet rs = ps.executeQuery();
+				while (rs.next()) {
+					int senderID = rs.getInt(DbContract.COL_SENDER_ID);
+					int quizID = rs.getInt(DbContract.COL_QUIZ_ID);
+					String txt = rs.getString(DbContract.COL_MESSAGE_TEXT);
+					Timestamp sentOn = rs.getTimestamp(DbContract.COL_TIME_SENT);
 
-			while (rs.next()) {
-				int senderID = rs.getInt(DbContract.COL_SENDER_ID);
-				int quizID = rs.getInt(DbContract.COL_QUIZ_ID);
-				String txt = rs.getString(DbContract.COL_MESSAGE_TEXT);
-				Timestamp sentOn = rs.getTimestamp(DbContract.COL_TIME_SENT);
+					Challenge msg = new Challenge(senderID, receiverID, quizID, txt, sentOn, challangeSeen,
+							challangeAccepted);
 
-				Challenge msg = new Challenge(senderID, receiverID, quizID, txt, sentOn, challangeSeen,
-						challangeAccepted);
+					result.add(msg);
+				}
 
-				result.add(msg);
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
 
 		} catch (SQLException e) {
@@ -661,20 +708,19 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	public int insertMessage(Message msg) {
 		String[] cols = { DbContract.COL_SENDER_ID, DbContract.COL_RECEIVER_ID, DbContract.COL_TIME_SENT,
 				DbContract.COL_MESSAGE_TEXT };
-		PreparedStatement ps = prepareInsertStatementWith(DbContract.TABLE_MESSAGES, cols);
 
-		try {
+		String query = prepareInsertStatementWith(DbContract.TABLE_MESSAGES, cols);
+
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
 			ps.setInt(1, msg.getSender());
 			ps.setInt(2, msg.getReceiver());
 			ps.setTimestamp(3, msg.getTime());
 			ps.setString(4, msg.getText());
 
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		try {
 			ps.executeUpdate();
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -691,46 +737,41 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	private void insertChallengePart(Challenge challenge) {
 		String[] cols = { DbContract.COL_MESSAGE_ID, DbContract.COL_QUIZ_ID, DbContract.COL_CHALLANGE_SEEN,
 				DbContract.COL_CHALLANGE_ACCEPTED };
-		PreparedStatement ps = prepareInsertStatementWith(DbContract.TABLE_CHALLENGES, cols);
 
-		try {
+		String query = prepareInsertStatementWith(DbContract.TABLE_CHALLENGES, cols);
+
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
 			ps.setInt(1, challenge.getMsgID());
 			ps.setInt(2, challenge.getQuiz());
 			ps.setBoolean(3, challenge.challengeSeen());
 			ps.setBoolean(4, challenge.challengeAccepted());
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
 
-		try {
 			ps.executeUpdate();
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
-	
-	public void addAnnouncement(Announcement ann){
-		System.out.println("Entered DAO");
-		String[] cols = { DbContract.COL_ANNOUNCER_ID, DbContract.COL_ANNOUNCED_ON, DbContract.COL_ANNOUNCEMENT_TEXT};
-		
-		PreparedStatement ps = prepareInsertStatementWith(DbContract.TABLE_ANNOUNCEMENTS, cols);
-		try {
+
+	public void addAnnouncement(Announcement ann) {
+		String[] cols = { DbContract.COL_ANNOUNCER_ID, DbContract.COL_ANNOUNCED_ON, DbContract.COL_ANNOUNCEMENT_TEXT };
+
+		String query = prepareInsertStatementWith(DbContract.TABLE_ANNOUNCEMENTS, cols);
+
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
 			ps.setInt(1, ann.getSender());
 			ps.setTimestamp(2, ann.getTime());
 			ps.setString(3, ann.getText());
-			
+
+			ps.executeUpdate();
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
-		try {
-			ps.executeUpdate();
-			System.out.println("Success! announcement inseted");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		
 	}
 }

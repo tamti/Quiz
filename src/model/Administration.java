@@ -8,9 +8,7 @@ public class Administration extends AccountManager {
 	
 
 	public void addAnnouncement(String announcement, String username) {
-		System.out.println("enterd Administration");
 		User ad = getUser(username);
-		System.out.println("got user");
 		int ad_id = ad.getID();
 		Announcement ann = new Announcement(ad_id, announcement);
 		uDao.addAnnouncement(ann);

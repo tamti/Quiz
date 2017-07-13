@@ -71,7 +71,7 @@ public class DbContract {
 	public static final String COL_TAKE_ON = "taken_on";
 	public static final String COL_USED_TIME = "used_time_in_seconds";
 	public static final String COL_NUM_CORRECT_ANSWERS = "num_correct_answers";
-	public static final String COL_NUM_RECIEVED_POINTS = "num_recieved_points";
+	public static final String COL_NUM_RECIEVED_POINTS = "num_received_points";
 	public static final String COL_HAS_ANSWERS_TO_CHECK = "some_answers_need_checking";
 	
 	public static final String TABLE_MESSAGES = "messages";

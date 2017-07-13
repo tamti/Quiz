@@ -1,5 +1,6 @@
 package databaseManagement;
 
+import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -25,40 +26,39 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 	public Quiz getQuizByID(int ID) {
 		Quiz result = null;
 
-		PreparedStatement ps = null;
-
 		String condition = DbContract.COL_QUIZ_ID + " = ?";
 
-		ps = prepareSelectStatementWith("*", DbContract.TABLE_QUIZZES, condition);
+		String query = prepareSelectStatementWith("*", DbContract.TABLE_QUIZZES, condition);
 
-		try {
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
 			ps.setInt(1, ID);
 
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+			try (ResultSet rs = ps.executeQuery()) {
 
-		try {
-			ResultSet rs = ps.executeQuery();
+				if (rs.next()) {
+					int quizID = rs.getInt(DbContract.COL_QUIZ_ID);
+					int ownerID = rs.getInt(DbContract.COL_AUTHOR_ID);
+					String quizName = rs.getString(DbContract.COL_QUIZ_NAME);
+					String description = rs.getString(DbContract.COL_QUIZ_DESCRIPTION);
+					Date dateCreated = rs.getDate(DbContract.COL_DATE_CREATED);
+					boolean answersImmediately = rs.getBoolean(DbContract.COL_SHOW_ANSWERS_IMMEDIATELY);
+					boolean isOnePage = rs.getBoolean(DbContract.COL_QUESTIONS_ON_SAME_PAGE);
+					int allowedTime = rs.getInt(DbContract.COL_MAX_ALLOWED_TIME);
 
-			if (rs.next()) {
-				int quizID = rs.getInt(DbContract.COL_QUIZ_ID);
-				int ownerID = rs.getInt(DbContract.COL_AUTHOR_ID);
-				String quizName = rs.getString(DbContract.COL_QUIZ_NAME);
-				String description = rs.getString(DbContract.COL_QUIZ_DESCRIPTION);
-				Date dateCreated = rs.getDate(DbContract.COL_DATE_CREATED);
-				boolean answersImmediately = rs.getBoolean(DbContract.COL_SHOW_ANSWERS_IMMEDIATELY);
-				boolean isOnePage = rs.getBoolean(DbContract.COL_QUESTIONS_ON_SAME_PAGE);
-				int allowedTime = rs.getInt(DbContract.COL_MAX_ALLOWED_TIME);
+					result = new Quiz(quizID, ownerID, quizName, description, dateCreated, answersImmediately,
+							isOnePage, allowedTime);
 
-				result = new Quiz(quizID, ownerID, quizName, description, dateCreated, answersImmediately, isOnePage,
-						allowedTime);
+					SortedMap<Integer, Question> questions = getAllQuestionsFor(quizID);
 
-				SortedMap<Integer, Question> questions = getAllQuestionsFor(quizID);
+					result.setQuestions(questions);
 
-				result.setQuestions(questions);
-
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -78,45 +78,46 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 		String condition = "qq." + DbContract.COL_QUIZ_ID + " = ? and qq." + DbContract.COL_QUESTION_ID + " = " + "q."
 				+ DbContract.COL_QUESTION_ID;
 
-		PreparedStatement ps = prepareSelectStatementWith("*", tables, condition);
+		String query = prepareSelectStatementWith("*", tables, condition);
 
-		try {
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
 			ps.setInt(1, quizID);
+
+			try (ResultSet rs = ps.executeQuery()) {
+
+				while (rs.next()) {
+					int questionID = rs.getInt(DbContract.COL_QUESTION_ID);
+					String questionStr = rs.getString(DbContract.COL_QUESTION);
+
+					String qTypeName = rs.getString(DbContract.COL_QUESTION_TYPE);
+					QuestionType qType = QuestionType.valueOf(qTypeName);
+
+					double maxPoints = rs.getDouble(DbContract.COL_MAX_POINTS);
+					int photoID = rs.getInt(DbContract.COL_PHOTO_ID);
+
+					Question current = new Question(questionID, questionStr, qType, maxPoints);
+
+					if (photoID > 0) {
+						// String photoFileName =
+						// rs.getString(DbContract.COL_PHOTO_FILE);
+						current.setPhotoID(photoID);
+					}
+
+					SortedMap<Integer, Answer> answers = getAllAnswersFor(questionID);
+
+					current.setAnswers(answers);
+
+					res.put(current.getID(), current);
+				}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
 
 		} catch (SQLException e1) {
 			e1.printStackTrace();
-		}
-
-		try {
-			ResultSet rs = ps.executeQuery();
-
-			while (rs.next()) {
-				int questionID = rs.getInt(DbContract.COL_QUESTION_ID);
-				String questionStr = rs.getString(DbContract.COL_QUESTION);
-
-				String qTypeName = rs.getString(DbContract.COL_QUESTION_TYPE);
-				QuestionType qType = QuestionType.valueOf(qTypeName);
-
-				double maxPoints = rs.getDouble(DbContract.COL_MAX_POINTS);
-				int photoID = rs.getInt(DbContract.COL_PHOTO_ID);
-
-				Question current = new Question(questionID, questionStr, qType, maxPoints);
-
-				if (photoID > 0) {
-					// String photoFileName =
-					// rs.getString(DbContract.COL_PHOTO_FILE);
-					current.setPhotoID(photoID);
-				}
-
-				SortedMap<Integer, Answer> answers = getAllAnswersFor(questionID);
-
-				current.setAnswers(answers);
-
-				res.put(current.getID(), current);
-			}
-
-		} catch (SQLException e) {
-			e.printStackTrace();
 		}
 
 		return res;
@@ -133,35 +134,37 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 		String condition = "aq." + DbContract.COL_QUESTION_ID + " = ? and aq." + DbContract.COL_ANSWER_ID + " = a."
 				+ DbContract.COL_ANSWER_ID;
 
-		PreparedStatement ps = prepareSelectStatementWith("*", tables, condition);
+		String query = prepareSelectStatementWith("*", tables, condition);
 
-		try {
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
 			ps.setInt(1, questionID);
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
 
-		try {
-			ResultSet rs = ps.executeQuery();
+			try (ResultSet rs = ps.executeQuery()) {
 
-			while (rs.next()) {
-				int answerID = rs.getInt(DbContract.COL_ANSWER_ID);
-				String answerStr = rs.getString(DbContract.COL_ANSWER);
-				boolean isCorrect = rs.getBoolean(DbContract.COL_ANSWER_IS_CORRECT);
+				while (rs.next()) {
+					int answerID = rs.getInt(DbContract.COL_ANSWER_ID);
+					String answerStr = rs.getString(DbContract.COL_ANSWER);
+					boolean isCorrect = rs.getBoolean(DbContract.COL_ANSWER_IS_CORRECT);
 
-				Answer current = new Answer(answerID, answerStr, isCorrect);
+					Answer current = new Answer(answerID, answerStr, isCorrect);
 
-				int answerNO = rs.getInt(DbContract.COL_ANSWER_NO);
+					int answerNO = rs.getInt(DbContract.COL_ANSWER_NO);
 
-				if (answerNO > 0) {
-					current.setNO(answerNO);
+					if (answerNO > 0) {
+						current.setNO(answerNO);
+					}
+
+					res.put(current.getID(), current);
 				}
 
-				res.put(current.getID(), current);
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
 
-		} catch (SQLException e) {
-			e.printStackTrace();
+		} catch (SQLException e1) {
+			e1.printStackTrace();
 		}
 
 		return res;
@@ -181,24 +184,25 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 		String table = DbContract.TABLE_USER_ANSWERS;
 		String condition = DbContract.COL_QUESTION_ID + " = ? and " + DbContract.COL_USER_ID + " = ?";
 
-		PreparedStatement ps = prepareSelectStatementWith(DbContract.COL_USER_ANSWER, table, condition);
+		String query = prepareSelectStatementWith(DbContract.COL_USER_ANSWER, table, condition);
 
-		try {
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
 			ps.setInt(1, questionID);
 			ps.setInt(2, userID);
 
+			try (ResultSet rs = ps.executeQuery()) {
+
+				if (rs.next()) {
+					result = rs.getString(DbContract.COL_USER_ANSWER);
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
 		} catch (SQLException e1) {
 			e1.printStackTrace();
-		}
-
-		try {
-			ResultSet rs = ps.executeQuery();
-
-			if (rs.next()) {
-				result = rs.getString(DbContract.COL_USER_ANSWER);
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
 		}
 
 		return result;
@@ -213,10 +217,11 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 
 		String columns = DbContract.COL_QUIZ_ID + ", " + DbContract.COL_QUIZ_NAME;
 
-		PreparedStatement ps = prepareSelectStatementWith(columns, DbContract.TABLE_QUIZZES, "");
+		String query = prepareSelectStatementWith(columns, DbContract.TABLE_QUIZZES, "");
 
-		try {
-			ResultSet rs = ps.executeQuery();
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query);
+				ResultSet rs = ps.executeQuery()) {
 
 			while (rs.next()) {
 				int ID = rs.getInt(DbContract.COL_QUIZ_ID);
@@ -243,9 +248,11 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 				DbContract.COL_DATE_CREATED, DbContract.COL_SHOW_ANSWERS_IMMEDIATELY,
 				DbContract.COL_QUESTIONS_ON_SAME_PAGE, DbContract.COL_MAX_ALLOWED_TIME };
 
-		PreparedStatement ps = prepareInsertStatementWith(DbContract.TABLE_QUIZZES, cols);
+		String query = prepareInsertStatementWith(DbContract.TABLE_QUIZZES, cols);
 
-		try {
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
 			ps.setString(1, newQuiz.getQuizName());
 			ps.setString(2, newQuiz.getDescription());
 			ps.setInt(3, newQuiz.getOwnerID());
@@ -254,12 +261,8 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 			ps.setBoolean(6, newQuiz.isOnePage());
 			ps.setInt(7, newQuiz.getAllowedTime());
 
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		try {
 			ps.executeUpdate();
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -279,21 +282,23 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 		String[] questionCols = { DbContract.COL_QUESTION, DbContract.COL_QUESTION_TYPE_ID, DbContract.COL_PHOTO_ID,
 				DbContract.COL_MAX_POINTS };
 
-		PreparedStatement ps1 = prepareInsertStatementWith(DbContract.TABLE_QUESTIONS, questionCols);
+		String query1 = prepareInsertStatementWith(DbContract.TABLE_QUESTIONS, questionCols);
 
-		try {
-			ps1.setString(1, newQuestion.getQuestionStr());
-			ps1.setInt(2, newQuestion.getType().getID());
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query1)) {
+
+			ps.setString(1, newQuestion.getQuestionStr());
+			ps.setInt(2, newQuestion.getType().getID());
 
 			if (newQuestion.hasPhoto()) {
-				ps1.setInt(3, newQuestion.getPhotoID());
+				ps.setInt(3, newQuestion.getPhotoID());
 			} else {
-				ps1.setNull(3, Types.INTEGER);
+				ps.setNull(3, Types.INTEGER);
 			}
 
-			ps1.setDouble(4, newQuestion.getMaxPoints());
+			ps.setDouble(4, newQuestion.getMaxPoints());
 
-			ps1.executeUpdate();
+			ps.executeUpdate();
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -301,15 +306,17 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 
 		String[] quizQuestionsCols = { DbContract.COL_QUIZ_ID, DbContract.COL_QUESTION_ID };
 
-		PreparedStatement ps2 = prepareInsertStatementWith(DbContract.TABLE_QUIZ_QUESTIONS, quizQuestionsCols);
+		String query2 = prepareInsertStatementWith(DbContract.TABLE_QUIZ_QUESTIONS, quizQuestionsCols);
 
 		int IdOfNewQuestion = getLastIdOf(DbContract.TABLE_QUESTIONS, DbContract.COL_QUESTION_ID);
 
-		try {
-			ps2.setInt(1, quizID);
-			ps2.setInt(2, IdOfNewQuestion);
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query2)) {
 
-			ps2.executeUpdate();
+			ps.setInt(1, quizID);
+			ps.setInt(2, IdOfNewQuestion);
+
+			ps.executeUpdate();
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -329,19 +336,21 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 	public int insertAnswer(int questionID, Answer newAnswer) {
 		String[] answerCols = { DbContract.COL_ANSWER, DbContract.COL_ANSWER_IS_CORRECT, DbContract.COL_ANSWER_NO };
 
-		PreparedStatement ps1 = prepareInsertStatementWith(DbContract.TABLE_ANSWERS, answerCols);
+		String query1 = prepareInsertStatementWith(DbContract.TABLE_ANSWERS, answerCols);
 
-		try {
-			ps1.setString(1, newAnswer.getAnswerStr());
-			ps1.setBoolean(2, newAnswer.isCorrect());
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query1)) {
+
+			ps.setString(1, newAnswer.getAnswerStr());
+			ps.setBoolean(2, newAnswer.isCorrect());
 
 			if (newAnswer.hasNO()) {
-				ps1.setInt(3, newAnswer.getNO());
+				ps.setInt(3, newAnswer.getNO());
 			} else {
-				ps1.setNull(3, Types.INTEGER);
+				ps.setNull(3, Types.INTEGER);
 			}
 
-			ps1.executeUpdate();
+			ps.executeUpdate();
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -349,15 +358,18 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 
 		String[] questionAnswersCols = { DbContract.COL_QUESTION_ID, DbContract.COL_ANSWER_ID };
 
-		PreparedStatement ps2 = prepareInsertStatementWith(DbContract.TABLE_ANSWERS_TO_QUESTIONS, questionAnswersCols);
+		String query2 = prepareInsertStatementWith(DbContract.TABLE_ANSWERS_TO_QUESTIONS, questionAnswersCols);
 
 		int idOfNewAnswer = getLastIdOf(DbContract.TABLE_ANSWERS, DbContract.COL_ANSWER_ID);
 
-		try {
-			ps2.setInt(1, questionID);
-			ps2.setInt(2, idOfNewAnswer);
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query2);
+				ResultSet rs = ps.executeQuery()) {
 
-			ps2.executeUpdate();
+			ps.setInt(1, questionID);
+			ps.setInt(2, idOfNewAnswer);
+
+			ps.executeUpdate();
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -378,9 +390,11 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 		String setCols = DbContract.COL_QUESTION + " = ?, " + DbContract.COL_MAX_POINTS + " = ?";
 		String condition = DbContract.COL_QUESTION_ID + " = ?";
 
-		PreparedStatement ps = prepareUpdateStatementWith(DbContract.TABLE_QUESTIONS, setCols, condition);
+		String query = prepareUpdateStatementWith(DbContract.TABLE_QUESTIONS, setCols, condition);
 
-		try {
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
 			ps.setString(1, updatedQuestionStr);
 			ps.setDouble(2, updatedMaxPoints);
 			ps.setInt(3, questionID);
@@ -403,9 +417,11 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 		String setCols = DbContract.COL_ANSWER + " = ?, " + DbContract.COL_ANSWER_NO + " = ?";
 		String condition = DbContract.COL_ANSWER_ID + " = ?";
 
-		PreparedStatement ps = prepareUpdateStatementWith(DbContract.TABLE_QUESTIONS, setCols, condition);
+		String query = prepareUpdateStatementWith(DbContract.TABLE_QUESTIONS, setCols, condition);
 
-		try {
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
 			ps.setString(1, updatedAnswer);
 			ps.setInt(2, newNO);
 			ps.setInt(3, answerID);
@@ -441,9 +457,11 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 	private void removeFromTableWithID(String table, String column, int ID) {
 		String condition = column + " = ?";
 
-		PreparedStatement ps = prepareDeleteStatementWith(table, condition);
+		String query = prepareDeleteStatementWith(table, condition);
 
-		try {
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
 			ps.setInt(1, ID);
 
 			ps.executeUpdate();

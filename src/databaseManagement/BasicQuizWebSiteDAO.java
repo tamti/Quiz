@@ -1,31 +1,16 @@
 package databaseManagement;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class BasicQuizWebSiteDAO {
 
 	/**
-	 * 
-	 * @param query
-	 * @return PreparedStatement prepared with given [query]
-	 */
-	protected PreparedStatement getPreparedStatementWith(String query) {
-		try {
-			Connection connection = DataSource.getDataSource().getConnection();
-
-			return connection.prepareStatement(query);
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		return null;
-	}
-
-	/**
-	 * Returns a PreparedStatement with select query constructed with the given
-	 * parameters. "condition" is optional, "where" condition will be omitted,
-	 * if "condition" is set to empty string.
+	 * Returns a select query constructed with the given parameters. "condition"
+	 * is optional, "where" condition will be omitted, if "condition" is set to
+	 * empty string.
 	 * 
 	 * Client should set all parameters (if any) for the execution of the query
 	 * by himself and than use executeQuery() or executeUpdate()
@@ -39,10 +24,10 @@ public class BasicQuizWebSiteDAO {
 	 *            String representing condition of selection given columns from
 	 *            the given table
 	 * 
-	 * @Return a PreparedStatement returned by the query: "select [columns] from
-	 *         [table] where [condition];"
+	 * @Return String representing select query: "select [columns] from [table]
+	 *         where [condition];"
 	 */
-	protected PreparedStatement prepareSelectStatementWith(String columns, String tables, String condition) {
+	protected String prepareSelectStatementWith(String columns, String tables, String condition) {
 		String query = "select " + columns + " from " + tables;
 
 		if (!condition.isEmpty())
@@ -50,13 +35,13 @@ public class BasicQuizWebSiteDAO {
 
 		query += ";";
 
-		return getPreparedStatementWith(query);
+		return query;
 	}
 
 	/**
-	 * Returns a PreparedStatement with update query constructed with the given
-	 * parameters. "condition" is optional, "where" condition will be omitted,
-	 * if "condition" is set to empty string.
+	 * Returns a update statement query constructed with the given parameters.
+	 * "condition" is optional, "where" condition will be omitted, if
+	 * "condition" is set to empty string.
 	 * 
 	 * Client should set all parameters (if any) for the execution of the query
 	 * by himself and than use executeQuery() or executeUpdate()
@@ -68,10 +53,10 @@ public class BasicQuizWebSiteDAO {
 	 *            columns in the table
 	 * @param condition
 	 *            String representing condition of update
-	 * @return a PreparedStatement for update made with the query: "update
-	 *         [table] set [setCols] (where [condition])"
+	 * @return String representing update query: "update [table] set [setCols]
+	 *         (where [condition])"
 	 */
-	protected PreparedStatement prepareUpdateStatementWith(String table, String setCols, String condition) {
+	protected String prepareUpdateStatementWith(String table, String setCols, String condition) {
 		String query = "update " + table + " set " + setCols;
 
 		if (!condition.isEmpty())
@@ -79,12 +64,11 @@ public class BasicQuizWebSiteDAO {
 
 		query += ";";
 
-		return getPreparedStatementWith(query);
+		return query;
 	}
 
 	/**
-	 * Returns PreparedStatement with the insert query constructed with given
-	 * parameters.
+	 * Returns an insert query constructed with given parameters.
 	 * 
 	 * Client should set all parameters (if any) for the execution of the query
 	 * by himself and than use executeQuery()
@@ -95,10 +79,10 @@ public class BasicQuizWebSiteDAO {
 	 *            array of string representing all columns into which we wish to
 	 *            insert some values
 	 * 
-	 * @Return a PreparedStatement for insertion into database with the query:
-	 *         "insert into [table] ( [cols[i],..] ) values ( [?,..] )"
+	 * @Return String representing insertion query: "insert into [table] (
+	 *         [cols[i],..] ) values ( [?,..] )"
 	 */
-	protected PreparedStatement prepareInsertStatementWith(String table, String[] cols) {
+	protected String prepareInsertStatementWith(String table, String[] cols) {
 		String query = "insert into " + table + " (" + String.join(",", cols) + ") values (?";
 
 		for (int i = 0; i < cols.length - 1; i++) {
@@ -107,12 +91,11 @@ public class BasicQuizWebSiteDAO {
 
 		query += ");";
 
-		return getPreparedStatementWith(query);
+		return query;
 	}
 
 	/**
-	 * Returns PreparedStatement with the delete query constructed with given
-	 * parameters.
+	 * Returns deletion query constructed with given parameters.
 	 * 
 	 * Parameter "condition" cannot be omitted!
 	 * 
@@ -124,13 +107,11 @@ public class BasicQuizWebSiteDAO {
 	 * @param condition
 	 *            a condition with which deletion will be made
 	 * 
-	 * @Return a PreparedStatement for deletion from table with the query:
-	 *         "delete from [table] where [condition]
+	 * @Return String representing deletion query: "delete from [table] where
+	 *         [condition]
 	 */
-	protected PreparedStatement prepareDeleteStatementWith(String table, String condition) {
-		String query = "delete from " + table + " where " + condition + ";";
-
-		return getPreparedStatementWith(query);
+	protected String prepareDeleteStatementWith(String table, String condition) {
+		return "delete from " + table + " where " + condition + ";";
 	}
 
 	/**
@@ -144,13 +125,16 @@ public class BasicQuizWebSiteDAO {
 	 * @return "select Max([idColumnName]) from [table]"
 	 */
 	protected int getLastIdOf(String table, String idColumnName) {
-		String col = "max(" + idColumnName + ") as lastID";
-		PreparedStatement ps = prepareSelectStatementWith(col, table, "");
-
 		int result = 0;
 
-		try {
-			ResultSet rs = ps.executeQuery();
+		String col = "max(" + idColumnName + ") as lastID";
+
+		String query = prepareSelectStatementWith(col, table, "");
+
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query);
+				ResultSet rs = ps.executeQuery()) {
+			
 			if (rs.next()) {
 				result = rs.getInt("lastID");
 			}
@@ -158,7 +142,7 @@ public class BasicQuizWebSiteDAO {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-
+		
 		return result;
 	}
 

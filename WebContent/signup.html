@@ -5,24 +5,25 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>		
 
 <meta charset="ISO-8859-1">
-	<title>Registration </title>
+	<title>Sign up</title>
 		<link rel="stylesheet" href="css/signUpStyle.css">
 
 </head>
 <body>
-				
-					<div class="create-quiz">
-				      <p>come on create quiz! <a href="createQuiz.html"> Click here to create quiz</a></p>
-				    </div>
+
+<h1>Create a new account</h1>
+
 					 <form method="post" action="RegistrationServlet" type="text/css" style="margin-top:80px; padding-left:300px;">
-				        <p id="name">
+				        <p>
 					        <input type="text" name="FirstName"   placeholder="First Name">
 					        <input type="text" name="LastName"  placeholder="Last Name">
 				        </p>
-				        <p><input type="text" id="uname" name="Username" placeholder="Username" size="getSize()"
+				        <p>
+				        	<input type="text" id="uname" name="Username" placeholder="Username" size="getSize()"
 				        	pattern="^[a-zA-Z][a-zA-Z0-9-_\.]{1,30}$" 
 				        	title="Only letters and numbers, plus dashes and hyphens are allowed. At most 30 characters" 
-				        	required></p>
+				        	required>
+				        </p>
 				        <p>
 				        	<input type="email" id="mail1" name="Mail" placeholder="Email" required>
 				        	<input type="email" id="mail2" name="Mail" placeholder="Re-enter email" required>
@@ -34,13 +35,13 @@
 				        	<input type="password" id="pass2" placeholder="Re-enter password" required>
 				        </p>
 				       	
-				        <p class="submit"><input type="submit" name="commit" value="Sign Up"></p>
+				        <p class="submit"><input type="submit" name="commit" value="Create account"></p>
 				        				        
 				      </form>
+				      
 					<div class = "poto">
 						<img src="sign-up.jpg"/>
 					</div>
-					
 					
 <script>
 	var password = document.getElementById("pass1"), 

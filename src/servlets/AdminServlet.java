@@ -46,9 +46,7 @@ public class AdminServlet extends HttpServlet {
 		String announcement = request.getParameter("announcement");
 		HttpSession session = request.getSession();
 		//session.setAttribute("announcement",announcement);
-		System.out.println(announcement);
 		String username = (String) session.getAttribute("username");
-		System.out.println(username);
 
 		admin.addAnnouncement(announcement,username);
 		

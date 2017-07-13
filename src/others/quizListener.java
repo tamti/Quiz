@@ -1,5 +1,6 @@
 package others;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextAttributeEvent;
 import javax.servlet.ServletContextAttributeListener;
 import javax.servlet.ServletContextEvent;
@@ -13,6 +14,8 @@ import javax.servlet.http.HttpSessionAttributeListener;
 import javax.servlet.http.HttpSessionBindingEvent;
 import javax.servlet.http.HttpSessionEvent;
 import javax.servlet.http.HttpSessionListener;
+
+import model.QuizManager;
 
 /**
  * Application Lifecycle Listener implementation class quizListener
@@ -60,7 +63,9 @@ public class quizListener implements ServletContextListener, ServletContextAttri
      * @see ServletContextListener#contextInitialized(ServletContextEvent)
      */
     public void contextInitialized(ServletContextEvent arg0)  { 
-         // TODO Auto-generated method stub
+    	ServletContext servletCont = arg0.getServletContext();
+    	QuizManager qMan = new QuizManager();
+    	servletCont.setAttribute("quizManager", qMan);
     }
 
 	/**

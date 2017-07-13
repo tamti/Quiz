@@ -43,29 +43,25 @@ public class RegistrationServlet extends HttpServlet {
 		String email = request.getParameter("Mail");
 		String username = request.getParameter("Username");
 		String password = request.getParameter("Password");
-		
+
 		HttpSession session = request.getSession();
 
-		session.setAttribute("name",firstName);
-		session.setAttribute("username",username);
+		session.setAttribute("name", firstName);
+		session.setAttribute("username", username);
 
-		/**if (accountMan.usernameExists(username)) {
+		if (accountMan.usernameExists(username)) {
 
-			RequestDispatcher dispatch = request.getRequestDispatcher("nameInUse.html");
+			RequestDispatcher dispatch = request.getRequestDispatcher("signup.html");
 			dispatch.forward(request, response);
 
-		}*/  if (password.length() < 6) {
-
-			request.setAttribute("signupPasError","Short password, It must be at least 6 characters!");
-			request.getRequestDispatcher("signup.html").forward(request, response);
 		} else if (accountMan.createAccount(firstName, lastName, email, username, password)) {
-			
+
 			RequestDispatcher dispatch = request.getRequestDispatcher("homepage.jsp");
 			dispatch.forward(request, response);
 
 		} else {
 
-			RequestDispatcher dispatch = request.getRequestDispatcher("");
+			RequestDispatcher dispatch = request.getRequestDispatcher("signup.html");
 			dispatch.forward(request, response);
 		}
 	}

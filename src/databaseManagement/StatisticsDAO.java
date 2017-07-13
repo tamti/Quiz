@@ -1,5 +1,6 @@
 package databaseManagement;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -72,33 +73,39 @@ public class StatisticsDAO extends BasicQuizWebSiteDAO {
 			condition = condition + " AND " + idCols[i] + " = ?";
 		}
 
-		PreparedStatement ps = prepareSelectStatementWith("*", table, condition);
+		String query = prepareSelectStatementWith("*", table, condition);
 
-		for (int i = 0; i < idCols.length; i++) {
-			try {
-				ps.setInt(i + 1, IDs[i]);
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
+			for (int i = 0; i < idCols.length; i++) {
+				try {
+					ps.setInt(i + 1, IDs[i]);
+
+				} catch (SQLException e) {
+					e.printStackTrace();
+				}
+			}
+
+			try (ResultSet rs = ps.executeQuery()) {
+
+				while (rs.next()) {
+					int quizID = rs.getInt(DbContract.COL_QUIZ_ID);
+					int userID = rs.getInt(DbContract.COL_USER_ID);
+					Timestamp takenOn = rs.getTimestamp(DbContract.COL_TAKE_ON);
+					int usedTime = rs.getInt(DbContract.COL_USED_TIME);
+					int numCorrectAnswers = rs.getInt(DbContract.COL_NUM_CORRECT_ANSWERS);
+					double numEarnedPoints = rs.getDouble(DbContract.COL_NUM_RECIEVED_POINTS);
+					boolean notYetFullyGraded = rs.getBoolean(DbContract.COL_HAS_ANSWERS_TO_CHECK);
+
+					Statistics current = new Statistics(quizID, userID, takenOn, usedTime, numCorrectAnswers,
+							numEarnedPoints, notYetFullyGraded);
+
+					result.add(current);
+				}
 
 			} catch (SQLException e) {
 				e.printStackTrace();
-			}
-		}
-
-		try {
-			ResultSet rs = ps.executeQuery();
-
-			while (rs.next()) {
-				int quizID = rs.getInt(DbContract.COL_QUIZ_ID);
-				int userID = rs.getInt(DbContract.COL_USER_ID);
-				Timestamp takenOn = rs.getTimestamp(DbContract.COL_TAKE_ON);
-				int usedTime = rs.getInt(DbContract.COL_USED_TIME);
-				int numCorrectAnswers = rs.getInt(DbContract.COL_NUM_CORRECT_ANSWERS);
-				double numEarnedPoints = rs.getDouble(DbContract.COL_NUM_RECIEVED_POINTS);
-				boolean notYetFullyGraded = rs.getBoolean(DbContract.COL_HAS_ANSWERS_TO_CHECK);
-
-				Statistics current = new Statistics(quizID, userID, takenOn, usedTime, numCorrectAnswers,
-						numEarnedPoints, notYetFullyGraded);
-
-				result.add(current);
 			}
 
 		} catch (SQLException e) {
@@ -121,9 +128,11 @@ public class StatisticsDAO extends BasicQuizWebSiteDAO {
 				DbContract.COL_USED_TIME, DbContract.COL_NUM_CORRECT_ANSWERS, DbContract.COL_NUM_RECIEVED_POINTS,
 				DbContract.COL_HAS_ANSWERS_TO_CHECK };
 
-		PreparedStatement ps = prepareInsertStatementWith(table, cols);
+		String query = prepareInsertStatementWith(table, cols);
 
-		try {
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
 			ps.setInt(1, stat.getQuizID());
 			ps.setInt(2, stat.getUserID());
 			ps.setTimestamp(3, stat.getTime());
@@ -131,6 +140,8 @@ public class StatisticsDAO extends BasicQuizWebSiteDAO {
 			ps.setInt(5, stat.getNumCorrectAnswers());
 			ps.setDouble(6, stat.getpoints());
 			ps.setBoolean(7, stat.needsGrading());
+
+			ps.executeUpdate();
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -161,9 +172,11 @@ public class StatisticsDAO extends BasicQuizWebSiteDAO {
 		String setCols = DbContract.COL_NUM_RECIEVED_POINTS + " = ? " + DbContract.COL_HAS_ANSWERS_TO_CHECK + " = ?";
 		String condition = DbContract.COL_QUIZ_ID + " = ? AND " + DbContract.COL_USER_ID + " = ?";
 
-		PreparedStatement ps = prepareUpdateStatementWith(DbContract.TABLE_QUIZ_STATS, setCols, condition);
+		String query = prepareUpdateStatementWith(DbContract.TABLE_QUIZ_STATS, setCols, condition);
 
-		try {
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
 			ps.setDouble(1, newScore);
 			ps.setBoolean(2, stillNeedsChecking);
 			ps.setInt(3, quizID);
