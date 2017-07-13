@@ -32,10 +32,10 @@ public class QuizManager {
 	 * @return newly created Quiz object
 	 */
 	public Quiz createQuiz(int ownerID, String quizName, String description, boolean answersImmediately,
-			boolean isOnePage, int allowedTimeInMinutes, int maxPoints) {
+			boolean isOnePage, int allowedTimeInMinutes) {
 		
 		Quiz newQuiz = new Quiz(ownerID, quizName, description, answersImmediately, isOnePage,
-				allowedTimeInMinutes, maxPoints);
+				allowedTimeInMinutes);
 
 		int newQuizID = qDao.insertQuiz(newQuiz);
 		newQuiz.setID(newQuizID);

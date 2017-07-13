@@ -16,13 +16,12 @@ public class Quiz implements Comparable<Quiz> {
 	private int allowedTimeInMinutes;
 	private boolean random;
 	private Date dateCreated;
-	private int maxPoints;
 	private SortedMap<Integer, Question> questions;
 	private int ownerID;
 	private SortedSet<Statistics> stats;
 
 	public Quiz(int ID, int ownerID, String quizName, String description, Date dateCreated, boolean answersImmediately,
-			boolean isOnePage, int allowedTimeInMinutes, int maxPoints) {
+			boolean isOnePage, int allowedTimeInMinutes) {
 		this.ID = ID;
 		this.ownerID = ownerID;
 		this.quizName = quizName;
@@ -31,17 +30,16 @@ public class Quiz implements Comparable<Quiz> {
 		this.showAnswersImmediately = answersImmediately;
 		this.isOnePage = isOnePage;
 		this.allowedTimeInMinutes = allowedTimeInMinutes;
-		this.maxPoints = maxPoints;
 
 		questions = new TreeMap<Integer, Question>();
 		stats = new TreeSet<Statistics>();
 	}
 
 	public Quiz(int ownerID, String quizName, String description, boolean answersImmediately, boolean isOnePage,
-			int allowedTimeInMinutes, int maxPoints) {
+			int allowedTimeInMinutes) {
 
 		this(-1, ownerID, quizName, description, new Date(Calendar.getInstance().getTimeInMillis()), answersImmediately,
-				isOnePage, allowedTimeInMinutes, maxPoints);
+				isOnePage, allowedTimeInMinutes);
 	}
 
 	public int getOwnerID() {
@@ -122,14 +120,6 @@ public class Quiz implements Comparable<Quiz> {
 
 	public void setDate(Date date) {
 		this.dateCreated = date;
-	}
-
-	public int getMaxPoints() {
-		return maxPoints;
-	}
-
-	public void setMaxPoints(int maxPoints) {
-		this.maxPoints = maxPoints;
 	}
 
 	public SortedSet<Statistics> getStats() {

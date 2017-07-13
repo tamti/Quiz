@@ -50,10 +50,9 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 				boolean answersImmediately = rs.getBoolean(DbContract.COL_SHOW_ANSWERS_IMMEDIATELY);
 				boolean isOnePage = rs.getBoolean(DbContract.COL_QUESTIONS_ON_SAME_PAGE);
 				int allowedTime = rs.getInt(DbContract.COL_MAX_ALLOWED_TIME);
-				int maxPoints = rs.getInt(DbContract.COL_MAX_POINTS);
 
 				result = new Quiz(quizID, ownerID, quizName, description, dateCreated, answersImmediately, isOnePage,
-						allowedTime, maxPoints);
+						allowedTime);
 
 				SortedMap<Integer, Question> questions = getAllQuestionsFor(quizID);
 
@@ -242,7 +241,7 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 	public int insertQuiz(Quiz newQuiz) {
 		String[] cols = { DbContract.COL_QUIZ_NAME, DbContract.COL_QUIZ_DESCRIPTION, DbContract.COL_AUTHOR_ID,
 				DbContract.COL_DATE_CREATED, DbContract.COL_SHOW_ANSWERS_IMMEDIATELY,
-				DbContract.COL_QUESTIONS_ON_SAME_PAGE, DbContract.COL_MAX_ALLOWED_TIME, DbContract.COL_MAX_POINTS };
+				DbContract.COL_QUESTIONS_ON_SAME_PAGE, DbContract.COL_MAX_ALLOWED_TIME };
 
 		PreparedStatement ps = prepareInsertStatementWith(DbContract.TABLE_QUIZZES, cols);
 
@@ -254,7 +253,6 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 			ps.setBoolean(5, newQuiz.showAnswersImmediately());
 			ps.setBoolean(6, newQuiz.isOnePage());
 			ps.setInt(7, newQuiz.getAllowedTime());
-			ps.setInt(8, newQuiz.getMaxPoints());
 
 		} catch (SQLException e) {
 			e.printStackTrace();
