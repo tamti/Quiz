@@ -1,8 +1,6 @@
 package model;
 
-import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 import others.PhotoAble;
@@ -17,7 +15,7 @@ public class User extends PhotoAble implements Comparable<User> {
 	private boolean isAdmin;
 	private SortedSet<String> friends;
 	private SortedSet<String> friendRequests;
-	private SortedMap<Integer, Statistics> stats;
+	private SortedSet<Statistics> stats;
 
 	public User(String firstName, String lastName, String email, String username, String password,
 			SortedSet<String> friends, SortedSet<String> friendRequests) {
@@ -30,7 +28,7 @@ public class User extends PhotoAble implements Comparable<User> {
 		this.friends = friends;
 		this.friendRequests = friendRequests;
 		isAdmin = false;
-		stats = new TreeMap<Integer, Statistics>();
+		stats = new TreeSet<Statistics>();
 	}
 
 	public User(String firstName, String lastName, String email, String username, String password) {
@@ -135,11 +133,11 @@ public class User extends PhotoAble implements Comparable<User> {
 		friends.remove(friend);
 	}
 
-	public SortedMap<Integer, Statistics> getStats() {
+	public SortedSet<Statistics> getStats() {
 		return stats;
 	}
 
-	public void setStats(SortedMap<Integer, Statistics> stats) {
+	public void setStats(SortedSet<Statistics> stats) {
 		this.stats = stats;
 	}
 

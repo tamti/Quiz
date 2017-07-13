@@ -1,9 +1,9 @@
 package databaseManagement;
 
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -64,12 +64,12 @@ public class StatisticsDAO extends BasicQuizWebSiteDAO {
 	private SortedSet<Statistics> getStatsByIdOf(String[] idCols, int[] IDs) {
 		SortedSet<Statistics> result = new TreeSet<Statistics>();
 
-		String table = DbContract.TABLE_QUIZ_STATS + "s";
+		String table = DbContract.TABLE_QUIZ_STATS;
 
 		String condition = "1 = 1";
 
 		for (int i = 0; i < idCols.length; i++) {
-			condition = condition + " AND s." + idCols[i] + " = ?";
+			condition = condition + " AND " + idCols[i] + " = ?";
 		}
 
 		PreparedStatement ps = prepareSelectStatementWith("*", table, condition);
@@ -89,7 +89,7 @@ public class StatisticsDAO extends BasicQuizWebSiteDAO {
 			while (rs.next()) {
 				int quizID = rs.getInt(DbContract.COL_QUIZ_ID);
 				int userID = rs.getInt(DbContract.COL_USER_ID);
-				Date takenOn = rs.getDate(DbContract.COL_TAKE_ON);
+				Timestamp takenOn = rs.getTimestamp(DbContract.COL_TAKE_ON);
 				int usedTime = rs.getInt(DbContract.COL_USED_TIME);
 				int numCorrectAnswers = rs.getInt(DbContract.COL_NUM_CORRECT_ANSWERS);
 				double numEarnedPoints = rs.getDouble(DbContract.COL_NUM_RECIEVED_POINTS);
@@ -126,7 +126,7 @@ public class StatisticsDAO extends BasicQuizWebSiteDAO {
 		try {
 			ps.setInt(1, stat.getQuizID());
 			ps.setInt(2, stat.getUserID());
-			ps.setDate(3, stat.getDate());
+			ps.setTimestamp(3, stat.getTime());
 			ps.setInt(4, stat.getUsedTime());
 			ps.setInt(5, stat.getNumCorrectAnswers());
 			ps.setDouble(6, stat.getpoints());

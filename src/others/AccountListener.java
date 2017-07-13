@@ -1,9 +1,11 @@
-package model;
+package others;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
+
+import model.AccountManager;
 
 
 /**

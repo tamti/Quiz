@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>		
+
 <meta charset="ISO-8859-1">
 	<title>Registration </title>
 		<link rel="stylesheet" href="css/signUpStyle.css">
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-		
+
 </head>
 <body>
 				
@@ -13,28 +15,64 @@
 				      <p>come on create quiz! <a href="createQuiz.html"> Click here to create quiz</a></p>
 				    </div>
 					 <form method="post" action="RegistrationServlet" type="text/css" style="margin-top:80px; padding-left:300px;">
-				        <p><input type="text" name="FirstName"   placeholder="First Name"></p>
-				        <p><input type="text" name="LastName"  placeholder="Last Name"></p>
-				        <p><input type="text" name="Username"  placeholder="Username"></p>
-				        <p><input type="text" name="Mail"  placeholder="E-Mail"></p>
-				        <p ><input id = 'pwd' type="password" name="Password"  placeholder="Password"></p>
-				        
-				         <script>
-				         $('#pwd').on('blur', function(){
-				        	    if(this.value.length < 6){ 
-				        	       alert('You have entered less than 6 characters for password');
-				        	       $(this).focus(); 
-				        	       return false;
-				        	    }
-				        	});
-				        
-						 </script>
+				        <p id="name">
+					        <input type="text" name="FirstName"   placeholder="First Name">
+					        <input type="text" name="LastName"  placeholder="Last Name">
+				        </p>
+				        <p><input type="text" id="uname" name="Username" placeholder="Username" size="getSize()"
+				        	pattern="^[a-zA-Z][a-zA-Z0-9-_\.]{1,30}$" 
+				        	title="Only letters and numbers, plus dashes and hyphens are allowed. At most 30 characters" 
+				        	required></p>
+				        <p>
+				        	<input type="email" id="mail1" name="Mail" placeholder="Email" required>
+				        	<input type="email" id="mail2" name="Mail" placeholder="Re-enter email" required>
+				        </p>
+				        <p>
+				        	<input type="password" id = "pass1" name="Password" placeholder="Password" pattern="(?!^[0-9]*$)(?!^[a-zA-Z]*$)^([a-zA-Z0-9]{8,})$" 
+				        	title="Password must contain at least one digit and one English character, no special characters are allowed. At least 8 characters are required." 
+				        	required>
+				        	<input type="password" id="pass2" placeholder="Re-enter password" required>
+				        </p>
 				       	
 				        <p class="submit"><input type="submit" name="commit" value="Sign Up"></p>
+				        				        
 				      </form>
 					<div class = "poto">
 						<img src="sign-up.jpg"/>
 					</div>
 					
-				
+					
+<script>
+	var password = document.getElementById("pass1"), 
+		confirm_password = document.getElementById("pass2");
+
+	function validatePassword() {
+		if (password.value != confirm_password.value) {
+			confirm_password.setCustomValidity("Passwords Don't Match");
+		} else {
+			confirm_password.setCustomValidity('');
+		}
+	}
+
+	password.onchange = validatePassword;
+	confirm_password.onkeyup = validatePassword;
+</script>
+
+<script>
+	var mail = document.getElementById("mail1"), 
+		confirm_mail = document.getElementById("mail2");
+
+	function validateEmailAddress() {
+		if (mail.value != confirm_mail.value) {
+			confirm_mail.setCustomValidity("emails Don't Match");
+		} else {
+			confirm_mail.setCustomValidity('');
+		}
+	}
+
+	mail.onchange = validateEmailAddress;
+	confirm_mail.onkeyup = validateEmailAddress;
+</script>
+					
+</body>
 </html>

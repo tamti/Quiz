@@ -1,8 +1,10 @@
 package model;
 
 import java.util.SortedMap;
+import java.util.SortedSet;
 import java.util.TreeMap;
 
+import databaseManagement.StatisticsDAO;
 import databaseManagement.UserDAO;
 import others.PasswordStorage;
 import others.PasswordStorage.CannotPerformOperationException;
@@ -10,6 +12,7 @@ import others.PasswordStorage.InvalidHashException;
 
 public class AccountManager {
 	private UserDAO uDao;
+	private StatisticsDAO sDao;
 	private SortedMap<String, User> users;
 
 	/**
@@ -17,6 +20,7 @@ public class AccountManager {
 	 */
 	public AccountManager() {
 		uDao = new UserDAO();
+		sDao = new StatisticsDAO();
 		users = new TreeMap<String, User>();
 	}
 
@@ -73,8 +77,11 @@ public class AccountManager {
 
 		if (u != null) {
 			u.setFriends(uDao.getUserFriends(u.getID(), true));
+			
 			u.setFriendRequests(uDao.getUserFriends(u.getID(), false));
 
+			u.setStats(sDao.getStatisticsByUser(u.getID()));
+			
 			users.put(u.getUsername(), u);
 		}
 
@@ -240,5 +247,4 @@ public class AccountManager {
 		User oldAdmin = getUser(username);
 		uDao.updateAdminStatus(oldAdmin.getID(), false);
 	}
-
 }

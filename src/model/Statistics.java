@@ -1,12 +1,12 @@
 package model;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 import java.util.Calendar;
 
 public class Statistics implements Comparable<Statistics> {
 	private int quizID;
 	private int userID;
-	private Date takenOn;
+	private Timestamp takenOn;
 	private int usedTimeInSeconds;
 	private int numCorrectAnswers;
 	private double numEarnedPoints;
@@ -19,7 +19,8 @@ public class Statistics implements Comparable<Statistics> {
 	 * @param userID
 	 *            ID of the user this data refers to
 	 * @param takenOn
-	 *            Date on which user with ID "userID" took quiz with ID "quizID"
+	 *            Date and time on which user with ID "userID" took quiz with ID
+	 *            "quizID"
 	 * @param usedTime
 	 *            time (IN SECONDS) user with ID "userID" took to complete the
 	 *            quiz with ID "quizID"
@@ -33,7 +34,7 @@ public class Statistics implements Comparable<Statistics> {
 	 *            ID "quizID" and this questions haven't yet been graded. False
 	 *            otherwise
 	 */
-	public Statistics(int quizID, int userID, Date takenOn, int usedTimeInSeconds, int numCorrectAnswers,
+	public Statistics(int quizID, int userID, Timestamp takenOn, int usedTimeInSeconds, int numCorrectAnswers,
 			double numEarnedPoints, boolean notYetFullyGraded) {
 		this.quizID = quizID;
 		this.userID = userID;
@@ -68,7 +69,7 @@ public class Statistics implements Comparable<Statistics> {
 	public Statistics(int quizID, int userID, int usedTimeInSeconds, int numCorrectAnswers, double numEarnedPoints,
 			boolean notYetFullyGraded) {
 
-		this(quizID, userID, new Date(Calendar.getInstance().getTimeInMillis()), usedTimeInSeconds, numCorrectAnswers,
+		this(quizID, userID, new Timestamp(new java.util.Date().getTime()), usedTimeInSeconds, numCorrectAnswers,
 				numEarnedPoints, notYetFullyGraded);
 	}
 
@@ -98,9 +99,10 @@ public class Statistics implements Comparable<Statistics> {
 
 	/**
 	 * 
-	 * @return Date on which user with ID "userID" took quiz with ID "quizID"
+	 * @return Date and time on which user with ID "userID" took quiz with ID
+	 *         "quizID"
 	 */
-	public Date getDate() {
+	public Timestamp getTime() {
 		return takenOn;
 	}
 
