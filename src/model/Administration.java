@@ -9,9 +9,8 @@ public class Administration extends AccountManager {
 
 	public void addAnnouncement(String announcement, String username) {
 		User ad = getUser(username);
-		int ad_id = ad.getID();
-		Announcement ann = new Announcement(ad_id, announcement);
-		uDao.addAnnouncement(ann);
+		Announcement ann = new Announcement(username, announcement);
+		uDao.addAnnouncement(ad.getID(), ann);
 	}
 
 	
@@ -32,5 +31,9 @@ public class Administration extends AccountManager {
 		
 	}
 	
-
+	public void removeFromAdminPost(String username) {
+		User oldAdmin = getUser(username);
+		uDao.updateAdminStatus(oldAdmin.getID(), false);
+	}
+	
 }

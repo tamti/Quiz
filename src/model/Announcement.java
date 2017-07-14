@@ -3,19 +3,22 @@ package model;
 import java.sql.Timestamp;
 
 public class Announcement {
-	private int annID;
-	private int sentFrom;
+	private String username;
 	private String txt;
 	private Timestamp sentOn;
 	
-	public Announcement (int sentFrom, String txt, Timestamp sentOn) {
-		this.sentFrom = sentFrom;
+	public Announcement (String senderUsername, String txt, Timestamp sentOn) {
+		this.username = senderUsername;
 		this.txt = txt;
 		this.sentOn = sentOn;
 	}
 	
-	public Announcement(int sentFrom, String txt) {
-		this(sentFrom, txt, new Timestamp(new java.util.Date().getTime()));
+	public Announcement(String senderUsername, String txt) {
+		this(senderUsername, txt ,new Timestamp(new java.util.Date().getTime()));
+	}
+	
+	public String getUsername() {
+		return username;
 	}
 	
 	public String getText() {
@@ -26,8 +29,8 @@ public class Announcement {
 		return sentOn;
 	}
 
-	public int getSender() {
-		return sentFrom;
+	public String getSender() {
+		return username;
 	}
 
 }

@@ -11,6 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import model.AccountManager;
 
 /**
@@ -33,7 +36,11 @@ public class LogInServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		String name = (String) request.getSession().getAttribute("username");
+		
+		response.setContentType("text/plain");
+	    response.setCharacterEncoding("UTF-8");
+	    response.getWriter().write(name);
 	}
 
 	/**
@@ -56,7 +63,17 @@ public class LogInServlet extends HttpServlet {
 				RequestDispatcher dispatch = request.getRequestDispatcher("adminpage.html");
 				dispatch.forward(request, response);
 			} else {
-				RequestDispatcher dispatch = request.getRequestDispatcher("homepage.jsp");
+
+//				GsonBuilder gBuilder = new GsonBuilder();
+//				Gson gson = gBuilder.create();
+//				
+//			    String json = gson.toJson(login);
+//			    
+			    response.setContentType("text/plain");
+			    response.setCharacterEncoding("UTF-8");
+			    response.getWriter().write("ika");
+			    
+				RequestDispatcher dispatch = request.getRequestDispatcher("homepage.html");
 				dispatch.forward(request, response);
 			}
 

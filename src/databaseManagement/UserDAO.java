@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -49,6 +50,33 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 		SortedMap<String, User> map = getUserMap(DbContract.COL_EMAIL, Email);
 
 		User result = map.get(Email);
+
+		return result;
+	}
+
+	public String getUsername(int userID) {
+		String result = "";
+
+		String condition = DbContract.COL_USER_ID + " = ?";
+
+		String query = prepareSelectStatementWith(DbContract.COL_USERNAME, DbContract.TABLE_USERS, condition);
+
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
+			ps.setInt(1, userID);
+
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next())
+					result = rs.getString(DbContract.COL_USERNAME);
+				
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 
 		return result;
 	}
@@ -755,7 +783,7 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 		}
 	}
 
-	public void addAnnouncement(Announcement ann) {
+	public void addAnnouncement(int senderID, Announcement ann) {
 		String[] cols = { DbContract.COL_ANNOUNCER_ID, DbContract.COL_ANNOUNCED_ON, DbContract.COL_ANNOUNCEMENT_TEXT };
 
 		String query = prepareInsertStatementWith(DbContract.TABLE_ANNOUNCEMENTS, cols);
@@ -763,7 +791,7 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 		try (Connection con = DataSource.getDataSource().getConnection();
 				PreparedStatement ps = con.prepareStatement(query)) {
 
-			ps.setInt(1, ann.getSender());
+			ps.setInt(1, senderID);
 			ps.setTimestamp(2, ann.getTime());
 			ps.setString(3, ann.getText());
 
@@ -773,5 +801,31 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 			e.printStackTrace();
 		}
 
+	}
+
+	public ArrayList<Announcement> getAllAnnouncements() {
+		ArrayList<Announcement> result = new ArrayList<Announcement>();
+
+		String cond = "1=1 ORDER BY " + DbContract.COL_ANNOUNCED_ON + " desc";
+
+		String query = prepareSelectStatementWith("*", DbContract.TABLE_ANNOUNCEMENTS, cond);
+
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query);
+				ResultSet rs = ps.executeQuery()) {
+
+			while (rs.next()) {
+				String sentFrom = getUsername(rs.getInt(DbContract.COL_ANNOUNCER_ID));
+				String txt = rs.getString(DbContract.COL_ANNOUNCEMENT_TEXT);
+				Timestamp sentOn = rs.getTimestamp(DbContract.COL_ANNOUNCED_ON);
+
+				Announcement ann = new Announcement(sentFrom, txt, sentOn);
+				result.add(ann);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return result;
 	}
 }

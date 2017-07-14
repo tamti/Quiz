@@ -86,6 +86,7 @@ public class DbContract {
 	public static final String COL_CHALLANGE_SEEN = "challange_seen";
 	
 	public static final String TABLE_ANNOUNCEMENTS = "announcements";
+	public static final String COL_ANNOUNCEMENT_ID = "announcement_id";
 	public static final String COL_ANNOUNCER_ID = "announcer_id";
 	public static final String COL_ANNOUNCED_ON = "time_announced";
 	public static final String COL_ANNOUNCEMENT_TEXT = "txt";

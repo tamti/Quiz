@@ -56,7 +56,7 @@ public class RegistrationServlet extends HttpServlet {
 
 		} else if (accountMan.createAccount(firstName, lastName, email, username, password)) {
 
-			RequestDispatcher dispatch = request.getRequestDispatcher("homepage.jsp");
+			RequestDispatcher dispatch = request.getRequestDispatcher("homepage.html");
 			dispatch.forward(request, response);
 
 		} else {

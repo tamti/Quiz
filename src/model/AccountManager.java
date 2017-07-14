@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -86,6 +87,16 @@ public class AccountManager {
 		}
 
 		return u;
+	}
+	
+	public String getUserById(int user_id){
+		if(!uDao.getUsername(user_id).equals("")){
+			return uDao.getUsername(user_id);
+		}
+		else{
+			 throw new RuntimeException("User doesn't excist");
+		}
+			
 	}
 
 	/**
@@ -233,14 +244,12 @@ public class AccountManager {
 	}
 	
 
-	/**
-	 * 
-	 * removes the specified user from the admin position
-	 * 
-	 * @param username
-	 */
-	public void removeFromAdminPost(String username) {
-		User oldAdmin = getUser(username);
-		uDao.updateAdminStatus(oldAdmin.getID(), false);
+
+	public ArrayList<Announcement> getAnnouncements(){
+		ArrayList<Announcement> ann = new ArrayList<Announcement>();
+		ann = uDao.getAllAnnouncements();
+		return ann;	
 	}
+	
+	
 }
