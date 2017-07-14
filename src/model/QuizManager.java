@@ -140,4 +140,8 @@ public class QuizManager {
 		//question.removeAnswer(answerID);
 		qDao.removeAnswer(answerID);
 	}
+	
+	public void removeQuiz(int quizID){
+		qDao.removeQuiz(quizID);
+	}
 }

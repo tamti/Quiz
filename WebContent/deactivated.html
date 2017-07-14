@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body{
+   background-image: url("topography.png");
+}
+</style>
+<meta charset="UTF-8">
+<title> Deactivated </title>
+</head>
+<body>
+  <h1 align="center" id = "forname">  your account has been deactivated </h1>
+  <script>
+  	$(document).ready(function() {
+		$.get("LogInServlet", function(txt) {
+			$("#forname").append(txt);
+		});
+	});
+  	</script>
+</body>
+</html>

@@ -2,6 +2,8 @@ package model;
 
 public class Administration extends AccountManager {
 	
+	private QuizManager qm  = new QuizManager();
+	
 	public Administration() {
 		super();
 	}
@@ -20,14 +22,18 @@ public class Administration extends AccountManager {
 	}
 	
 	public void removeAccount(User user) {
-		
+		uDao.deactivateUserAccount(user.getID());
 	}
 	
-	public void removeQuiz(User user) {
-		
+	public void activateAccount(User user) {
+		uDao.reactivateUserAccount(user.getID());
 	}
 	
-	public void clearHistory(User user) {
+	public void removeQuiz(int quiz_id) {
+		qm.removeQuiz(quiz_id);
+	}
+	
+	public void clearHistoryForQuiz(int quiz_id) {
 		
 	}
 	

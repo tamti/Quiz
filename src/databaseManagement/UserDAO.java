@@ -567,6 +567,36 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 		updateUsersBooleanColWith(userID, DbContract.COL_USER_IS_ACTIVE, isActive);
 	}
 
+	public boolean UserActivationStatus(int userID){
+		boolean res = false;
+
+		String col = DbContract.COL_USER_IS_ACTIVE;
+		String table = DbContract.TABLE_USERS;
+		String condition = DbContract.COL_USER_ID + " = ?";
+
+		String query = prepareSelectStatementWith(col, table, condition);
+		
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
+			ps.setInt(1, userID);
+
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.first())
+					res = rs.getBoolean(DbContract.COL_USER_IS_ACTIVE);
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return res;
+		
+	}
+	
 	/**
 	 * Updates value of the column DbContract.COL_IS_ADMIN of the specified user
 	 * 

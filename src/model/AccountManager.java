@@ -243,7 +243,10 @@ public class AccountManager {
 		return uDao.getAdminStatus(user.getID());
 	}
 	
-
+	public boolean isActiveAccount(String username){
+		User user = getUser(username);
+		return uDao.UserActivationStatus(user.getID());
+	}
 
 	public ArrayList<Announcement> getAnnouncements(){
 		ArrayList<Announcement> ann = new ArrayList<Announcement>();

@@ -470,5 +470,23 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 			e.printStackTrace();
 		}
 	}
+	
+	public void removeQuiz(int quiz_id){
+		String condition = DbContract.COL_QUIZ_ID + " = ?";
+		String query = prepareDeleteStatementWith(DbContract.TABLE_QUIZZES, condition);
+
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
+			ps.setInt(1, quiz_id);
+
+			ps.executeUpdate();
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+		
 
 }

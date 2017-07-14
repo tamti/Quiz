@@ -62,17 +62,10 @@ public class LogInServlet extends HttpServlet {
 			if (accountMan.isAdminAcc(login)) {
 				RequestDispatcher dispatch = request.getRequestDispatcher("adminpage.html");
 				dispatch.forward(request, response);
-			} else {
-
-//				GsonBuilder gBuilder = new GsonBuilder();
-//				Gson gson = gBuilder.create();
-//				
-//			    String json = gson.toJson(login);
-//			    
-			    response.setContentType("text/plain");
-			    response.setCharacterEncoding("UTF-8");
-			    response.getWriter().write("ika");
-			    
+			} else if(!accountMan.isActiveAccount(login)){
+				RequestDispatcher dispatch = request.getRequestDispatcher("deactivated.html");
+				dispatch.forward(request, response);
+			}else {    
 				RequestDispatcher dispatch = request.getRequestDispatcher("homepage.html");
 				dispatch.forward(request, response);
 			}
