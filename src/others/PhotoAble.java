@@ -2,6 +2,7 @@ package others;
 
 public class PhotoAble {
 	private int photoID;
+	private String photoUrl;
 
 	public PhotoAble() {
 		photoID = -1;
@@ -13,6 +14,9 @@ public class PhotoAble {
 	
 	public void setPhotoID(int photoID) {
 		this.photoID = photoID;
+	}
+	public void setPhoto(String url){
+		this.photoUrl = url;
 	}
 	
 	public void removePhoto() {
