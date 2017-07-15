@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.SortedMap;
 
 import databaseManagement.QuizDAO;
@@ -161,5 +162,10 @@ public class QuizManager {
 	
 	public void removeQuiz(int quizID){
 		qDao.removeQuiz(quizID);
+	}
+	
+	public ArrayList<String> getQuizNames(){
+		return null;
+		
 	}
 }
