@@ -3,8 +3,38 @@
 <head>
 <meta charset="UTF-8">
 <title> All About Quizes</title>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+
+<style>
+body{
+   background-image: url("topography.png");
+}
+a{
+   color: orange;	
+}
+</style>
+
 </head>
 <body>
+<div style ="width:50%; float:right">
+<h1> Quiz </h1>
+<div id="ann" class="scroll" style='overflow:scroll'>
+</div>
+</div>
+<script>
+$(document).ready(function() {
+	var output = document.getElementById('ann');
+	$.get("QuizInfoServlet", function(responseJson) {
+		$.each(responseJson, function(index, a) {
+			 var ele = document.createElement("a");
+			 ele.append(a);
+			 ele.append(document.createElement("br"));
+			 output.appendChild(ele);
+		});
+	});
+});
+</script>
 
 </body>
 </html>
