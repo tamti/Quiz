@@ -1,7 +1,6 @@
 package model;
 
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.ArrayList;
 
 import others.PhotoAble;
 import others.QuestionType;
@@ -10,7 +9,7 @@ public class Question extends PhotoAble implements Comparable<Question> {
 	private int ID;
 	private QuestionType type;
 	private String questionStr;
-	private SortedMap<Integer, Answer> answers;
+	private ArrayList<Answer> answers;
 	private double maxPoints;
 
 	/**
@@ -26,35 +25,16 @@ public class Question extends PhotoAble implements Comparable<Question> {
 	 *            a real number - max number of points a user will get for
 	 *            answering correctly
 	 */
-	public Question(int ID, String questionStr, QuestionType type, double maxPoints,
-			SortedMap<Integer, Answer> answers) {
+	public Question(int ID, String questionStr, QuestionType type, double maxPoints) {
 		this.ID = ID;
 		this.questionStr = questionStr;
 		this.type = type;
-		this.answers = answers;
 		this.maxPoints = maxPoints;
+		answers = new ArrayList<Answer>();
 	}
 
 	/**
-	 * Constructs Question object without answers to it
-	 * 
-	 * @param ID
-	 *            ID of the question in the database
-	 * @param questionStr
-	 *            a string representing question's text
-	 * @param type
-	 *            Of which type is this question
-	 * @param maxPoints
-	 *            a real number - max number of points a user will get for
-	 *            answering correctly
-	 */
-	public Question(int ID, String questionStr, QuestionType type, double maxPoints) {
-		this(ID, questionStr, type, maxPoints, new TreeMap<Integer, Answer>());
-	}
-
-	/**
-	 * Constructs Question object without its ID and answers (Answer objects)to
-	 * it
+	 * Constructs Question object without its ID
 	 * 
 	 * @param questionStr
 	 *            a string representing question's text
@@ -65,7 +45,7 @@ public class Question extends PhotoAble implements Comparable<Question> {
 	 *            answering correctly
 	 */
 	public Question(String questionStr, QuestionType type, double maxPoints) {
-		this(-1, questionStr, type, maxPoints, new TreeMap<Integer, Answer>());
+		this(-1, questionStr, type, maxPoints);
 	}
 
 	/**
@@ -112,7 +92,7 @@ public class Question extends PhotoAble implements Comparable<Question> {
 	 *            all needed components)
 	 */
 	public void addAnswer(Answer newAnswer) {
-		answers.put(newAnswer.getID(), newAnswer);
+		answers.add(newAnswer);
 	}
 
 	/**
@@ -127,7 +107,7 @@ public class Question extends PhotoAble implements Comparable<Question> {
 	 * 
 	 * @return SortedMap<answerID, Answer>
 	 */
-	public SortedMap<Integer, Answer> getAnswers() {
+	public ArrayList<Answer> getAnswers() {
 		return answers;
 	}
 
@@ -135,7 +115,7 @@ public class Question extends PhotoAble implements Comparable<Question> {
 	 * 
 	 * @param answers
 	 */
-	public void setAnswers(SortedMap<Integer, Answer> answers) {
+	public void setAnswers(ArrayList<Answer> answers) {
 		this.answers = answers;
 	}
 

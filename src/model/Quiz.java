@@ -1,10 +1,9 @@
 package model;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 
 public class Quiz implements Comparable<Quiz> {
@@ -16,7 +15,7 @@ public class Quiz implements Comparable<Quiz> {
 	private int allowedTimeInMinutes;
 	private boolean random;
 	private Date dateCreated;
-	private SortedMap<Integer, Question> questions;
+	private ArrayList<Question> questions;
 	private int ownerID;
 	private SortedSet<Statistics> stats;
 
@@ -31,7 +30,7 @@ public class Quiz implements Comparable<Quiz> {
 		this.isOnePage = isOnePage;
 		this.allowedTimeInMinutes = allowedTimeInMinutes;
 
-		questions = new TreeMap<Integer, Question>();
+		questions = new ArrayList<Question>();
 		stats = new TreeSet<Statistics>();
 	}
 
@@ -50,11 +49,11 @@ public class Quiz implements Comparable<Quiz> {
 		this.ownerID = ownerID;
 	}
 
-	public SortedMap<Integer, Question> getQuestions() {
+	public ArrayList<Question> getQuestions() {
 		return questions;
 	}
 
-	public void setQuestions(SortedMap<Integer, Question> questions) {
+	public void setQuestions(ArrayList<Question> questions) {
 		this.questions = questions;
 	}
 
@@ -131,7 +130,7 @@ public class Quiz implements Comparable<Quiz> {
 	}
 
 	public void addQuestion(Question newQuestion) {
-		questions.put(newQuestion.getID(), newQuestion);
+		questions.add(newQuestion);
 	}
 
 	public void removeQuestion(Integer questionID) {

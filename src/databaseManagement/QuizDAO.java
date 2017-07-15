@@ -6,6 +6,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -50,7 +51,7 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 					result = new Quiz(quizID, ownerID, quizName, description, dateCreated, answersImmediately,
 							isOnePage, allowedTime);
 
-					SortedMap<Integer, Question> questions = getAllQuestionsFor(quizID);
+					ArrayList<Question> questions = getAllQuestionsFor(quizID);
 
 					result.setQuestions(questions);
 
@@ -70,8 +71,8 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 	 * Selects all necessary info from the database and returns SortedSet of all
 	 * Questions that belong to the specified quiz
 	 */
-	private SortedMap<Integer, Question> getAllQuestionsFor(int quizID) {
-		SortedMap<Integer, Question> res = new TreeMap<Integer, Question>();
+	private ArrayList<Question> getAllQuestionsFor(int quizID) {
+		ArrayList<Question> res = new ArrayList<Question>();
 
 		String tables = DbContract.TABLE_QUESTIONS + " q, " + DbContract.TABLE_QUIZ_QUESTIONS + " qq";
 
@@ -105,11 +106,11 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 						current.setPhotoID(photoID);
 					}
 
-					SortedMap<Integer, Answer> answers = getAllAnswersFor(questionID);
+					ArrayList<Answer> answers = getAllAnswersFor(questionID);
 
 					current.setAnswers(answers);
 
-					res.put(current.getID(), current);
+					res.add(current);
 				}
 
 			} catch (SQLException e) {
@@ -127,8 +128,8 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 	 * Selects all necessary info from the database and returns SortedSet of all
 	 * Answers that belong to the specified question
 	 */
-	private SortedMap<Integer, Answer> getAllAnswersFor(int questionID) {
-		SortedMap<Integer, Answer> res = new TreeMap<Integer, Answer>();
+	private ArrayList<Answer> getAllAnswersFor(int questionID) {
+		ArrayList<Answer> res = new ArrayList<Answer>();
 
 		String tables = DbContract.TABLE_ANSWERS + " a, " + DbContract.TABLE_ANSWERS_TO_QUESTIONS + " aq";
 		String condition = "aq." + DbContract.COL_QUESTION_ID + " = ? and aq." + DbContract.COL_ANSWER_ID + " = a."
@@ -156,7 +157,7 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 						current.setNO(answerNO);
 					}
 
-					res.put(current.getID(), current);
+					res.add(current);
 				}
 
 			} catch (SQLException e) {
@@ -300,6 +301,8 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 
 			ps.executeUpdate();
 
+			System.out.println("INSERT QUESTION " + newQuestion.getQuestionStr());
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -352,6 +355,8 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 
 			ps.executeUpdate();
 
+			System.out.println("INSERT ANSWER " + newAnswer.getAnswerStr());
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
