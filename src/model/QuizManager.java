@@ -65,8 +65,19 @@ public class QuizManager {
 
 	
 	public void setQuiz(Quiz quiz) {
-		int result = qDao.insertQuiz(quiz);
-		quizInfo.put(quiz.getQuizName(), result);
+		int quizID = qDao.insertQuiz(quiz);
+		quiz.setID(quizID);
+		quizInfo.put(quiz.getQuizName(), quizID);
+		SortedMap<Integer, Question> questions = quiz.getQuestions();
+		for (Question q : questions.values()) {
+			int questionID = qDao.insertQuestion(quizID, q);
+			q.setID(questionID);
+			SortedMap<Integer, Answer> answers = q.getAnswers();
+			for (Answer a : answers.values()) {
+				int answerID = qDao.insertAnswer(questionID, a);
+				a.setID(answerID);
+			}
+		}
 		
 	}
 	
