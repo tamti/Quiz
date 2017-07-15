@@ -138,7 +138,6 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 
 				SortedSet<String> friends = getUserFriends(userID, true);
 				SortedSet<String> friendRequests = getUserFriends(userID, false);
-				System.out.println(userID + " " + username);
 				User u = new User(userID, firstName, lastName, email, username, password, friends, friendRequests);
 				// String photo = rs.getString(DbContract.COL_PHOTO_FILE);
 

@@ -61,7 +61,7 @@ public class addQuizServlet extends HttpServlet {
 		AccountManager accountMan = (AccountManager) servletCon.getAttribute("accountManager");
 		User user = accountMan.getUser(username);
 		int userID = user.getID();
-		
+		System.out.println(userID);
 		String json = readAll(request.getInputStream());
 		System.out.println(json);
 		JsonObject quiz = new JsonParser().parse(json).getAsJsonObject();

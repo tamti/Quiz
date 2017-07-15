@@ -5,24 +5,9 @@
 		<title>Quiz Website</title>
 		<title>Login Form</title>
 		<link rel="stylesheet" href="css/style.css">
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-
-<style>
-body{
-   background-image: url("topography.png");
-}
-
-input::placeholder {
-  color: orange;
-}
-a{
-   color: orange;	
-}
-</style>
 	</head>
 	<body>
-		<section class="container" align="center">
+		<section class="container">
 		    <div class="login">
 		      <h1>Login To Quiz Website</h1>
 		      <form id="loginForm" action="LogInServlet" method="post">
@@ -37,13 +22,15 @@ a{
 		            Remember me on this computer
 		          </label>-->
 		        </p>
-		        <p class="submit"><a href = "home.html"><input class="btn btn-warning hell" type="submit" name="commit" value="Log in"></a></p>
+		        <p class="submit"><a href = "homepage.html"><input type="submit" name="commit" value="Log in"></a></p>
 		      </form>
 			</div>
 	    
 	    <div class="Sing-up">
 	      <p>Join us now! <a href="signup.html"> Click here to sign up </a></p>
+	       <a align="right" href="adminpage.html"> Admin Page </a>
 	    </div>
+	    <img  src="welcome.jpg"/>
 		</section>
 	</body>
 </html>
