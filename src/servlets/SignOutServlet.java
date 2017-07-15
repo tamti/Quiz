@@ -28,7 +28,7 @@ public class SignOutServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		request.getSession().removeValue("user");
-		response.sendRedirect("index.html");
+		response.sendRedirect("login.html");
 	}
 
 	/**

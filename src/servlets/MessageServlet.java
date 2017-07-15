@@ -6,6 +6,10 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import model.AccountManager;
+import model.Message;
 
 /**
  * Servlet implementation class MessageServlet
@@ -34,7 +38,12 @@ public class MessageServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+		String msg = request.getParameter("msg");
+		HttpSession session = request.getSession();
+		String from = (String) session.getAttribute("username");
+		String to = "";
+		AccountManager accMan = new AccountManager();
+		accMan.SendMessage(from,to,msg);
 		
 	}
 

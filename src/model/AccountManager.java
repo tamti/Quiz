@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.SortedMap;
 import java.util.SortedSet;
 
+import org.apache.catalina.ha.tcp.SendMessageData;
+
 import databaseManagement.StatisticsDAO;
 import databaseManagement.UserDAO;
 import others.PasswordStorage;
@@ -250,6 +252,13 @@ public class AccountManager {
 		ArrayList<Announcement> ann = new ArrayList<Announcement>();
 		ann = uDao.getAllAnnouncements();
 		return ann;
+	}
+	
+	public void SendMessage(String from, String to,String msg){
+		int from_id = getUser(from).getID();
+		int to_id = getUser(to).getID();
+		Message m = new Message(from_id, to_id, msg);
+		uDao.insertMessage(m);
 	}
 
 }
