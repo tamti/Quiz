@@ -2,14 +2,10 @@ package servlets;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Date;
-import java.util.ArrayList;
-import java.util.SortedMap;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.sun.xml.internal.bind.v2.runtime.output.StAXExStreamWriterOutput;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -39,14 +35,12 @@ public class addQuizServlet extends HttpServlet {
      */
     public addQuizServlet() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
@@ -89,6 +83,7 @@ public class addQuizServlet extends HttpServlet {
 				System.out.println("q text: "+questionText);
 			}
 			else if(questionCategoryId == 2 ){
+				System.out.println("inininininin");
 				String questionText = question.get("question").getAsString();
 				String questionAnswer = question.get("answer").getAsString();
 				int maxPoint = question.get("maxpoint").getAsInt();
@@ -96,18 +91,55 @@ public class addQuizServlet extends HttpServlet {
 				for(int j=0; j<choices.length; j++){
 					choices[j] = question.get("choice"+(j+1)).getAsString();
 				}
-				Question q = new Question(questionText, QuestionType.multiAnswer, maxPoint);
-				Answer ans1 = null;
+				Question q = new Question(questionText, QuestionType.multipleChoice, maxPoint);
+				/*Answer ans1 = null;
 				Answer ans2 = null;
 				Answer ans3 = null;
 				Answer ans4 = null;
+				*/
+			
 				System.out.println("answerrrr " +questionAnswer );
-				if (questionAnswer.equals("A")){
+				
+				boolean[] ansCorrect = { false, false, false, false };
+				
+				switch (questionAnswer) {
+					case "A":
+						ansCorrect[0] = true;
+						break;
+					case "B":
+						ansCorrect[1] = true;
+						break;
+					case "C":
+						ansCorrect[2] = true;
+						break;
+					case "D":
+						ansCorrect[3] = true;
+						break;
+					default:
+						throw new IllegalArgumentException("Invalid argument: " + questionAnswer);
+				}
+				
+				Answer ans1 = new Answer(choices[0], ansCorrect[0]);
+				Answer ans2 = new Answer(choices[1], ansCorrect[1]);
+				Answer ans3 = new Answer(choices[2], ansCorrect[2]);
+				Answer ans4 = new Answer(choices[3], ansCorrect[3]);
+				
+				System.out.println(ans1.getAnswerStr());
+				System.out.println(ans2.getAnswerStr());
+				System.out.println(ans3.getAnswerStr());
+				System.out.println(ans4.getAnswerStr());
+				
+				/*if (questionAnswer.equals("A")){
 					System.out.println("aq aris!");
 					ans1 = new Answer(choices[0], true);
 					ans2 = new Answer(choices[1], false);
 					ans3 = new Answer(choices[2], false);
 					ans4 = new Answer(choices[3], false);
+					System.out.println(ans1.getAnswerStr());
+					System.out.println(ans2.getAnswerStr());
+					System.out.println(ans3.getAnswerStr());
+					System.out.println(ans4.getAnswerStr());
+					
 					
 				}
 				if (questionAnswer == "B"){
@@ -115,6 +147,10 @@ public class addQuizServlet extends HttpServlet {
 					ans2 = new Answer(choices[1], true);
 					ans3 = new Answer(choices[2], false);
 					ans4 = new Answer(choices[3], false);
+					System.out.println(ans1.getAnswerStr());
+					System.out.println(ans2.getAnswerStr());
+					System.out.println(ans3.getAnswerStr());
+					System.out.println(ans4.getAnswerStr());
 					
 				}
 				if (questionAnswer == "C"){
@@ -130,9 +166,7 @@ public class addQuizServlet extends HttpServlet {
 					ans3 = new Answer(choices[2], false);
 					ans4 = new Answer(choices[3], true);
 					
-				}
-				String an = ans1.getAnswerStr();
-				System.out.println("answeeeeeeeeeeeeeer   "+an);
+				}*/
 				q.addAnswer(ans1);
 				q.addAnswer(ans2);
 				q.addAnswer(ans3);
@@ -166,7 +200,7 @@ public class addQuizServlet extends HttpServlet {
 				}
 				quizObj.addQuestion(q);
 				
-				System.out.println(answers);
+				//System.out.println(answers);
 			}
 		}
 		QuizManager man = new QuizManager();

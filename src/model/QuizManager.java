@@ -1,7 +1,7 @@
 package model;
 
 import java.util.ArrayList;
-import java.util.Set;
+import java.util.List;
 import java.util.SortedMap;
 
 import databaseManagement.QuizDAO;
@@ -70,12 +70,18 @@ public class QuizManager {
 		int quizID = qDao.insertQuiz(quiz);
 		quiz.setID(quizID);
 		quizInfo.put(quiz.getQuizName(), quizID);
-		SortedMap<Integer, Question> questions = quiz.getQuestions();
-		for (Question q : questions.values()) {
+		List<Question> questions = quiz.getQuestions();
+		for (int j = 0; j < questions.size(); j++) {
+			Question q = questions.get(j);
 			int questionID = qDao.insertQuestion(quizID, q);
 			q.setID(questionID);
-			SortedMap<Integer, Answer> answers = q.getAnswers();
-			for (Answer a : answers.values()) {
+			
+			List<Answer> answers = q.getAnswers();
+			
+			for (int i = 0; i < answers.size(); i++) {
+				Answer a = answers.get(i);
+				System.out.println("QUIZ MANAGER " + a.getAnswerStr());
+				
 				int answerID = qDao.insertAnswer(questionID, a);
 				a.setID(answerID);
 			}
@@ -164,7 +170,6 @@ public class QuizManager {
 	public void removeQuiz(int quizID){
 		qDao.removeQuiz(quizID);
 	}
-	
 	public ArrayList<String> getQuizNames(){
 		 ArrayList<String> list = new ArrayList<String>(quizInfo.keySet());
 		 return list;
