@@ -1,6 +1,7 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.SortedMap;
 
 import databaseManagement.QuizDAO;
@@ -165,7 +166,7 @@ public class QuizManager {
 	}
 	
 	public ArrayList<String> getQuizNames(){
-		return null;
-		
+		 ArrayList<String> list = new ArrayList<String>(quizInfo.keySet());
+		 return list;
 	}
 }
