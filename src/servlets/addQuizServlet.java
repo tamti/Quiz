@@ -100,7 +100,7 @@ public class addQuizServlet extends HttpServlet {
 			
 				System.out.println("answerrrr " +questionAnswer );
 				
-				boolean[] ansCorrect = {false, false, false, false};
+				boolean[] ansCorrect = { false, false, false, false };
 				
 				switch (questionAnswer) {
 					case "A":
@@ -120,9 +120,9 @@ public class addQuizServlet extends HttpServlet {
 				}
 				
 				Answer ans1 = new Answer(choices[0], ansCorrect[0]);
-				Answer ans2 = new Answer(choices[0], ansCorrect[1]);
-				Answer ans3 = new Answer(choices[0], ansCorrect[2]);
-				Answer ans4 = new Answer(choices[0], ansCorrect[3]);
+				Answer ans2 = new Answer(choices[1], ansCorrect[1]);
+				Answer ans3 = new Answer(choices[2], ansCorrect[2]);
+				Answer ans4 = new Answer(choices[3], ansCorrect[3]);
 				
 				System.out.println(ans1.getAnswerStr());
 				System.out.println(ans2.getAnswerStr());

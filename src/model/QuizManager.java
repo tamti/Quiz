@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedMap;
 
@@ -168,5 +169,9 @@ public class QuizManager {
 	
 	public void removeQuiz(int quizID){
 		qDao.removeQuiz(quizID);
+	}
+	public ArrayList<String> getQuizNames(){
+		 ArrayList<String> list = new ArrayList<String>(quizInfo.keySet());
+		 return list;
 	}
 }
