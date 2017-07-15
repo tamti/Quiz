@@ -363,8 +363,7 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 		int idOfNewAnswer = getLastIdOf(DbContract.TABLE_ANSWERS, DbContract.COL_ANSWER_ID);
 
 		try (Connection con = DataSource.getDataSource().getConnection();
-				PreparedStatement ps = con.prepareStatement(query2);
-				ResultSet rs = ps.executeQuery()) {
+				PreparedStatement ps = con.prepareStatement(query2)) {
 
 			ps.setInt(1, questionID);
 			ps.setInt(2, idOfNewAnswer);

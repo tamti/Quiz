@@ -9,6 +9,7 @@ import java.util.SortedMap;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.sun.xml.internal.bind.v2.runtime.output.StAXExStreamWriterOutput;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -64,7 +65,7 @@ public class addQuizServlet extends HttpServlet {
 		String json = readAll(request.getInputStream());
 		System.out.println(json);
 		JsonObject quiz = new JsonParser().parse(json).getAsJsonObject();
-		
+		System.out.println(quiz.toString());
 		boolean answersImmediately = quiz.get("answersImmediately").getAsBoolean();
 		boolean isOnePage = quiz.get("isOnePage").getAsBoolean();
 		String name = quiz.get("name").getAsString();
@@ -100,8 +101,9 @@ public class addQuizServlet extends HttpServlet {
 				Answer ans2 = null;
 				Answer ans3 = null;
 				Answer ans4 = null;
-				
-				if (questionAnswer == "A"){
+				System.out.println("answerrrr " +questionAnswer );
+				if (questionAnswer.equals("A")){
+					System.out.println("aq aris!");
 					ans1 = new Answer(choices[0], true);
 					ans2 = new Answer(choices[1], false);
 					ans3 = new Answer(choices[2], false);
@@ -129,7 +131,8 @@ public class addQuizServlet extends HttpServlet {
 					ans4 = new Answer(choices[3], true);
 					
 				}
-				
+				String an = ans1.getAnswerStr();
+				System.out.println("answeeeeeeeeeeeeeer   "+an);
 				q.addAnswer(ans1);
 				q.addAnswer(ans2);
 				q.addAnswer(ans3);
@@ -156,9 +159,10 @@ public class addQuizServlet extends HttpServlet {
 				Question q = new Question(questionText, QuestionType.fillInTheBlank, maxPoint);
 				String [] answers = new String[jsonAnswers.size()];
 				for(int k=0; k<answers.length; k++){
-					answers[k]=jsonAnswers.get(i).getAsString();
+					answers[k]=jsonAnswers.get(k).getAsString();
 					Answer ans = new Answer(answers[k], true);
 					q.addAnswer(ans);
+					System.out.println(ans.getAnswerStr());
 				}
 				quizObj.addQuestion(q);
 				
@@ -169,7 +173,7 @@ public class addQuizServlet extends HttpServlet {
 		man.setQuiz(quizObj);
 //		System.out.println("name: "+quizObj.getQuizName());
 //		System.out.println("random: "+quizObj.isRandom());
-		response.getOutputStream().print("home.jsp");
+		response.getOutputStream().print("homepage.html");
 	}
 	
 	static String readAll(InputStream in){

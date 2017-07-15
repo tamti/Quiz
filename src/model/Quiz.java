@@ -137,7 +137,6 @@ public class Quiz implements Comparable<Quiz> {
 	public void removeQuestion(Integer questionID) {
 		questions.remove(questionID);
 	}
-
 	/**
 	 * Compares Quiz objects. Comparison is made with their IDs
 	 * 
