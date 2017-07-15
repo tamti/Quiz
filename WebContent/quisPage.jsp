@@ -142,6 +142,6 @@ if(user == null){
 			}
 		});
 	}
-	</script>
-	<%} %>
+	</script><%-- 
+	<%} %> --%>
 </html>
