@@ -138,7 +138,7 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 
 				SortedSet<String> friends = getUserFriends(userID, true);
 				SortedSet<String> friendRequests = getUserFriends(userID, false);
-
+				System.out.println(userID + " " + username);
 				User u = new User(userID, firstName, lastName, email, username, password, friends, friendRequests);
 				// String photo = rs.getString(DbContract.COL_PHOTO_FILE);
 
@@ -567,22 +567,22 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 		updateUsersBooleanColWith(userID, DbContract.COL_USER_IS_ACTIVE, isActive);
 	}
 
-	public boolean UserActivationStatus(int userID){
+	public boolean UserActivationStatus(String username){
 		boolean res = false;
 
 		String col = DbContract.COL_USER_IS_ACTIVE;
 		String table = DbContract.TABLE_USERS;
-		String condition = DbContract.COL_USER_ID + " = ?";
+		String condition = DbContract.COL_USERNAME + " = ?";
 
 		String query = prepareSelectStatementWith(col, table, condition);
 		
 		try (Connection con = DataSource.getDataSource().getConnection();
 				PreparedStatement ps = con.prepareStatement(query)) {
 
-			ps.setInt(1, userID);
+			ps.setString(1, username);
 
 			try (ResultSet rs = ps.executeQuery()) {
-				if (rs.first())
+				if (rs.next())
 					res = rs.getBoolean(DbContract.COL_USER_IS_ACTIVE);
 
 			} catch (SQLException e) {

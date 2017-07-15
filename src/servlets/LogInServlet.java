@@ -59,17 +59,16 @@ public class LogInServlet extends HttpServlet {
 		session.setAttribute("username", login);
 
 		if (accountMan.canPass(login, password)) {
-			if (accountMan.isAdminAcc(login)) {
-				RequestDispatcher dispatch = request.getRequestDispatcher("adminpage.html");
-				dispatch.forward(request, response);
-			} else if(!accountMan.isActiveAccount(login)){
+			if(!accountMan.isActiveAccount(login)) {
 				RequestDispatcher dispatch = request.getRequestDispatcher("deactivated.html");
 				dispatch.forward(request, response);
-			}else {    
+			} else if (accountMan.isAdminAcc(login)) {
+				RequestDispatcher dispatch = request.getRequestDispatcher("adminpage.html");
+				dispatch.forward(request, response);
+			} else {
 				RequestDispatcher dispatch = request.getRequestDispatcher("homepage.html");
 				dispatch.forward(request, response);
 			}
-
 		} else {
 			RequestDispatcher dispatch = request.getRequestDispatcher("noSuchUser.html");
 			dispatch.forward(request, response);

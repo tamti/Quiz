@@ -3,7 +3,6 @@ package model;
 import java.util.ArrayList;
 import java.util.SortedMap;
 import java.util.SortedSet;
-import java.util.TreeMap;
 
 import databaseManagement.StatisticsDAO;
 import databaseManagement.UserDAO;
@@ -22,7 +21,7 @@ public class AccountManager {
 	public AccountManager() {
 		uDao = new UserDAO();
 		sDao = new StatisticsDAO();
-		users = new TreeMap<String, User>();
+		users = uDao.getAllUsers();
 	}
 
 	/**
@@ -78,9 +77,9 @@ public class AccountManager {
 		
 		if (u != null) {
 			SortedSet<Statistics> stats = sDao.getStatisticsByUser(u.getID());
-						
+			
 			u.setStats(stats);
-						
+			
 			users.put(u.getUsername(), u);
 		}
 		return u;
@@ -244,8 +243,7 @@ public class AccountManager {
 	}
 
 	public boolean isActiveAccount(String username) {
-		User user = getUser(username);
-		return uDao.UserActivationStatus(user.getID());
+		return uDao.UserActivationStatus(username);
 	}
 
 	public ArrayList<Announcement> getAnnouncements() {

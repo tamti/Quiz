@@ -7,13 +7,30 @@
 <meta charset="ISO-8859-1">
 	<title>Sign up</title>
 		<link rel="stylesheet" href="css/signUpStyle.css">
+				<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+
+<style>
+body{
+   background-image: url("topography.png");
+}
+
+input::placeholder {
+  color: orange;
+}
+a{
+  color: orange;
+}
+
+</style>
 
 </head>
 <body>
 
-<h1>Create a new account</h1>
 
-					 <form method="post" action="RegistrationServlet" type="text/css" style="margin-top:80px; padding-left:300px;">
+<h1 align = "center" style="margin-top:3%">Create a new account</h1>
+
+					 <form method="post" action="RegistrationServlet" type="text/css" style="margin-top:7%; margin-left:38%">
 				        <p>
 					        <input type="text" name="FirstName"   placeholder="First Name">
 					        <input type="text" name="LastName"  placeholder="Last Name">
@@ -35,13 +52,10 @@
 				        	<input type="password" id="pass2" placeholder="Re-enter password" required>
 				        </p>
 				       	
-				        <p class="submit"><input type="submit" name="commit" value="Create account"></p>
+				        <p class="submit"><input class="btn btn-warning hell" type="submit" name="commit" value="Create account"></p>
 				        				        
 				      </form>
 				      
-					<div class = "poto">
-						<img src="sign-up.jpg"/>
-					</div>
 					
 <script>
 	var password = document.getElementById("pass1"), 

@@ -13,15 +13,31 @@ body{
 </style>
 </head>
 <body>
+<div align="left" id = "cover">
+ <input  class="btn btn-warning hell" style="width:33%" type="button" onclick="toggle()" value="Create Announcement" />
+</div>	
 
-<form method="post" action="AdminServlet" >
- <div>
- <p> Create Announcement </p>
- <textarea style="width: 30%" name = "announcement"></textarea>
+<form style="width:33%;" method="post" action="AdminServlet" >
+ <div id = "a" style="display:none;">
+ <textarea id="area" style="width: 100%" name = "announcement"></textarea>
  <br>
- <input class="btn btn-warning hell" style="width:30%"  type="submit" value = "Post" />
+ <input class="btn btn-warning hell" style="width:49%"  type="button" onclick="toggle()" value = "Cancel" />
+ <input class="btn btn-warning hell" style="width:49%"  type="submit" value = "Post" />
  </div>
 </form>
+
+<script> 
+ function toggle(){
+	 var x = document.getElementById('a');
+	// var y = document.getElementById('area');
+	    if (x.style.display === 'none') {
+	        x.style.display = 'block';
+	    } else {
+	        x.style.display = 'none';
+	        $('#area').val("");
+	    }
+ }
+</script>
 
 </body>
 </html>
