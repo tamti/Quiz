@@ -19,9 +19,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import model.AccountManager;
+import model.Answer;
 import model.Question;
 import model.Quiz;
+import model.QuizManager;
 import model.User;
+import others.QuestionType;
 
 /**
  * Servlet implementation class addQuizServlet
@@ -67,8 +70,8 @@ public class addQuizServlet extends HttpServlet {
 		String name = quiz.get("name").getAsString();
 		String description = quiz.get("description").getAsString();
 		int allowedTimeInMinutes = quiz.get("allowedTimeInMinutes").getAsInt();
+		
 		Quiz quizObj = new Quiz(userID, name, description, answersImmediately, isOnePage, allowedTimeInMinutes);
-		SortedMap<Integer, Question> questionsList = quizObj.getQuestions();
 		
 		JsonArray questions = quiz.get("questions").getAsJsonArray();
 		for(int i=0; i<questions.size(); i++){
@@ -77,43 +80,93 @@ public class addQuizServlet extends HttpServlet {
 			if(questionCategoryId == 1 ){
 				String questionText = question.get("question").getAsString();
 				String questionAnswer = question.get("answer").getAsString();
-				//QuestinAnswerQuestion q = new QuestinAnswerQuestion();
-//				q.setQuestion(questionText);
-//				q.setAnswer(questionAnswer);
-//				q.setScore(1);
-//				questionsList.add(q);
+				int maxPoint = question.get("maxpoint").getAsInt();
+				Question q = new Question(questionText, QuestionType.basicResponse, maxPoint);
+				Answer ans = new Answer(questionAnswer, true);
+				q.addAnswer(ans);
+				quizObj.addQuestion(q);
 				System.out.println("q text: "+questionText);
 			}
 			else if(questionCategoryId == 2 ){
 				String questionText = question.get("question").getAsString();
 				String questionAnswer = question.get("answer").getAsString();
+				int maxPoint = question.get("maxpoint").getAsInt();
 				String[] choices = new String[4];
 				for(int j=0; j<choices.length; j++){
 					choices[j] = question.get("choice"+(j+1)).getAsString();
 				}
-//				MultipleChoiceQuestion q = new MultipleChoiceQuestion(questionText, choices, questionAnswer, 1);
-//				questionsList.add(q);
+				Question q = new Question(questionText, QuestionType.multiAnswer, maxPoint);
+				Answer ans1 = null;
+				Answer ans2 = null;
+				Answer ans3 = null;
+				Answer ans4 = null;
+				
+				if (questionAnswer == "A"){
+					ans1 = new Answer(choices[0], true);
+					ans2 = new Answer(choices[1], false);
+					ans3 = new Answer(choices[2], false);
+					ans4 = new Answer(choices[3], false);
+					
+				}
+				if (questionAnswer == "B"){
+					ans1 = new Answer(choices[0], false);
+					ans2 = new Answer(choices[1], true);
+					ans3 = new Answer(choices[2], false);
+					ans4 = new Answer(choices[3], false);
+					
+				}
+				if (questionAnswer == "C"){
+					ans1 = new Answer(choices[0], false);
+					ans2 = new Answer(choices[1], false);
+					ans3 = new Answer(choices[2], true);
+					ans4 = new Answer(choices[3], false);
+					
+				}
+				if (questionAnswer == "D"){
+					ans1 = new Answer(choices[0], false);
+					ans2 = new Answer(choices[1], false);
+					ans3 = new Answer(choices[2], false);
+					ans4 = new Answer(choices[3], true);
+					
+				}
+				
+				q.addAnswer(ans1);
+				q.addAnswer(ans2);
+				q.addAnswer(ans3);
+				q.addAnswer(ans4);
+				quizObj.addQuestion(q);
+				System.out.println("q text: "+questionText);
+				
 			}
 			else if(questionCategoryId == 3 ){
 				String pictureUrl = question.get("url").getAsString();
 				String questionAnswer = question.get("answer").getAsString();
-//				PictureQuizQuestion q = new PictureQuizQuestion(pictureUrl, questionAnswer, 1);
-//				questionsList.add(q);
+				String questionText = question.get("question").getAsString();
+				int maxPoint = question.get("maxpoint").getAsInt();
+				Question q = new Question(questionText, QuestionType.pictureResponse, maxPoint);
+				Answer ans = new Answer(questionAnswer, true);
+				q.addAnswer(ans);
+				q.setPhoto(pictureUrl);
+				quizObj.addQuestion(q);
 			}
 			else  if(questionCategoryId == 4 ){
 				String questionText = question.get("question").getAsString();
 				JsonArray jsonAnswers = question.get("answers").getAsJsonArray();
+				int maxPoint = question.get("maxpoint").getAsInt();
+				Question q = new Question(questionText, QuestionType.fillInTheBlank, maxPoint);
 				String [] answers = new String[jsonAnswers.size()];
 				for(int k=0; k<answers.length; k++){
 					answers[k]=jsonAnswers.get(i).getAsString();
+					Answer ans = new Answer(answers[k], true);
+					q.addAnswer(ans);
 				}
+				quizObj.addQuestion(q);
+				
 				System.out.println(answers);
-//				FillTheGapsQuestion q = new FillTheGapsQuestion(questionText, answers, 1);
-//				questionsList.add(q);
 			}
 		}
-//		quizObj.setOwnes((User)request.getSession().getAttribute("user"));
-//		DBHelper.addQuizIntoDatabase(quizObj);
+		QuizManager man = new QuizManager();
+		man.setQuiz(quizObj);
 //		System.out.println("name: "+quizObj.getQuizName());
 //		System.out.println("random: "+quizObj.isRandom());
 		response.getOutputStream().print("home.jsp");

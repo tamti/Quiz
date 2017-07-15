@@ -59,18 +59,24 @@ if(user == null){
 			<textarea rows="5" cols="100" class="questionText"></textarea>
 			<h6>Enter correct answer</h6>
 			<textarea rows="2" cols="100" class="questionAnswer"></textarea>
+			
 		</div>
 	</fieldset>
 </div>
 <div id="questionAnswerTemplate" style="display: none">
 	<h6>Enter Question</h6>
-	<textarea rows="5" cols="100" class="questionText"></textarea>
+	<textarea rows="2" cols="80" class="questionText"></textarea>
 	<h6>Enter correct answer</h6>
-	<textarea rows="2" cols="100" class="questionAnswer"></textarea>
+	<textarea rows="2" cols="80" class="questionAnswer"></textarea>
+	<p>Enter Max Point:
+	<input type="number" id="MaxPoint" class = "maxpoint"/></p>
+	
 </div>
 <div id="multipleChoiceTemplate" style="display: none">
 	<h6>Enter Question</h6>
 	<textarea rows="5" cols="100" class="questionText"></textarea>
+	<h6>Enter Max Point:</h6>
+	<input type="number" id="MaxPoint" class = "maxpoint"/>
 	<p>A: <input type="text" class="choice1"></p>
 	<p>B: <input type="text" class="choice2"></p>
 	<p>C: <input type="text" class="choice3"></p>
@@ -83,13 +89,18 @@ if(user == null){
 							<option value="D">D</option>
 						</select>
 						</p>
+	
 </div>
 <div id="pictureQuestionTemplate" style="display: none">
 	<h6>Enter picture url:</h6>
 	<input type="text" class="pictureURL" onchange="changePictureURL(this)"/>
 	<img class="pqImage" width="100px" height="100px"/>
+	<h6>Enter Question:</h6>
+	<textarea rows="5" cols="100" class="questionText"></textarea>
 	<h6>Enter correct answer</h6>
 	<textarea rows="2" cols="100" class="pictureAnswer"></textarea>
+	<h6>Enter Max Point:</h6>
+	<input type="number" id="MaxPoint" class = "maxpoint"/>
 </div>
 <div id="fillTheGapsTemplate" style="display: none">
 	<h6>Enter Question</h6>
@@ -100,6 +111,8 @@ if(user == null){
 	<div class="answers">
 		<input type="text" class="ftgAnswer1"/>
 	</div>
+	<h6>Enter Max Point:</h6>
+	<input type="number" id="MaxPoint" class = "maxpoint"/>
 </div>
 
 <!-- <body> -->
@@ -150,7 +163,8 @@ $('#addQuiz').click(function(){
 					var obj = {category: 1};
 					obj.question = $(question).find(".questionText").val();
 					obj.answer = $(question).find(".questionAnswer").val();
-					if(obj.question == "" || obj.answer == ""){
+					obj.maxpoint = $(question).find(".maxpoint").val();
+					if(obj.question == "" || obj.answer == "" || obj.maxpoint==""){
 						alert("fill all fields of question "+(i+1));
 						return;
 					}
@@ -164,6 +178,7 @@ $('#addQuiz').click(function(){
 						obj["choice"+j] = $(question).find(".choice"+j).val();
 					obj.answer = $(question).find(".correctAnswer").val();
 					console.log(obj);
+					obj.maxpoint = $(question).find(".maxpoint").val();
 					if(obj.question == "" || obj.choice1 == "" || obj.choice2 == "" || obj.choice3 == "" || obj.choice4 == "" || 
 							obj.answer == ""){
 						alert("fill all fields of question "+(i+1));
@@ -175,7 +190,9 @@ $('#addQuiz').click(function(){
 				case "pictureQuestionTemplate":{
 					var obj = {category :3 }
 					obj.url = $(question).find(".pictureURL").val();
+					obj.question = $(question).find(".questionText").val();
 					obj.answer = $(question).find(".pictureAnswer").val();
+					obj.maxpoint = $(question).find(".maxpoint").val();
 					if(obj.url == "" || obj.answer == ""){
 						alert("fill all fields of question "+(i+1));
 						return;
@@ -186,6 +203,7 @@ $('#addQuiz').click(function(){
 				case "fillTheGapsTemplate":{
 					var obj = {category :4 }
 					obj.question=$(question).find(".questionText").val();
+					obj.maxpoint = $(question).find(".maxpoint").val();
 					obj.answers = [];
 					for(var k=1; k<=$(question).find(".ftgNumberQuantity").val(); k++){
 						obj.answers.push($(question).find(".ftgAnswer"+k).val());

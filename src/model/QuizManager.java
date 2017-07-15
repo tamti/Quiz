@@ -63,6 +63,13 @@ public class QuizManager {
 		return result;
 	}
 
+	
+	public void setQuiz(Quiz quiz) {
+		int result = qDao.insertQuiz(quiz);
+		quizInfo.put(quiz.getQuizName(), result);
+		
+	}
+	
 	/**
 	 * 
 	 * Creates a new Question without any answers and adds it to the specified
