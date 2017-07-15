@@ -19,7 +19,7 @@ public class User extends PhotoAble implements Comparable<User> {
 
 	public User(int userID, String firstName, String lastName, String email, String username, String password,
 			SortedSet<String> friends, SortedSet<String> friendRequests) {
-		this.ID = -1;
+		this.ID = userID;
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
