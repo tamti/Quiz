@@ -136,8 +136,10 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 				String username = rs.getString(DbContract.COL_USERNAME);
 				int photoID = rs.getInt(DbContract.COL_PHOTO_ID);
 
-				User u = new User(firstName, lastName, email, username, password, userID);
+				SortedSet<String> friends = getUserFriends(userID, true);
+				SortedSet<String> friendRequests = getUserFriends(userID, false);
 
+				User u = new User(userID, firstName, lastName, email, username, password, friends, friendRequests);
 				// String photo = rs.getString(DbContract.COL_PHOTO_FILE);
 
 				u.setPhotoID(photoID);
@@ -257,8 +259,6 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 
 		String query = prepareSelectStatementWith(col, tables, condition);
 
-		String currUsername = "";
-
 		try (Connection con = DataSource.getDataSource().getConnection();
 				PreparedStatement ps = con.prepareStatement(query)) {
 
@@ -269,7 +269,7 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 			try (ResultSet rs = ps.executeQuery()) {
 
 				while (rs.next()) {
-					currUsername = rs.getString("u." + DbContract.COL_USERNAME);
+					String currUsername = rs.getString("u." + DbContract.COL_USERNAME);
 					result.add(currUsername);
 				}
 			} catch (SQLException e) {

@@ -135,7 +135,7 @@ CREATE TABLE user_achievements (
  * boolean indicating if the correct answers to the 
  * questions of this quiz should be showed immediately or not
  * (true indicates that they should), max allowed time to complete
- * the quiz, max number of points for the quiz.
+ * the quiz.
  *
  * Authors are stored as foreign keys referencing their
  * respective table ("users")
@@ -149,7 +149,6 @@ CREATE TABLE quizzes (
     show_correct_answer_immediately BOOLEAN NOT NULL,
 	show_questions_on_one_page BOOlEAN NOT NULL,
 	max_allowed_time_in_minutes INT NOT NULL,
-    max_points INT NOT NULL,
     CONSTRAINT quizzes_pk PRIMARY KEY (quiz_id),
     CONSTRAINT quizzes_uk UNIQUE KEY (quiz_name),
     CONSTRAINT quizzes_fk FOREIGN KEY (quiz_author_id)

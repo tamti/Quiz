@@ -17,7 +17,7 @@ public class User extends PhotoAble implements Comparable<User> {
 	private SortedSet<String> friendRequests;
 	private SortedSet<Statistics> stats;
 
-	public User(String firstName, String lastName, String email, String username, String password,
+	public User(int userID, String firstName, String lastName, String email, String username, String password,
 			SortedSet<String> friends, SortedSet<String> friendRequests) {
 		this.ID = -1;
 		this.firstName = firstName;
@@ -32,12 +32,7 @@ public class User extends PhotoAble implements Comparable<User> {
 	}
 
 	public User(String firstName, String lastName, String email, String username, String password) {
-		this(firstName, lastName, email, username, password, new TreeSet<String>(), new TreeSet<String>());
-	}
-
-	public User(String firstName, String lastName, String email, String username, String password, int ID) {
-		this(firstName, lastName, email, username, password);
-		this.ID = ID;
+		this(-1, firstName, lastName, email, username, password, new TreeSet<String>(), new TreeSet<String>());
 	}
 
 	public int getID() {
@@ -129,8 +124,8 @@ public class User extends PhotoAble implements Comparable<User> {
 		return friends.contains(username);
 	}
 
-	public void removeFriend(User friend) {
-		friends.remove(friend);
+	public void removeFriend(String username) {
+		friends.remove(username);
 	}
 
 	public SortedSet<Statistics> getStats() {

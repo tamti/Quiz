@@ -6,6 +6,7 @@ public class PhotoAble {
 
 	public PhotoAble() {
 		photoID = -1;
+		photoUrl = "";
 	}
 	
 	public int getPhotoID() {
@@ -19,11 +20,16 @@ public class PhotoAble {
 		this.photoUrl = url;
 	}
 	
+	public String getPhoto() {
+		return photoUrl;
+	}
+	
 	public void removePhoto() {
 		photoID = -1;
+		photoUrl = "";
 	}
 	
 	public boolean hasPhoto() {
-		return photoID > 0;
+		return !photoUrl.isEmpty();
 	}
 }

@@ -1,7 +1,6 @@
 package model;
 
 import java.sql.Timestamp;
-import java.util.Calendar;
 
 public class Statistics implements Comparable<Statistics> {
 	private int quizID;

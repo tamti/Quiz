@@ -75,28 +75,28 @@ public class AccountManager {
 			return users.get(username);
 
 		User u = uDao.getUserByUsername(username);
-
+		
 		if (u != null) {
-			u.setFriends(uDao.getUserFriends(u.getID(), true));
-			
-			u.setFriendRequests(uDao.getUserFriends(u.getID(), false));
-
-			u.setStats(sDao.getStatisticsByUser(u.getID()));
-			
+			SortedSet<Statistics> stats = sDao.getStatisticsByUser(u.getID());
+						
+			u.setStats(stats);
+						
 			users.put(u.getUsername(), u);
 		}
-
 		return u;
 	}
+
+	public SortedMap<String, User> getAllUsers() {
+		return users;
+	}
 	
-	public String getUserById(int user_id){
-		if(!uDao.getUsername(user_id).equals("")){
+	public String getUserById(int user_id) {
+		if (!uDao.getUsername(user_id).equals("")) {
 			return uDao.getUsername(user_id);
+		} else {
+			throw new RuntimeException("User doesn't excist");
 		}
-		else{
-			 throw new RuntimeException("User doesn't excist");
-		}
-			
+
 	}
 
 	/**
@@ -227,8 +227,8 @@ public class AccountManager {
 
 		uDao.updateFriendshipStatus(user.getID(), friend.getID(), false, false);
 
-		user.removeFriend(friend);
-		friend.removeFriend(user);
+		user.removeFriend(friend.getUsername());
+		friend.removeFriend(user.getUsername());
 	}
 
 	/**
@@ -238,21 +238,20 @@ public class AccountManager {
 	 * 
 	 * @param username
 	 */
-	public boolean isAdminAcc(String username){
+	public boolean isAdminAcc(String username) {
 		User user = getUser(username);
 		return uDao.getAdminStatus(user.getID());
 	}
-	
-	public boolean isActiveAccount(String username){
+
+	public boolean isActiveAccount(String username) {
 		User user = getUser(username);
 		return uDao.UserActivationStatus(user.getID());
 	}
 
-	public ArrayList<Announcement> getAnnouncements(){
+	public ArrayList<Announcement> getAnnouncements() {
 		ArrayList<Announcement> ann = new ArrayList<Announcement>();
 		ann = uDao.getAllAnnouncements();
-		return ann;	
+		return ann;
 	}
-	
-	
+
 }
