@@ -34,7 +34,7 @@ public class User extends PhotoAble implements Comparable<User> {
 	public User(String firstName, String lastName, String email, String username, String password) {
 		this(-1, firstName, lastName, email, username, password, new TreeSet<String>(), new TreeSet<String>());
 	}
-
+	
 	public int getID() {
 		return ID;
 	}
@@ -44,7 +44,7 @@ public class User extends PhotoAble implements Comparable<User> {
 	}
 
 	public String getURL() {
-		return "User.jsp?username=" + username;
+		return "profilePage.html?username=" + username;
 	}
 
 	public void addFriend(String username) {

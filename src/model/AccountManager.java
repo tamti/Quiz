@@ -1,6 +1,9 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.SortedMap;
 import java.util.SortedSet;
 
@@ -232,6 +235,23 @@ public class AccountManager {
 		friend.removeFriend(user.getUsername());
 	}
 
+	
+	public User [] searchUsers(String text){
+		ArrayList<User> users = new ArrayList<>();
+		AccountManager man = new AccountManager();
+		SortedMap<String, User> alluser = man.getAllUsers() ;
+		for (SortedMap.Entry<String, User> entry : alluser.entrySet()){
+			if(entry.getKey().contains(text)){
+				users.add(entry.getValue());
+				System.out.println(entry.getKey());
+			}
+		}
+		User [] answer = new User [users.size()];
+		return users.toArray(answer);
+		
+		
+	}
+	
 	/**
 	 * 
 	 * Assigns the specified user as an admin, so that he would be able to use

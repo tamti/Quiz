@@ -36,7 +36,7 @@ if(user == null){
 		<div class = "headerMenu" size = "60">
 			<div class = "search-box">
 
-				<form action="search" method = "GET" id = "search">
+				<form action="searchServlet" method = "POST" id = "search">
 					<input id="searchForm" type = "text" name="q" size="60" placeholder="Search ...">
 				</form>
 				<a href="https://instagram.com/"><img class = "link" src="./img/2.png"></a>

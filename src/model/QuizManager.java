@@ -174,4 +174,20 @@ public class QuizManager {
 		 ArrayList<String> list = new ArrayList<String>(quizInfo.keySet());
 		 return list;
 	}
+	public Quiz [] searchQuizes(String text){
+		ArrayList<Quiz> quizes = new ArrayList<>();
+		QuizManager quizman = new QuizManager();
+		ArrayList<String> allQuiz = quizman.getQuizNames();
+		for (int i=0; i<allQuiz.size(); i++){
+			if(allQuiz.get(i).contains(text)){
+				quizes.add(quizman.getQuiz(allQuiz.get(i)));
+				System.out.println(allQuiz.get(i));
+			}
+		}
+		Quiz [] answer = new Quiz[quizes.size()];
+		return quizes.toArray(answer);
+		
+	}
+	
+
 }
