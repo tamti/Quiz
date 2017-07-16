@@ -25,7 +25,7 @@ if(user == null){
 		<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
 	</head>
 	<body>
-	<a href="creatQuiz.jsp"><img class = "quiz" src="./img/blaa.png" title="Create New Quiz"></a>
+	<a href="createQuiz.jsp"><img class = "quiz" src="./img/blaa.png" title="Create New Quiz"></a>
 			<hr>
 		<div class = "headerMenu" size = "60">
 			<div class = "search-box">

@@ -31,7 +31,7 @@ if(user == null){
 </head>
 <body>	 
 		 
-<a href="creatQuiz.jsp"><img class = "quiz" src="./img/blaa.png" title="Create New Quiz"></a>
+<a href="createQuiz.jsp"><img class = "quiz" src="./img/blaa.png" title="Create New Quiz"></a>
 			<hr>
 		<div class = "headerMenu" size = "60">
 			<div class = "search-box">
