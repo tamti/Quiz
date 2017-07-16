@@ -74,10 +74,12 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 	private ArrayList<Question> getAllQuestionsFor(int quizID) {
 		ArrayList<Question> res = new ArrayList<Question>();
 
-		String tables = DbContract.TABLE_QUESTIONS + " q, " + DbContract.TABLE_QUIZ_QUESTIONS + " qq";
+		String tables = DbContract.TABLE_QUESTIONS + " q, " + DbContract.TABLE_QUIZ_QUESTIONS + " qq, "
+				+ DbContract.TABLE_QUESTION_TYPES + " qt";
 
-		String condition = "qq." + DbContract.COL_QUIZ_ID + " = ? and qq." + DbContract.COL_QUESTION_ID + " = " + "q."
-				+ DbContract.COL_QUESTION_ID;
+		String condition = "qq." + DbContract.COL_QUIZ_ID + " = ? and qq." + DbContract.COL_QUESTION_ID + " = q."
+				+ DbContract.COL_QUESTION_ID + " AND q." + DbContract.COL_QUESTION_TYPE_ID + " = qt."
+				+ DbContract.COL_QUESTION_TYPE_ID;
 
 		String query = prepareSelectStatementWith("*", tables, condition);
 
@@ -356,7 +358,7 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 			ps.executeUpdate();
 
 			System.out.println("INSERT ANSWER " + newAnswer.getAnswerStr());
-			
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -474,8 +476,8 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 			e.printStackTrace();
 		}
 	}
-	
-	public void removeQuiz(int quiz_id){
+
+	public void removeQuiz(int quiz_id) {
 		String condition = DbContract.COL_QUIZ_ID + " = ?";
 		String query = prepareDeleteStatementWith(DbContract.TABLE_QUIZZES, condition);
 
@@ -490,6 +492,5 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 			e.printStackTrace();
 		}
 	}
-	
 
 }
