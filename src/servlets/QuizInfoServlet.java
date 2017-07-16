@@ -40,13 +40,14 @@ public class QuizInfoServlet extends HttpServlet {
 	    
 		QuizManager quizMan = new QuizManager();
 		ArrayList<String> n = quizMan.getQuizNames();
-		System.out.println("uuuaa");
+		
+		request.getSession().setAttribute("quizes", n);
 
-		for(int i=0;i<n.size();i++){
-			System.out.println(n.get(i));
-		}
+//		for(int i=0;i<n.size();i++){
+//			System.out.println(n.get(i));
+//		}
 		String json = gson.toJson(n);
-	    
+	   
 	    response.setContentType("application/json");
 	    response.setCharacterEncoding("UTF-8");
 	    response.getWriter().write(json);

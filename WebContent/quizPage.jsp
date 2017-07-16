@@ -1,3 +1,4 @@
+<%@page import="others.quizListener"%>
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 <%@page import="databaseManagement.*"%>
@@ -7,13 +8,14 @@
 <% 
 HttpSession ses = request.getSession();
 String username = (String) session.getAttribute("username");
-//System.out.println("username: "+username);
+System.out.println("username: "+username);
 AccountManager accountman = new AccountManager();
 User user = accountman.getUser(username);
 if(user == null){
 	response.sendRedirect("homepage.html");
 }else{
-	String quizName = request.getParameter("quizName");
+	String quizName = request.getParameter("quizname");
+	System.out.println("quizname: "+quizName);
 	QuizManager man = new QuizManager();
 	Quiz quiz = man.getQuiz(quizName);
 	ses.setAttribute("quiz", quiz);
@@ -46,7 +48,16 @@ if(user == null){
     		<img style="float:right;" class = "animated bounce" src="./img/minuka.jpg">
 		<h2>Name of Quiz: <%=quiz.getQuizName()%></h2>
 		<h3>Description: <%=quiz.getDescription() %></h3>
-		<h4>Creator: <a href="<%accountman.getUserById(quiz.getOwnerID());%>"></a></h4>
+		<h4>Creator: <%=accountman.getUserById(quiz.getOwnerID())%></h4>
+		<h4>number of questions: <%=quiz.getQuestions().size()%></h4>
+		 <% for(int i = 0;i< quiz.getQuestions().size();i++){ 
+			 System.out.println(quiz.getQuestions().get(i));%>
+			  <p> <%=(quiz.getQuestions().get(i))%></p>
+			<% }%>
+		 
 		</div>
 		<%} %>
+		<div>
+		
+		</div>
 </html>
