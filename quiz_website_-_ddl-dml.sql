@@ -303,7 +303,7 @@ CREATE TABLE quiz_stats (
     taken_on DATETIME NOT NULL,
     used_time_in_seconds INT NOT NULL,
     num_correct_answers INT NOT NULL,
-    num_recieved_points DECIMAL NOT NULL,
+    num_received_points DECIMAL NOT NULL,
 	some_answers_need_checking BOOLEAN NOT null,
     CONSTRAINT quiz_stats_pk PRIMARY KEY (stat_id),
     CONSTRAINT quiz_stats_fk1 FOREIGN KEY (quiz_id)

@@ -112,7 +112,7 @@ public class StatisticsDAO extends BasicQuizWebSiteDAO {
 			e.printStackTrace();
 		}
 
-		return new TreeSet<Statistics>();
+		return result;
 	}
 
 	/**

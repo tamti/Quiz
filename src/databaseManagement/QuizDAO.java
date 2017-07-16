@@ -5,13 +5,11 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import model.Announcement;
 import model.Answer;
 import model.Question;
 import model.Quiz;

@@ -14,10 +14,17 @@ import java.util.TreeSet;
 import model.Announcement;
 import model.Challenge;
 import model.Message;
+import model.Statistics;
 import model.User;
 
 public class UserDAO extends BasicQuizWebSiteDAO {
 
+	StatisticsDAO sDao;
+	
+	public UserDAO() {
+		sDao = new StatisticsDAO();
+	}
+	
 	/**
 	 * Selects from the database all the necessary parameters for the user
 	 * filtered with the given username and returns a User object constructed
@@ -138,7 +145,8 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 
 				SortedSet<String> friends = getUserFriends(userID, true);
 				SortedSet<String> friendRequests = getUserFriends(userID, false);
-				User u = new User(userID, firstName, lastName, email, username, password, friends, friendRequests);
+				SortedSet<Statistics> stats = sDao.getStatisticsByUser(userID);
+				User u = new User(userID, firstName, lastName, email, username, password, friends, friendRequests, stats);
 				// String photo = rs.getString(DbContract.COL_PHOTO_FILE);
 
 				u.setPhotoID(photoID);

@@ -351,3 +351,4 @@ src/databaseManagement/MyDbInfo.java
 src/databaseManagement/DBCPDataSourceExample.java
 src/others/DaoTester.java
 WebContent/History.html
+WebContent/Test.html
