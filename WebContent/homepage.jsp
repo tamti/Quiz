@@ -19,7 +19,7 @@ if(user == null){
 				<link rel="stylesheet" type="text/css" href="./css/Quiz.css"/>
 		 <link rel="stylesheet" type="text/css" href="./css/HeaderSCC.css"/>
 <!-- 		<link rel="stylesheet" type="text/css" href="./css/bootstrap/css/bootstrap.min.css"/>
- -->		<title> <%=user.getFirstName()%> </title>
+ -->		<title> <%=user.getUsername()%> </title>
  		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
  		
 		<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
@@ -35,8 +35,8 @@ if(user == null){
 				</form>
 				<img class = "link" src="./img/2.png"></a>
 				<br>
-				<p id = "bla" class = "boloshi"><a href="homepage.jsp"> <%=user.getFirstName() %> <%=user.getLastName() %></a></p>
-				<a href="homepage.jsp"><img class = "user" src="./img/user.png"></a>
+				<p id = "bla" class = "boloshi"><a href="profilePage.jsp"> <%=user.getFirstName() %> <%=user.getLastName() %></a></p>
+				<a href=<%="profilePage.jsp?username=" + user.getUsername()%>><img class = "user" src="./img/user.png"></a>
 				
 			</div>
 		</div>
