@@ -39,7 +39,7 @@ if(user == null){
 				<form action="searchServlet" method = "POST" id = "search">
 					<input id="searchForm" type = "text" name="q" size="60" placeholder="Search ...">
 				</form>
-				<a href="https://instagram.com/"><img class = "link" src="./img/2.png"></a>
+				<img class = "link" src="./img/2.png"></a>
 				<p id = "bla" class="out"><a href="SignOutServlet">Sing Out</a></p>
 			 <p id = "bla" class = "boloshi"><a href="homepage.html"><%=user.getFirstName()%> <%=user.getLastName() %></a></p>
 				<a href="homepage.html"><img class = "user" src="./img/user.png"></a>
