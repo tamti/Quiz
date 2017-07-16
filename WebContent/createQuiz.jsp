@@ -41,8 +41,8 @@ if(user == null){
 				</form>
 				<img class = "link" src="./img/2.png"></a>
 				<p id = "bla" class="out"><a href="SignOutServlet">Sing Out</a></p>
-			 <p id = "bla" class = "boloshi"><a href="homepage.html"><%=user.getFirstName()%> <%=user.getLastName() %></a></p>
-				<a href="homepage.html"><img class = "user" src="./img/user.png"></a>
+			 <p id = "bla" class = "boloshi"><a href="homepage.jsp"><%=user.getFirstName()%> <%=user.getLastName() %></a></p>
+				<a href="homepage.jsp"><img class = "user" src="./img/user.png"></a>
 				
 			</div>
 		</div>

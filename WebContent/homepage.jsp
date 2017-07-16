@@ -1,10 +1,45 @@
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<%@ page import="model.AccountManager"%>
+<%@ page import="model.User"%>
 <!DOCTYPE html>
 <html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Hello  </title>
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<%
+HttpSession ses = request.getSession();
+String username = (String) session.getAttribute("username");
+//System.out.println("username: "+username);
+AccountManager accountman = new AccountManager();
+User user = accountman.getUser(username);
+if(user == null){
+	response.sendRedirect("login.html");
+}else{
+%>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+				<link rel="stylesheet" type="text/css" href="./css/Quiz.css"/>
+		 <link rel="stylesheet" type="text/css" href="./css/HeaderSCC.css"/>
+<!-- 		<link rel="stylesheet" type="text/css" href="./css/bootstrap/css/bootstrap.min.css"/>
+ -->		<title> <%=user.getFirstName()%> </title>
+ 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+ 		
+		<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+	</head>
+	<body>
+	<a href="creatQuiz.jsp"><img class = "quiz" src="./img/blaa.png" title="Create New Quiz"></a>
+			<hr>
+		<div class = "headerMenu" size = "60">
+			<div class = "search-box">
+
+				<form action="searchServlet" method = "POST" id = "search">
+					<input id="searchForm" type = "text" name="q" size="60" placeholder="Search ...">
+				</form>
+				<img class = "link" src="./img/2.png"></a>
+				<br>
+				<p id = "bla" class = "boloshi"><a href="homepage.jsp"> <%=user.getFirstName() %> <%=user.getLastName() %></a></p>
+				<a href="homepage.jsp"><img class = "user" src="./img/user.png"></a>
+				
+			</div>
+		</div>
 
 <style>
 body{
@@ -97,6 +132,6 @@ th, td {
 	
 	
 </script>
-
+<%} %>
 </body>
 </html>

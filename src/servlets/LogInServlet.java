@@ -66,7 +66,7 @@ public class LogInServlet extends HttpServlet {
 				RequestDispatcher dispatch = request.getRequestDispatcher("adminpage.html");
 				dispatch.forward(request, response);
 			} else {
-				RequestDispatcher dispatch = request.getRequestDispatcher("homepage.html");
+				RequestDispatcher dispatch = request.getRequestDispatcher("homepage.jsp");
 				dispatch.forward(request, response);
 			}
 		} else {

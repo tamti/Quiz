@@ -51,8 +51,8 @@
 				</form>
 				<img class = "link" src="./img/2.png"></a>
 				<p class="out"><a href="SignOutServlet">Sign Out</a></p>
-				<p class = "boloshi"><a href="homepage.html"><%=user.getFirstName() %> <%=user.getLastName() %></a></p>
-				<a href="homepage.html"><img class = "user" src="./img/user.png"></a>
+				<p class = "boloshi"><a href="homepage.jsp"><%=user.getFirstName() %> <%=user.getLastName() %></a></p>
+				<a href="homepage.jsp"><img class = "user" src="./img/user.png"></a>
 				
 			</div>
 		</div>

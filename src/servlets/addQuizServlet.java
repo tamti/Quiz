@@ -207,7 +207,7 @@ public class addQuizServlet extends HttpServlet {
 		man.setQuiz(quizObj);
 //		System.out.println("name: "+quizObj.getQuizName());
 //		System.out.println("random: "+quizObj.isRandom());
-		response.getOutputStream().print("homepage.html");
+		response.getOutputStream().print("homepage.jsp");
 	}
 	
 	static String readAll(InputStream in){
