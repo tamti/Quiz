@@ -143,7 +143,7 @@ public class Quiz implements Comparable<Quiz> {
 	 * Compares Quiz objects. Comparison is made with their IDs
 	 * 
 	 * @param other
-	 *            Quiz object to compare to
+	 *            Quiz object to ompare to
 	 * @return the value 0 if this.ID == other.getID(); a value less than 0 if
 	 *         this.ID < other.getID(); and a value greater than 0 if this.ID >
 	 *         other.getID();
