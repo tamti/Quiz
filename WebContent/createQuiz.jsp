@@ -61,9 +61,11 @@ if(user == null){
 		</div>
 		<div class="questionBody">
 			<h6>Enter Question</h6>
-			<textarea rows="5" cols="100" class="questionText"></textarea>
+			<textarea rows="2" cols="80" class="questionText"></textarea>
 			<h6>Enter correct answer</h6>
-			<textarea rows="2" cols="100" class="questionAnswer"></textarea>
+			<textarea rows="2" cols="80" class="questionAnswer"></textarea>
+			<p>Enter Max Point:
+			<input type="number" id="MaxPoint" class = "maxpoint"/></p>
 			
 		</div>
 	</fieldset>
