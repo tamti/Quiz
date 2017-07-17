@@ -38,8 +38,8 @@ if(user == null){
 				</form>
 				<img class = "link" src="./img/2.png">
 				<br>
-				<p id = "bla" class = "boloshi"><a href=<%="profilePage.jsp?username=" + user.getUsername()%>><%=user.getFirstName() %> <%=user.getLastName() %></a></p>
-				<a href=<%="profilePage.jsp?username=" + user.getUsername()%>><img class = "user" src="./img/user.png"></a>
+				<p id = "bla" class = "boloshi"><a href=<%=user.getURL()%>><%=user.getFirstName() %> <%=user.getLastName() %></a></p>
+				<a href=<%=user.getURL()%>><img class = "user" src="./img/user.png"></a>
 				
 			</div>
 		</div>
@@ -64,7 +64,7 @@ th, td {
 
 				
 <div align="center" id = "cover" style="margin-top:1%">
- <input  class="btn btn-warning hell" style="width:33%" type="button" onclick="location.href='<%="profilePage.jsp?username=" + user.getUsername()%>'" value="Profile page" />
+ <input  class="btn btn-warning hell" style="width:33%" type="button" onclick="location.href='<%=user.getURL()%>'" value="Profile page" />
  <input  class="btn btn-warning hell" style="width:33%" type="button" onclick="location.href='allAboutQuizes.jsp'" value="All about quizes" />
  <input class="btn btn-warning hell" style="width:33%" type="button" onclick="location.href='SignOutServlet'" value = "Sign out" />
 </div>
