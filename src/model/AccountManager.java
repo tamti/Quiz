@@ -273,7 +273,7 @@ public class AccountManager {
 		return ann;
 	}
 	
-	public void SendMessage(String from, String to,String msg){
+	public void SendMessage(String from, String to, String msg){
 		int from_id = getUser(from).getID();
 		int to_id = getUser(to).getID();
 		Message m = new Message(from_id, to_id, msg);
@@ -282,6 +282,17 @@ public class AccountManager {
 
 	public SortedSet<Message> getMessagesOf(int userID) {		
 		return uDao.getMessage(userID);
+	}
+	
+	public void SendChallenge(String from, String to, int quizID, String msg) {
+		int fromID = getUser(from).getID();
+		int toID = getUser(to).getID();
+		Challenge chal = new Challenge(fromID, toID, quizID, msg, false, false);
+		uDao.insertChallenge(chal);
+	}
+	
+	public SortedSet<Challenge> getChallengesOf(int userID) {
+		return uDao.getChallangeRequest(userID);
 	}
 	
 }
