@@ -33,7 +33,7 @@
 <!-- 		<link rel="stylesheet" type="text/css" href="./css/challenge.css"/>
  -->		<link rel="stylesheet" type="text/css" href="./css/search.css"/>
 <!-- 		<link rel="stylesheet" type="text/css" href="./css/transi.css"/> 
- -->		<title>Challenge</title>
+ -->		<title>search</title>
 		<link rel="stylesheet" type="text/css" href="./css/styleHome.css"/>
 		<!-- <link rel="stylesheet" type="text/css" href="./css/animate.css"/> -->
 <!-- 		<link rel="stylesheet" type="text/css" href="./css/css/bootstrap.min.css"/>
