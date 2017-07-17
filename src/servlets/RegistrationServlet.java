@@ -51,7 +51,7 @@ public class RegistrationServlet extends HttpServlet {
 
 		if (accountMan.usernameExists(username)) {
 
-			RequestDispatcher dispatch = request.getRequestDispatcher("signup.html");
+			RequestDispatcher dispatch = request.getRequestDispatcher("nameInUse.html");
 			dispatch.forward(request, response);
 
 		} else if (accountMan.createAccount(firstName, lastName, email, username, password)) {

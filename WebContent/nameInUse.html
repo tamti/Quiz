@@ -3,20 +3,83 @@
 <head>
 <meta charset="ISO-8859-1">
 	<title>Registration </title>
-		<link rel="stylesheet" href="css/signUpStyle.css">
+	<link rel="stylesheet" href="css/style.css">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+<script src="http://code.jquery.com/jquery-latest.min.js"></script>
+<style>
+body{
+   background-image: url("topography.png");
+}
+
+input::placeholder {
+  color: orange;
+}
+a{
+   color: orange;	
+}
+</style>
 </head>
 <body>
-				
-				
-	 <form method="post" action="registrationServlet" type="text/css" style="margin-top:80px; padding-left:300px;">
-        <p><input type="text" name="FirstName"   placeholder="FirstName"></p>
-        <p><input type="text" name="LastName"  placeholder="LastName"></p>
-        <p><input type="text" name="UserName"  placeholder="UserName"></p>
-        <p><input type="text" name="Mail"  placeholder="Mail"></p>
-        <p><input type="password" name="Password"  placeholder="Password"></p>
-        <label>username in use.</label>
-       	
-        <p class="submit"><input type="submit" name="commit" value="Sign Up"></p>
-      </form>
-				
+	<h1 align = "center" style="margin-top:3%">Create a new account</h1>
+
+					 <form method="post" action="RegistrationServlet" type="text/css" style="margin-top:7%; margin-left:38%">
+				        <p>	
+				        	<h6>Username alredy in use</h6>
+					        <input type="text" name="FirstName"   placeholder="First Name">
+					        <input type="text" name="LastName"  placeholder="Last Name">
+				        </p>
+				        <p>
+				        	<input type="text" id="uname" name="Username" placeholder="Username" size="getSize()"
+				        	pattern="^[a-zA-Z][a-zA-Z0-9-_\.]{1,30}$" 
+				        	title="Only letters and numbers, plus dashes and hyphens are allowed. At most 30 characters" 
+				        	required>
+				        </p>
+				        <p>
+				        	<input type="email" id="mail1" name="Mail" placeholder="Email" required>
+				        	<input type="email" id="mail2" name="Mail" placeholder="Re-enter email" required>
+				        </p>
+				        <p>
+				        	<input type="password" id = "pass1" name="Password" placeholder="Password" pattern="(?!^[0-9]*$)(?!^[a-zA-Z]*$)^([a-zA-Z0-9]{8,})$" 
+				        	title="Password must contain at least one digit and one English character, no special characters are allowed. At least 8 characters are required." 
+				        	required>
+				        	<input type="password" id="pass2" placeholder="Re-enter password" required>
+				        </p>
+				       	
+				        <p class="submit"><input class="btn btn-warning hell" type="submit" name="commit" value="Create account"></p>
+				        				        
+				      </form>
+				      
+					
+<script>
+	var password = document.getElementById("pass1"), 
+		confirm_password = document.getElementById("pass2");
+
+	function validatePassword() {
+		if (password.value != confirm_password.value) {
+			confirm_password.setCustomValidity("Passwords Don't Match");
+		} else {
+			confirm_password.setCustomValidity('');
+		}
+	}
+
+	password.onchange = validatePassword;
+	confirm_password.onkeyup = validatePassword;
+</script>
+
+<script>
+	var mail = document.getElementById("mail1"), 
+		confirm_mail = document.getElementById("mail2");
+
+	function validateEmailAddress() {
+		if (mail.value != confirm_mail.value) {
+			confirm_mail.setCustomValidity("emails Don't Match");
+		} else {
+			confirm_mail.setCustomValidity('');
+		}
+	}
+
+	mail.onchange = validateEmailAddress;
+	confirm_mail.onkeyup = validateEmailAddress;
+</script>
+	</body>		
 </html>

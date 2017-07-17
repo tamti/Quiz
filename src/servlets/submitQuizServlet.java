@@ -14,6 +14,8 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import com.sun.org.glassfish.external.statistics.Statistic;
 
+import databaseManagement.StatisticsDAO;
+import model.AccountManager;
 import model.Answer;
 import model.Question;
 import model.Quiz;
@@ -50,8 +52,10 @@ public class submitQuizServlet extends HttpServlet {
 		// TODO Auto-generated method stub
 		long time = System.currentTimeMillis();
 		java.sql.Timestamp timestamp = new java.sql.Timestamp(time);
-		
-		User user =(User) request.getSession().getAttribute("user");
+		String userName = (String) request.getSession().getAttribute("username");
+		AccountManager accountman = new AccountManager();
+		User user = accountman.getUser(userName);
+		System.out.println("user  "+user);
 		String json = addQuizServlet.readAll(request.getInputStream());
 		System.out.println(json);
 		JsonArray answers = new JsonParser().parse(json).getAsJsonArray();
@@ -61,9 +65,11 @@ public class submitQuizServlet extends HttpServlet {
 		int index = 0;
 		double point = 0;
 		for(int i=0; i<questions.size(); i++){
-			for(int j=0; j<questions.get(i).getAnswers().size(); j++){
+			ArrayList<String> correctAnswer = questions.get(i).getQuestionsCorrectAnswer(); 
+			for(int j=0; j<correctAnswer.size(); j++){
 				int  cor = 0;
-				if((questions.get(i).getAnswers().get(j).getAnswerStr()).equals(answers.get(index))){
+				System.out.println("question: "+i+","+j+" answer: "+index);
+				if((correctAnswer.get(j)).equals(answers.get(index))){
 					if(questions.get(i).getAnswers().size()==1){
 						cor = -1;
 						point = point + questions.get(i).getMaxPoints();
@@ -77,15 +83,19 @@ public class submitQuizServlet extends HttpServlet {
 				}
 				if(j == questions.get(i).getAnswers().size() -1){
 					if(cor != -1){
-						point = point + ((questions.get(i).getAnswers().size()/cor) * questions.get(i).getMaxPoints());
+						point = point + ((cor/questions.get(i).getAnswers().size()) * questions.get(i).getMaxPoints());
+						System.out.println(point);
+						//System.out.println(correct);
 					}
 				}
 			}
 			
 			
 		}
+		System.out.println("aqamde");
 		Statistics stat = new  Statistics(quiz.getID(),user.getID(), 300, correct, point, false);
-		//DBHelper.playQuiz(user, quiz, correct, timestamp);
+		StatisticsDAO statDao = new StatisticsDAO();
+		statDao.insertStatistics(stat);
 		response.getOutputStream().print("{\"value\": \"correct "+correct+"\", \"url\": \"homepage.jsp\"}");
 		response.getOutputStream().flush();
 	}
