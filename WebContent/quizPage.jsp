@@ -2,6 +2,9 @@
 <%@ page language="java" contentType="text/html; charset=ISO-8859-1"
     pageEncoding="ISO-8859-1"%>
 <%@page import="databaseManagement.*"%>
+<%@page import="others.QuestionType"%>
+<%@page import="java.util.ArrayList"%>
+
 <%@ page import="model.*"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -50,14 +53,115 @@ if(user == null){
 		<h3>Description: <%=quiz.getDescription() %></h3>
 		<h4>Creator: <%=accountman.getUserById(quiz.getOwnerID())%></h4>
 		<h4>number of questions: <%=quiz.getQuestions().size()%></h4>
-		 <% for(int i = 0;i< quiz.getQuestions().size();i++){ 
-			 System.out.println(quiz.getQuestions().get(i));%>
-			  <p> <%=(quiz.getQuestions().get(i))%></p>
+		
+		<%ArrayList <Question> questions = quiz.getQuestions();
+		
+		if(!questions.isEmpty()){
+		  for(int i = 0;i< questions.size();i++){ %>
+		     <div class="question">
+			 <p> <%=(questions.get(i).getQuestionStr())%> </p> 
+			 <% System.out.println(quiz.isOnePage());
+			 QuestionType currType = questions.get(i).getType();
+		     if(currType.equals(QuestionType.basicResponse)){ %>
+		        <input type="hidden" value="1" class="type">
+		        <textarea rows="2" cols="15" class="questionAnswer"></textarea>
+		    	 <% 
+		    	 
+		     }else if(currType.equals(QuestionType.fillInTheBlank)){
+		    	 %><input type="hidden" value="4" class="type">
+		    	 <input type="hidden" class="numAnswers" value= <%=questions.get(i).getAnswers().size()%> > <%
+		    	 for (int j = 0; j< questions.get(i).getAnswers().size();j++){
+		    		 %>
+		    		 <textarea rows="2" cols="15" class="answ<%=j %>"></textarea>
+		    		 <%  
+		    	 }
+		    	
+		     }else if(currType.equals(QuestionType.multipleChoice)){
+		    	 %>     <input type="hidden" value="2" class="type">
+		    	 		<select class="questionAnswer">
+							<option value="A"> <%=questions.get(i).getAnswers().get(0).getAnswerStr() %></option>
+							<option value="B"> <%=questions.get(i).getAnswers().get(1).getAnswerStr() %></option>
+							<option value="C"> <%=questions.get(i).getAnswers().get(2).getAnswerStr() %></option>
+							<option value="D"> <%=questions.get(i).getAnswers().get(3).getAnswerStr() %></option>
+						</select>
+		    	 <%  
+		     }else if(currType.equals(QuestionType.pictureResponse)){
+		    	 System.out.println(questions.get(i).getPhoto());
+		    	 %> 
+		    	    <input type="hidden" value="3" class="type">
+		    	    <img src="<%=questions.get(i).getPhoto()%>"></img>
+					<textarea rows="2" cols="15" class="questionAnswer"></textarea>
+		    	 <% 
+		     }
+				 %>			
+					 
 			<% }%>
 		 
 		</div>
-		<%} %>
-		<div>
+		<%}  }%>
+		 <input type = "submit" value = "submit" onclick="submitQuiz(this)">
+		 </div>
+		<script>
+    var bla;
+	function submitQuiz(e){
+		var questions = $(".question");
+		var answers = [];
+		for(var i=0; i< questions.length; i++){
+			var question = questions[i];
+			switch($(question).find(".type").val()){
+			case "1":{
+				if($(question).find(".questionAnswer").val() === ""){
+					alert("Please don't leave little gap empty!");
+				}
+				answers.push($(question).find(".questionAnswer").val());
+				break;
+			}
+			case "2":{
+				answers.push($(question).find(".questionAnswer option:selected").text());
+				break;
+			}
+			case "3":{
+				if($(question).find(".questionAnswer").val() === ""){
+					alert("Please don't leave little gap empty!");
+				}
+				answers.push($(question).find(".questionAnswer").val());
+				break;
+			}
+			case "4":{
+				var num = $(question).find(".numAnswers").val();
+				var arr = [];
+				for(var j=0; j<num; j++){
+					if(($(question).find(".answ"+j).val()) === ""){
+						alert("Please don't leave little gap empty!");	
+					}
+					answers.push($(question).find(".answ"+j).val());
+				}
+				break;
+			}
+		}
+			
+		}
 		
-		</div>
+		$.ajax({
+			url: "submitQuizServlet",
+			type: "post",
+			data: JSON.stringify(answers),
+			headers: {
+				'content-type': 'application/json'
+			},
+			success: function(data){
+				//bla = data;
+				console.log(data);
+				var d = JSON.parse(data);//???
+				console.log(d);
+				//alert(d.value);
+				window.location.replace(d.url);//linkze gadasvla
+			},
+			error: function(e){
+				alert("error");
+			}
+		});
+	}		
+		</script>
+		</body>
 </html>
