@@ -111,7 +111,7 @@ th, td {
 				<form id="sendmsg" class="bla" onsubmit="sendMSG(event)">
 					<fieldset data-role="collapsible">
 						<legend>Send message</legend>
-						<textarea name="msg" rows="" cols=""
+						<textarea id="msgarea" name="msg" rows="" cols=""
 							placeholder="Write your message here"></textarea>
 						<input type="hidden" name="fromUser" value="<%=viewer%>"></input>
 						<input type="hidden" name="toUser" value="<%=pageOwner%>"></input>
@@ -247,19 +247,14 @@ th, td {
 
 	<script>
 		function removeFriend(e) {
-			console.log('submit');
 			e.preventDefault();
 			var au = "FriendServlet";
-			console.log()
 			$.ajax({
 				type : "POST",
 				url : au,
 				data : $("#removefriend").serialize(),
 				headers : {
 					'content-type' : 'application/x-www-form-urlencoded'
-				},
-				success : function(data) {
-					alert(data);
 				}
 			});
 		}
@@ -277,6 +272,7 @@ th, td {
 					'content-type' : 'application/x-www-form-urlencoded'
 				}
 			});
+			$("#msgarea").val('');
 		}
 	</script>
 
