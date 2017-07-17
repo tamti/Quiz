@@ -117,7 +117,7 @@ if(user == null){
 				break;
 			}
 			case "2":{
-				answers.push($(question).find(".questionAnswer option:selected").text());
+				answers.push($(question).find(".questionAnswer option:selected").html());
 				break;
 			}
 			case "3":{
