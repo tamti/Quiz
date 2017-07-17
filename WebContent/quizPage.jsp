@@ -37,13 +37,13 @@ if(user == null){
 		<div class = "headerMenu" size = "60">
 			<div class = "search-box">
 
-				<form action="search" method = "GET" id = "search">
+				<form action="searchServlet" method = "POST" id = "search">
 					<input id="searchForm" type = "text" name="q" size="60" placeholder="Search ...">
 				</form>
 				<a href="https://instagram.com/"><img class = "link" src="./img/2.png"></a>
 				<p id = "bla" class="out"><a href="SignOutServlet">Sign Out</a></p>
 				<p id = "bla" class = "boloshi"><a href="homepage.jsp"><%=user.getFirstName() %> <%=user.getLastName() %></a></p>
-				<a href="homepage.jsp"><img class = "user" src="./img/user.jpg"></a>
+				<a href="homepage.jsp"><img class = "user" src="./img/user.png"></a>
 				
 			</div>
 		</div>

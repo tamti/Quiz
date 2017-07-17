@@ -96,7 +96,7 @@ public class submitQuizServlet extends HttpServlet {
 		Statistics stat = new  Statistics(quiz.getID(),user.getID(), 300, correct, point, false);
 		StatisticsDAO statDao = new StatisticsDAO();
 		statDao.insertStatistics(stat);
-		response.getOutputStream().print("{\"value\": \"correct "+correct+"\", \"url\": \"homepage.jsp\"}");
+		response.getOutputStream().print("{\"correct\":" +correct+", \"url\": \"playedQuiz.jsp\"}");
 		response.getOutputStream().flush();
 	}
 
