@@ -11,12 +11,12 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" type="text/css" href="./css/Quiz.css"/>
-<link rel="stylesheet" type="text/css" href="./css/HeaderSCC.css"/>
+<link rel="stylesheet" type="text/css" href="./css/HeaderSCC.css"/><!-- 
 <link rel="stylesheet"
 	href="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
 <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
 <script
-	src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+	src="https://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script> -->
 <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 
 <%@ page import="java.util.SortedSet"%>
@@ -87,9 +87,7 @@ th, td {
 			<div class="top">
 				<fieldset class="bla" data-role="collapsible">
 					<legend>Friend list</legend>
-					<input type="text" id="search" onkeyup="filter()"
-						placeholder="Search..." title="Type in a name">
-					<div id="peoplediv">
+					<div id="peoplediv" style="max-height: 250px; overflow-y: auto; overflow-x: hidden; padding-right: 10px;">
 						<ul id="peopleUL">
 							<%
 								SortedSet<String> friends = u.getFriends();
@@ -168,6 +166,34 @@ th, td {
 					}
 				%>
 				</div>
+				
+				<div style="max-height: 540px; overflow-y: auto; overflow-x: hidden; padding-right: 10px;">
+					<h3>Challenges</h3>
+					<%
+					
+					SortedSet<Challenge> challenges = accountMan.getChallengesOf(u.getID());
+					
+					for (Challenge chal : challenges) {
+						String sender = accountMan.getUserById(chal.getSender());
+				%>
+					<% 
+						String note = chal.getText();
+						if (!note.isEmpty()) {
+					%>
+							<p><strong>Note: </strong><%=note%></p>
+					<%
+						}
+					%>
+					<p><strong><%="Challenge from: "%></strong>
+						<a href=<%="profilePage.jsp?username=" + sender%>><%=sender%></a>
+						<strong><%=" sent on " + chal.getTime()%></strong></p>
+					<p><strong></strong></p>
+					<br>
+				<%
+					}
+				%>
+				</div>
+				
 				<%
 				}
 			%>
@@ -251,24 +277,6 @@ th, td {
 					'content-type' : 'application/x-www-form-urlencoded'
 				}
 			});
-		}
-	</script>
-
-	<script>
-		function filter() {
-			var input, filter, ul, li, a, i;
-			input = document.getElementById("search");
-			filter = input.value.toUpperCase();
-			ul = document.getElementById("peopleUL");
-			li = ul.getElementsByTagName("li");
-			for (i = 0; i < li.length; i++) {
-				a = li[i].getElementsByTagName("a")[0];
-				if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
-					li[i].style.display = "";
-				} else {
-					li[i].style.display = "none";
-				}
-			}
 		}
 	</script>
 
