@@ -68,8 +68,8 @@ public class submitQuizServlet extends HttpServlet {
 			ArrayList<String> correctAnswer = questions.get(i).getQuestionsCorrectAnswer(); 
 			for(int j=0; j<correctAnswer.size(); j++){
 				int  cor = 0;
-				System.out.println("question: "+i+","+j+" answer: "+index);
-				if((correctAnswer.get(j)).equals(answers.get(index))){
+				System.out.println("question: "+i+correctAnswer.get(j)+","+j+" answer: "+index+(answers.get(index).getAsString()));
+				if((correctAnswer.get(j)).equals((answers.get(index).getAsString()))){
 					if(questions.get(i).getAnswers().size()==1){
 						cor = -1;
 						point = point + questions.get(i).getMaxPoints();
@@ -96,7 +96,7 @@ public class submitQuizServlet extends HttpServlet {
 		Statistics stat = new  Statistics(quiz.getID(),user.getID(), 300, correct, point, false);
 		StatisticsDAO statDao = new StatisticsDAO();
 		statDao.insertStatistics(stat);
-		response.getOutputStream().print("{\"correct\":" +correct+", \"url\": \"playedQuiz.jsp\"}");
+		response.getOutputStream().print("{\"correct\":" +correct+", \"url\": \"playedQuiz.jsp?quizname="+quiz.getQuizName()+"\"}");
 		response.getOutputStream().flush();
 	}
 
