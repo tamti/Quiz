@@ -104,7 +104,7 @@
 		<br>
 		<br>
 		<br>
-			<a href="homePage.jsp">RETURN HOMEPAGE</a>
+			<a href="<%=user.getURL()%>">RETURN HOMEPAGE</a>
 		</h5>
 		</div>
 	</fieldSet>
