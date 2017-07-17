@@ -52,13 +52,13 @@ th, td {
 	<%
 		HttpSession ses = request.getSession();
 		String viewer = (String) ses.getAttribute("username");
-		System.out.println("viewer: " + viewer);
+
 		String pageOwner = request.getParameter("username");
 
 		ServletContext servletCon = getServletContext();
 		AccountManager accountMan = (AccountManager) servletCon.getAttribute("accountManager");
 		QuizManager qMan = (QuizManager) servletCon.getAttribute("quizManager");
-		System.out.print("page owner: " + pageOwner);
+
 		User u = accountMan.getUser(pageOwner);
 	%>
 
@@ -79,9 +79,9 @@ th, td {
 								SortedSet<String> friends = u.getFriends();
 
 								for (String friend : friends) {
+									System.out.println("friend : " + friend);
 							%>
-							<li>
-								<a href=<%="profilePage.jsp?username=" + friend%>><%=friend%></a>
+							<li><a href=<%="profilePage.jsp?username=" + friend%>><%=friend%></a>
 							</li>
 							<%
 								}
@@ -94,7 +94,7 @@ th, td {
 				<%
 					if (!viewer.equals(pageOwner)) {
 				%>
-				<form class="bla" method="post" action="MessageServlet">
+				<form id="sendmsg" class="bla" onsubmit="sendMSG(event)">
 					<fieldset data-role="collapsible">
 						<legend>Send message</legend>
 						<textarea name="msg" rows="" cols=""
@@ -109,31 +109,24 @@ th, td {
 					if (!u.isFriend(viewer)) {
 				%>
 
-				<form id="tempform">
+				<form id="addfriend" onsubmit="sendFriendRequest(event)">
 					<input type="hidden" name="requestType" value="addFriend"></input>
 					<input type="hidden" name="fromUser" value="<%=viewer%>"></input> 
 					<input type="hidden" name="toUser" value="<%=pageOwner%>"></input> 
-					<input id="addFriend" type="submit" value="Send friend request"></input>
+					<input type="submit" value="Send friend request"></input>
 				</form>
-
+				
 				<%
 					} else {
 				%>
-				<form class="bla" method="post" action="">
-					<fieldset data-role="collapsible">
-						<legend>Send challenge</legend>
-
-						<input type="submit" value="Send"></input>
-						<div data-role="controlgroup"></div>
-					</fieldset>
-				</form>
-
-				<form method="post" action="FriendServlet">
+				
+				<form id="removefriend" onsubmit="removeFriend(event)">
 					<input type="hidden" name="requestType" value="removeFriend"></input>
 					<input type="hidden" name="fromUser" value="<%=viewer%>"></input> 
 					<input type="hidden" name="toUser" value="<%=pageOwner%>"></input> 
 					<input type="submit" value="Remove friend"></input>
 				</form>
+				
 				<%
 					}
 				%>
@@ -173,18 +166,32 @@ th, td {
 			</div>
 		</div>
 	</div>
-	
+
 	<script>
-		 $("#tempform").submit(function(e) {
-			 console.log('submit');
-			 e.preventDefault();
-		//function sendFriendRequest() {
+		 function sendFriendRequest(e) {
+			e.preventDefault();
+			var au = "FriendServlet";
+		    $.ajax({
+		           type: "POST",
+		           url: au,
+		           data: $("#addfriend").serialize(),
+		           headers: {
+		        	   'content-type' : 'application/x-www-form-urlencoded'
+		           }
+		         });
+		 }
+	</script>
+
+	<script>
+		 function removeFriend(e) {
+			console.log('submit');
+			e.preventDefault();
 			var au = "FriendServlet";
 			console.log()
 		    $.ajax({
 		           type: "POST",
 		           url: au,
-		           data: $("#tempform").serialize(),
+		           data: $("#removefriend").serialize(),
 		           headers: {
 		        	   'content-type' : 'application/x-www-form-urlencoded'
 		           },
@@ -193,8 +200,22 @@ th, td {
 		               alert(data);
 		           }
 		         });
-		//}
-		 });
+		 }
+	</script>
+	
+	<script>
+		function sendMSG(e){
+			e.preventDefault();
+			var au = "MessageServlet";
+		     $.ajax({ 
+		           type: "POST",
+		           url: au,
+		           data: $("#sendmsg").serialize(),
+		           headers: {
+		        	   'content-type' : 'application/x-www-form-urlencoded'
+		           }
+		     });
+		}
 	</script>
 
 	<script>
