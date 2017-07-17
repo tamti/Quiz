@@ -109,11 +109,11 @@ th, td {
 					if (!u.isFriend(viewer)) {
 				%>
 
-				<form>
+				<form id="tempform">
 					<input type="hidden" name="requestType" value="addFriend"></input>
 					<input type="hidden" name="fromUser" value="<%=viewer%>"></input> 
 					<input type="hidden" name="toUser" value="<%=pageOwner%>"></input> 
-					<input id="addFriend" type="submit" onclick="sendFriendRequest()" value="Send friend request"></input>
+					<input id="addFriend" type="submit" value="Send friend request"></input>
 				</form>
 
 				<%
@@ -175,19 +175,22 @@ th, td {
 	</div>
 	
 	<script>
-		/* $("#submitButtonId").click(function() { */
-		function sendFriendRequest() {
+		 $("#tempform").submit(function(e) {
+			 console.log('submit');
+			 e.preventDefault();
+		//function sendFriendRequest() {
+			var au = "FriendServlet";
 		    $.ajax({
 		           type: "POST",
-		           url: "FriendServlet",
+		           url: au,
 		           data: $("#addFriend").serialize(),
 		           success: function(data)
 		           {
 		               alert(data);
 		           }
 		         });
-		}
-		/* }); */
+		//}
+		 });
 	</script>
 
 	<script>
