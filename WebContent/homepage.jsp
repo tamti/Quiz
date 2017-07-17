@@ -19,10 +19,13 @@ if(user == null){
 				<link rel="stylesheet" type="text/css" href="./css/Quiz.css"/>
 		 <link rel="stylesheet" type="text/css" href="./css/HeaderSCC.css"/>
 <!-- 		<link rel="stylesheet" type="text/css" href="./css/bootstrap/css/bootstrap.min.css"/>
- -->		<title> <%=user.getUsername()%> </title>
+ -->
  		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
  		
 		<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+		
+		<title>Quiz Web Site</title>
+		
 	</head>
 	<body>
 	<a href="createQuiz.jsp"><img class = "quiz" src="./img/blaa.png" title="Create New Quiz"></a>
@@ -35,7 +38,7 @@ if(user == null){
 				</form>
 				<img class = "link" src="./img/2.png">
 				<br>
-				<p id = "bla" class = "boloshi"><a href="profilePage.jsp"> <%=user.getFirstName() %> <%=user.getLastName() %></a></p>
+				<p id = "bla" class = "boloshi"><a href=<%="profilePage.jsp?username=" + user.getUsername()%>><%=user.getFirstName() %> <%=user.getLastName() %></a></p>
 				<a href=<%="profilePage.jsp?username=" + user.getUsername()%>><img class = "user" src="./img/user.png"></a>
 				
 			</div>
@@ -61,19 +64,15 @@ th, td {
 
 				
 <div align="center" id = "cover" style="margin-top:1%">
+ <input  class="btn btn-warning hell" style="width:33%" type="button" onclick="location.href='<%="profilePage.jsp?username=" + user.getUsername()%>'" value="Profile page" />
  <input  class="btn btn-warning hell" style="width:33%" type="button" onclick="location.href='allAboutQuizes.jsp'" value="All about quizes" />
- <input class="btn btn-warning hell" style="width:33%" type="button" onclick="location.href='friends.html'" value = "Friends">
  <input class="btn btn-warning hell" style="width:33%" type="button" onclick="location.href='SignOutServlet'" value = "Sign out" />
-</div>		
- <form align="left" method="post" action="RegistrationServlet" type="text/css" style="margin-top:1%; ">
- 		  <p id="forname">Welcome </p>
- </form>
-
+</div>
 
 <section style ="width:100%">
 <div id="history" class="scroll" style ="width:50%; float:left">
 	<table id="historyTable" style='overflow:scroll'>
-		<h1>History</h1>
+		<h1>Recent activity</h1>
 		<tr>
 			<th>Quiz</th>
 			<th>Taken on</th>
@@ -86,7 +85,7 @@ th, td {
 
 <div style ="width:50%; float:right">
 <h1> Announcements </h1>
-<div id="ann" class="scroll" style='overflow:scroll'>
+<div id="ann" class="scroll" style='overflow-y:scroll'>
 </div>
 </div>
 </section>
@@ -102,13 +101,6 @@ th, td {
 					.append($("<td>").text(s.numCorrectAnswers))
 					.append($("<td>").text(s.numEarnedPoints));
 			});
-		});
-	});
-	
-	$(document).ready(function() {
-		$.get("LogInServlet", function(txt) {
-			$("title").append(txt)
-			$("#forname").append(txt);
 		});
 	});
 	
