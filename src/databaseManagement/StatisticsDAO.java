@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
@@ -188,5 +190,38 @@ public class StatisticsDAO extends BasicQuizWebSiteDAO {
 			e.printStackTrace();
 		}
 	}
+
+	public Map<String, Integer> getTop10Quizzes() {
+		Map <String, Integer> answer = new HashMap<String, Integer>();
+		String col = "q." + DbContract.COL_QUIZ_NAME + ", count(1) num_played";
+		String tables = DbContract.TABLE_QUIZ_STATS + " qs, " + DbContract.TABLE_QUIZZES + " q";
+		String condition = "qs." + DbContract.COL_QUIZ_ID + " = q." + DbContract.COL_QUIZ_ID + " group by qs."
+				+ DbContract.COL_QUIZ_ID + " order by num_played desc limit 10";
+
+		String query = prepareSelectStatementWith(col, tables, condition);
+		System.out.println(query);
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+			
+			try (ResultSet rs = ps.executeQuery()) {
+				while(rs.next()){
+					String QuizName = rs.getString("q."+DbContract.COL_QUIZ_NAME);
+					System.out.println("Quizname "+ QuizName);
+					int getplayed = rs.getInt("num_played");
+					System.out.println(getplayed);
+					answer.put(QuizName, getplayed);
+				}
+
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return answer;
+	}
+	
+	
 
 }

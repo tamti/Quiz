@@ -3,6 +3,9 @@
 <%@page import="java.io.Console"%>
 <%@page import="servlets.*"%>
 <%@ page import="model.*"%>
+<%@ page import="databaseManagement.*"%>
+<%@page import="java.util.Map"%>
+<%@page import="java.util.ArrayList" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -15,6 +18,8 @@
 	//System.out.println("username: "+username);
 	AccountManager accountman = new AccountManager();
 	User user = accountman.getUser(username);
+	StatisticsDAO stat = new StatisticsDAO();
+	QuizDAO quizdao = new QuizDAO();
 	
 	if(user == null)
 		response.sendRedirect("login.html");
@@ -22,7 +27,8 @@
 		//Message[] messages = DBHelper.getUserUnreadMessages(user.getUserID());
 		//Challenge[] challenges = DBHelper.getUnseenChallenges(user);
 		//FriendRequest[] friendRequest = DBHelper.getUnseenFriendRequest(user);
-		//Quiz[] popQuizes = DBHelper.getPopularQuizes();
+		Map<String, Integer> top10Quizes = stat.getTop10Quizzes();
+		ArrayList<String> recentlyQuizes = quizdao.getQuizByDate();
 		//Quiz[] recentCreatedQuizes = DBHelper.getRecentlyCreatedQuizes(user);
 		//Quiz[] recentQuizActivities = DBHelper.getRecentQuizActivities(user);
 		//Quiz[] userPlayedQuizes = DBHelper.getUserPlayedQuizes(user);
@@ -46,48 +52,81 @@ a{
 <body>
 	<a href="createQuiz.jsp"><img class = "quiz" src="./img/blaa.png" title="Create New Quiz"></a>
 			<hr>
-		<div class = "headerMenu" size = "100">
+		<div class = "headerMenu">
 			<div class = "search-box">
 
 				<form action="searchServlet" method = "POST" id = "search">
-					<input id="searchForm" type = "text" name="q" size="60" placeholder="Search ...">
+					<input id="searchForm" type = "text"  name="q" placeholder="Search ...">
 					
 				</form>
-				<div>
-				<img class = "link" src="./img/2.png">
-				<p> <a href="profilePage.jsp"><%=user.getFirstName()%> <%=user.getLastName() %></a>
 				
-				<p class="out" ><a href="SignOutServlet">Sign Out</a></p>
-				</p>
+				<img class = "link" src="./img/2.png">
+				<p> <a href="<%=user.getURL()%>"><%=user.getFirstName()%> <%=user.getLastName() %></a></p>
+				
+				<p style="margin-top:2%" class="out" ><a href="SignOutServlet">Sign Out</a></p>
+				
+				
 				<a href=<%="profilePage.jsp?username=" + user.getUsername()%>><img class = "user" src="./img/user.png"></a>
 				
-				</div>
 				
 			</div>
 		</div>
 		<input class="btn btn-warning hell" style="width:33%; margin-top:1%" type="button" onclick="location.href='createQuiz.jsp'" value="Create Quiz" />
-
-<div align="center">
-<h1> Top Quizes </h1>
-<div id="ann" class="scroll" style='overflow:scroll'>
-</div>
-</div>
-<script>
-$(document).ready(function() {
-	var output = document.getElementById('ann');
-	$.get("QuizInfoServlet", function(responseJson) {
-		$.each(responseJson, function(index, a) {
-			 var ele = document.createElement("a");
-			 ele.href = "quizPage.jsp?quizname="+a;
-			 ele.append(a);
-			 ele.append(document.createElement("br"));
-			 output.appendChild(ele);
+<div style="display: flex;
+    justify-content: space-around;">
+	<div style="max-height:540px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 10px;">
+	<div >
+	<h1 style="margin-left:6%">All Quizes: </h1>
+	<div id="ann" style="margin-left:2%" class="scroll" style='overflow:scroll'>
+	</div>
+	</div>
+	<script>
+	$(document).ready(function() {
+		var output = document.getElementById('ann');
+		$.get("QuizInfoServlet", function(responseJson) {
+			$.each(responseJson, function(index, a) {
+				 var ele = document.createElement("a");
+				 ele.href = "quizPage.jsp?quizname="+a;
+				 ele.append(a);
+				 ele.append(document.createElement("br"));
+				 output.appendChild(ele);
+			});
 		});
 	});
-});
+	
+	</script>
+	</div>
+	<div>
+	
+	<h1 > Top 10 Quizes: </h1>
+	<div id="ann" style="margin-left:6%" class="scroll" style='overflow:scroll'>
+	<%if(!top10Quizes.isEmpty()) {
+		for(String name : top10Quizes.keySet()){ %>
+					<div><a href="quizPage.jsp?quizname=<%=name%>"><%=name%></a>  <%top10Quizes.get(name);%></div>
+				<%} %>
+	<%} %>
+	
+	</div>
+	</div>
+	
+	<div>
+	<h1>Recently created Quizes:</h1>
+	<div>
+		<%if(recentlyQuizes.size()!=0) {
+		for(int i=0; i<recentlyQuizes.size(); i++){ %>
+					<div><a href="quizPage.jsp?quizname=<%=recentlyQuizes.get(i)%>"> <%=recentlyQuizes.get(i)%></a> </div> 
+				<%} %>
+	<%} %>
+	
+	</div>
+	</div>
+</div>
 
 
-</script>
+
 <%} %>
 </body>
 </html>
