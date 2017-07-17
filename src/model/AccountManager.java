@@ -184,12 +184,16 @@ public class AccountManager {
 	 * @param receiverUsername
 	 */
 	public void sendFriendRequest(String senderUsername, String receiverUsername) {
+		System.out.println("in sendFriendRequest received sender: " + senderUsername);
 		User sender = getUser(senderUsername);
-		User reciever = getUser(receiverUsername);
+		System.out.println("in sendFriendRequest : " + sender.getUsername());
+		
+		System.out.println("in sendFriendRequest received receiver: " + receiverUsername);
+		User receiver = getUser(receiverUsername);
+		System.out.println("in sendFriendRequest : " + receiver.getUsername());
+		uDao.insertFriendShip(sender.getID(), receiver.getID(), true, false);
 
-		uDao.insertFriendShip(sender.getID(), reciever.getID(), true, false);
-
-		reciever.addFriendRequest(sender.getUsername());
+		receiver.addFriendRequest(sender.getUsername());
 	}
 
 	/**

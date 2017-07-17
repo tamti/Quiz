@@ -184,6 +184,9 @@ th, td {
 		           type: "POST",
 		           url: au,
 		           data: $("#addFriend").serialize(),
+		           headers: {
+		        	   'content-type' : 'application/x-www-form-urlencoded'
+		           },
 		           success: function(data)
 		           {
 		               alert(data);
