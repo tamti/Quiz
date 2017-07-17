@@ -180,10 +180,11 @@ th, td {
 			 e.preventDefault();
 		//function sendFriendRequest() {
 			var au = "FriendServlet";
+			console.log()
 		    $.ajax({
 		           type: "POST",
 		           url: au,
-		           data: $("#addFriend").serialize(),
+		           data: $("#tempform").serialize(),
 		           headers: {
 		        	   'content-type' : 'application/x-www-form-urlencoded'
 		           },
