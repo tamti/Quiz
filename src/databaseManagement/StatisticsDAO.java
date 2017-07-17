@@ -206,9 +206,7 @@ public class StatisticsDAO extends BasicQuizWebSiteDAO {
 			try (ResultSet rs = ps.executeQuery()) {
 				while(rs.next()){
 					String QuizName = rs.getString("q."+DbContract.COL_QUIZ_NAME);
-					System.out.println("Quizname "+ QuizName);
 					int getplayed = rs.getInt("num_played");
-					System.out.println(getplayed);
 					answer.put(QuizName, getplayed);
 				}
 

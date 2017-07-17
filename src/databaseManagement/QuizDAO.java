@@ -81,7 +81,6 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 
 				while(rs.next()) {
 					String quizName = rs.getString(DbContract.COL_QUIZ_NAME);
-					System.out.println("quizName " + quizName);
 					result.add(quizName);
 				}
 			} catch (SQLException e) {
