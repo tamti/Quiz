@@ -280,4 +280,8 @@ public class AccountManager {
 		uDao.insertMessage(m);
 	}
 
+	public SortedSet<Message> getMessagesOf(int userID) {		
+		return uDao.getMessage(userID);
+	}
+	
 }

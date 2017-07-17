@@ -23,14 +23,12 @@ public class MessageServlet extends HttpServlet {
      */
     public MessageServlet() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doPost(request,response);
 	}
 
@@ -38,10 +36,10 @@ public class MessageServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String msg = request.getParameter("msg");
-		HttpSession session = request.getSession();
-		String from = (String) session.getAttribute("username");
-		String to = "";
+		String from = (String) request.getParameter("fromUser");
+		String to = (String) request.getParameter("toUser");	
+		String msg = (String) request.getParameter("msg");
+		
 		AccountManager accMan = new AccountManager();
 		accMan.SendMessage(from,to,msg);
 		

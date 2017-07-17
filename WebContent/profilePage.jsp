@@ -111,110 +111,130 @@ th, td {
 
 				<form id="addfriend" onsubmit="sendFriendRequest(event)">
 					<input type="hidden" name="requestType" value="addFriend"></input>
-					<input type="hidden" name="fromUser" value="<%=viewer%>"></input> 
-					<input type="hidden" name="toUser" value="<%=pageOwner%>"></input> 
-					<input type="submit" value="Send friend request"></input>
+					<input type="hidden" name="fromUser" value="<%=viewer%>"></input> <input
+						type="hidden" name="toUser" value="<%=pageOwner%>"></input> <input
+						type="submit" value="Send friend request"></input>
 				</form>
-				
+
 				<%
 					} else {
 				%>
-				
+
 				<form id="removefriend" onsubmit="removeFriend(event)">
 					<input type="hidden" name="requestType" value="removeFriend"></input>
-					<input type="hidden" name="fromUser" value="<%=viewer%>"></input> 
-					<input type="hidden" name="toUser" value="<%=pageOwner%>"></input> 
-					<input type="submit" value="Remove friend"></input>
+					<input type="hidden" name="fromUser" value="<%=viewer%>"></input> <input
+						type="hidden" name="toUser" value="<%=pageOwner%>"></input> <input
+						type="submit" value="Remove friend"></input>
 				</form>
-				
+
 				<%
 					}
 				%>
 
 			</div>
 			<%
+				} else {
+					SortedSet<Message> messages = accountMan.getMessagesOf(u.getID());
+			%>
+			<div style="display: flex; justify-content: space-around;">
+				<div style="max-height: 540px; overflow-y: auto; overflow-x: hidden; padding-right: 10px;">
+					<h3>Messages</h3>
+					<%
+					for (Message msg : messages) {
+						String sender = accountMan.getUserById(msg.getSender());
+				%>
+					<p><strong>Message: </strong><%=msg.getText()%></p>
+					<p><strong><%="Message from: "%></strong>
+						<a href=<%="profilePage.jsp?username=" + sender%>><%=sender%></a>
+						<strong><%=" sent on " + msg.getTime()%></strong></p>
+					<br>
+				<%
+					}
+				%>
+				</div>
+				<%
 				}
 			%>
 
-			<div id="history" class="scroll" style="width: 50%; clear: both">
-				<h3><%=pageOwner + "'s history"%></h3>
-				<table id="historyTable" style='overflow: scroll'>
-					<tr>
-						<th>Quiz</th>
-						<th>Taken on</th>
-						<th>Used time</th>
-						<th>Correct answers</th>
-						<th>Earned points</th>
-					</tr>
-					<%
+				<div id="history" class="scroll" style="width: 50%; clear: both">
+					<h3><%=pageOwner + "'s history"%></h3>
+					<table id="historyTable" style='overflow: scroll'>
+						<tr>
+							<th>Quiz</th>
+							<th>Taken on</th>
+							<th>Used time</th>
+							<th>Correct answers</th>
+							<th>Earned points</th>
+						</tr>
+						<%
 						SortedSet<Statistics> stats = u.getStats();
 						for (Statistics s : stats) {
 							String quizName = qMan.getQuizName(s.getQuizID());
 					%>
-					<tr>
-						<td><a href=<%="quizPage.jsp?quizname=" + quizName%>> <%=quizName%>
-						</a></td>
-						<td><%=s.getTime().toLocalDateTime()%></td>
-						<td><%=s.getUsedTime()%></td>
-						<td><%=s.getNumCorrectAnswers()%></td>
-						<td><%=s.getpoints()%></td>
-					</tr>
-					<%
+						<tr>
+							<td><a href=<%="quizPage.jsp?quizname=" + quizName%>> <%=quizName%>
+							</a></td>
+							<td><%=s.getTime().toLocalDateTime()%></td>
+							<td><%=s.getUsedTime()%></td>
+							<td><%=s.getNumCorrectAnswers()%></td>
+							<td><%=s.getpoints()%></td>
+						</tr>
+						<%
 						}
 					%>
-				</table>
+					</table>
+				</div>
+			</div>
 			</div>
 		</div>
-	</div>
 
 	<script>
-		 function sendFriendRequest(e) {
+		function sendFriendRequest(e) {
 			e.preventDefault();
 			var au = "FriendServlet";
-		    $.ajax({
-		           type: "POST",
-		           url: au,
-		           data: $("#addfriend").serialize(),
-		           headers: {
-		        	   'content-type' : 'application/x-www-form-urlencoded'
-		           }
-		         });
-		 }
+			$.ajax({
+				type : "POST",
+				url : au,
+				data : $("#addfriend").serialize(),
+				headers : {
+					'content-type' : 'application/x-www-form-urlencoded'
+				}
+			});
+		}
 	</script>
 
 	<script>
-		 function removeFriend(e) {
+		function removeFriend(e) {
 			console.log('submit');
 			e.preventDefault();
 			var au = "FriendServlet";
 			console.log()
-		    $.ajax({
-		           type: "POST",
-		           url: au,
-		           data: $("#removefriend").serialize(),
-		           headers: {
-		        	   'content-type' : 'application/x-www-form-urlencoded'
-		           },
-		           success: function(data)
-		           {
-		               alert(data);
-		           }
-		         });
-		 }
+			$.ajax({
+				type : "POST",
+				url : au,
+				data : $("#removefriend").serialize(),
+				headers : {
+					'content-type' : 'application/x-www-form-urlencoded'
+				},
+				success : function(data) {
+					alert(data);
+				}
+			});
+		}
 	</script>
-	
+
 	<script>
-		function sendMSG(e){
+		function sendMSG(e) {
 			e.preventDefault();
 			var au = "MessageServlet";
-		     $.ajax({ 
-		           type: "POST",
-		           url: au,
-		           data: $("#sendmsg").serialize(),
-		           headers: {
-		        	   'content-type' : 'application/x-www-form-urlencoded'
-		           }
-		     });
+			$.ajax({
+				type : "POST",
+				url : au,
+				data : $("#sendmsg").serialize(),
+				headers : {
+					'content-type' : 'application/x-www-form-urlencoded'
+				}
+			});
 		}
 	</script>
 
