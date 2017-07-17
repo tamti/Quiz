@@ -170,10 +170,23 @@ public class QuizManager {
 	public void removeQuiz(int quizID){
 		qDao.removeQuiz(quizID);
 	}
+	
 	public ArrayList<String> getQuizNames(){
 		 ArrayList<String> list = new ArrayList<String>(quizInfo.keySet());
 		 return list;
 	}
+	
+	public String getQuizName(int quizID) {
+		ArrayList<String> names = getQuizNames();
+		for (int i = 0; i < names.size(); i++) {
+			String current = names.get(i);
+			if (quizInfo.get(current).intValue() == quizID) {
+				return current;
+			}
+		}
+		return qDao.getQuizByID(quizID).getQuizName();
+	}
+	
 	public Quiz [] searchQuizes(String text){
 		ArrayList<Quiz> quizes = new ArrayList<>();
 		QuizManager quizman = new QuizManager();

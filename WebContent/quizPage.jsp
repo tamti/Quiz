@@ -15,7 +15,7 @@ System.out.println("username: "+username);
 AccountManager accountman = new AccountManager();
 User user = accountman.getUser(username);
 if(user == null){
-	response.sendRedirect("homepage.html");
+	response.sendRedirect("homepage.jsp");
 }else{
 	String quizName = request.getParameter("quizname");
 	System.out.println("quizname: "+quizName);
@@ -42,8 +42,8 @@ if(user == null){
 				</form>
 				<a href="https://instagram.com/"><img class = "link" src="./img/2.png"></a>
 				<p id = "bla" class="out"><a href="SignOutServlet">Sign Out</a></p>
-				<p id = "bla" class = "boloshi"><a href="homepage.html"><%=user.getFirstName() %> <%=user.getLastName() %></a></p>
-				<a href="homepage.html"><img class = "user" src="./img/user.jpg"></a>
+				<p id = "bla" class = "boloshi"><a href="homepage.jsp"><%=user.getFirstName() %> <%=user.getLastName() %></a></p>
+				<a href="homepage.jsp"><img class = "user" src="./img/user.jpg"></a>
 				
 			</div>
 		</div>

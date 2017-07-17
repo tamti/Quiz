@@ -66,6 +66,33 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 
 		return result;
 	}
+	public ArrayList<String> getQuizByDate() {
+		ArrayList<String> result = new ArrayList<>();
+		String col = "q." + DbContract.COL_QUIZ_NAME;
+		String tables = DbContract.TABLE_QUIZZES + " q";
+		String condition = "1=1 order by " + DbContract.COL_DATE_CREATED + " desc limit 10";
+
+		String query = prepareSelectStatementWith(col, tables, condition);
+
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
+			try (ResultSet rs = ps.executeQuery()) {
+
+				while(rs.next()) {
+					String quizName = rs.getString(DbContract.COL_QUIZ_NAME);
+					result.add(quizName);
+				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+		return result;
+	}
 
 	/*
 	 * Selects all necessary info from the database and returns SortedSet of all

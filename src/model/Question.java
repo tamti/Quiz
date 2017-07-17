@@ -110,6 +110,17 @@ public class Question extends PhotoAble implements Comparable<Question> {
 	public ArrayList<Answer> getAnswers() {
 		return answers;
 	}
+	
+	public ArrayList<String> getQuestionsCorrectAnswer(){
+		ArrayList <String> result = new ArrayList<String>();
+		for(int i =0; i< answers.size(); i++){
+			if(answers.get(i).isCorrect()){
+				result.add(answers.get(i).getAnswerStr());
+			}
+		}
+		
+		return result;
+	}
 
 	/**
 	 * 

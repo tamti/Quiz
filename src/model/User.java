@@ -44,7 +44,7 @@ public class User extends PhotoAble implements Comparable<User> {
 	}
 
 	public String getURL() {
-		return "profilePage.html?username=" + username;
+		return "profilePage.jsp?username=" + username;
 	}
 
 	public void addFriend(String username) {

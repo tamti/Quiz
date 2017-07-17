@@ -361,7 +361,8 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 			ps.setBoolean(4, friendshipActive);
 
 			ps.executeUpdate();
-
+			
+			System.out.println("insertion success");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

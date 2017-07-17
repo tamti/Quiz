@@ -31,7 +31,7 @@ if(user == null){
 </head>
 <body>	 
 		 
-<a href="creatQuiz.jsp"><img class = "quiz" src="./img/blaa.png" title="Create New Quiz"></a>
+<a href="createQuiz.jsp"><img class = "quiz" src="./img/blaa.png" title="Create New Quiz"></a>
 			<hr>
 		<div class = "headerMenu" size = "60">
 			<div class = "search-box">
@@ -41,8 +41,8 @@ if(user == null){
 				</form>
 				<img class = "link" src="./img/2.png"></a>
 				<p id = "bla" class="out"><a href="SignOutServlet">Sing Out</a></p>
-			 <p id = "bla" class = "boloshi"><a href="homepage.html"><%=user.getFirstName()%> <%=user.getLastName() %></a></p>
-				<a href="homepage.html"><img class = "user" src="./img/user.png"></a>
+			 <p id = "bla" class = "boloshi"><a href="homepage.jsp"><%=user.getFirstName()%> <%=user.getLastName() %></a></p>
+				<a href="homepage.jsp"><img class = "user" src="./img/user.png"></a>
 				
 			</div>
 		</div>
@@ -61,9 +61,11 @@ if(user == null){
 		</div>
 		<div class="questionBody">
 			<h6>Enter Question</h6>
-			<textarea rows="5" cols="100" class="questionText"></textarea>
+			<textarea rows="2" cols="80" class="questionText"></textarea>
 			<h6>Enter correct answer</h6>
-			<textarea rows="2" cols="100" class="questionAnswer"></textarea>
+			<textarea rows="2" cols="80" class="questionAnswer"></textarea>
+			<p>Enter Max Point:
+			<input type="number" id="MaxPoint" class = "maxpoint"/></p>
 			
 		</div>
 	</fieldset>

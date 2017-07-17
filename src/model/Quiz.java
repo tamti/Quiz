@@ -137,7 +137,7 @@ public class Quiz implements Comparable<Quiz> {
 		questions.remove(questionID);
 	}
 	public String getURL() {
-		return "quizPage.jsp?quizName=" + quizName;
+		return "quizPage.jsp?quizname=" + quizName;
 	}
 	/**
 	 * Compares Quiz objects. Comparison is made with their IDs
