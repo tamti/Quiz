@@ -93,7 +93,6 @@ th, td {
 								SortedSet<String> friends = u.getFriends();
 
 								for (String friend : friends) {
-									System.out.println("friend : " + friend);
 							%>
 							<li><a href=<%="profilePage.jsp?username=" + friend%>><%=friend%></a>
 							</li>
@@ -196,13 +195,13 @@ th, td {
 						<% if (!chal.challengeSeen()) {%>
 							<form id="accpetchal" action="ChallengeServlet">
 								<input type="hidden" name="challengeID" value="<%=challengeID%>"></input>
-								<input type="hidden" name="quizURL" value="<%=q.getURL()%>"></input>
+								<input type="hidden" name="URL" value="<%=q.getURL()%>"></input>
 								<input type="hidden" name="response" value="accept"></input> 
 								<input type="submit" value="Accept challenge"></input>
 							</form>
-							<form id="ignorechal" onsubmit="ChallengeServlet">
+							<form id="ignorechal" onsubmit="ignoreChallenge(event)">
 								<input type="hidden" name="challengeID" value="<%=challengeID%>"></input>
-								<input type="hidden" name="requestURL" value="<%=u.getURL()%>"></input>
+								<input type="hidden" name="URL" value="<%="profilePage.jsp?username=" + pageOwner%>"></input>
 								<input type="hidden" name="response" value="ignore"></input> 
 								<input type="submit" value="Ingore challenge"></input>
 							</form>
@@ -307,18 +306,20 @@ th, td {
 	</script>
 	
 	<script>
-		ignoreChallenge(e) {
+		function ignoreChallenge(e) {
 			e.preventDefault();
-			var au = "FriendServlet";
+			var au = "ChallengeServlet";
 			$.ajax({
 				type : "POST",
 				url : au,
 				data : $("#ignorechal").serialize(),
 				headers : {
 					'content-type' : 'application/x-www-form-urlencoded'
+				},
+				success : function(data) {
+					location.reload();
 				}
 			});
-			location.reload();
 		}
 	</script>
 

@@ -18,48 +18,51 @@ import model.AccountManager;
 @WebServlet("/ChallengeServlet")
 public class ChallengeServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public ChallengeServlet() {
-        super();
-    }
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#HttpServlet()
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public ChallengeServlet() {
+		super();
+	}
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+	 *      response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		doPost(request, response);
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		ServletContext servletCon = getServletContext();
 		AccountManager accountMan = (AccountManager) servletCon.getAttribute("accountManager");
-		
-		int challengeID = Integer.parseInt(request.getParameter("challengeID"));
-		
+
 		String ans = request.getParameter("response");
-		
-		if (ans.equals("accept")) {
-			accountMan.acceptChallenge(challengeID);
-			
-			String quizURL = request.getParameter("quizURL");
-			
-			RequestDispatcher dispatch = request.getRequestDispatcher(quizURL);
-			dispatch.forward(request, response);
+
+		int challengeID = Integer.parseInt(request.getParameter("challengeID"));
+
+		String url = request.getParameter("URL");
+
+		if ((ans.equals("ignore"))) {
+
+			accountMan.denyChallenge(challengeID);
 			
 		} else {
-			accountMan.denyChallenge(challengeID);
-
-			String requestUrl = request.getParameter("requestURL");
 			
-			RequestDispatcher dispatch = request.getRequestDispatcher(requestUrl);
+			accountMan.acceptChallenge(challengeID);
+
+			RequestDispatcher dispatch = request.getRequestDispatcher(url);
 			dispatch.forward(request, response);
+
 		}
+
 	}
 
 }
