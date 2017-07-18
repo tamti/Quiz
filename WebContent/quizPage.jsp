@@ -11,14 +11,12 @@
 <% 
 HttpSession ses = request.getSession();
 String username = (String) session.getAttribute("username");
-System.out.println("username: "+username);
 AccountManager accountman = new AccountManager();
 User user = accountman.getUser(username);
 if(user == null){
 	response.sendRedirect("homepage.jsp");
 }else{
 	String quizName = request.getParameter("quizname");
-	System.out.println("quizname: "+quizName);
 	QuizManager man = new QuizManager();
 	Quiz quiz = man.getQuiz(quizName);
 	ses.setAttribute("quiz", quiz);
@@ -42,7 +40,7 @@ if(user == null){
 				</form>
 				<a href="https://instagram.com/"><img class = "link" src="./img/2.png"></a>
 				<p id = "bla" class="out"><a href="SignOutServlet">Sign Out</a></p>
-				<p id = "bla" class = "boloshi"><a href="homepage.jsp"><%=user.getFirstName() %> <%=user.getLastName() %></a></p>
+				<p id = "bla" class = "boloshi"><a href=<%=user.getURL()%>><%=user.getFirstName() %> <%=user.getLastName() %></a></p>
 				<a href="homepage.jsp"><img class = "user" src="./img/user.png"></a>
 				
 			</div>

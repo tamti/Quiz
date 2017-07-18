@@ -161,6 +161,7 @@ th, td {
 					<p><strong><%="Message from: "%></strong>
 						<a href=<%="profilePage.jsp?username=" + sender%>><%=sender%></a>
 						<strong><%=" sent on " + msg.getTime()%></strong></p>
+					<hr>
 					<br>
 				<%
 					}
@@ -216,6 +217,7 @@ th, td {
 						<% 
 							} 
 						%>
+						<hr>
 					<br>
 				<%
 					}
