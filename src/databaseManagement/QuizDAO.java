@@ -102,11 +102,11 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 		ArrayList<Question> res = new ArrayList<Question>();
 
 		String tables = DbContract.TABLE_QUESTIONS + " q, " + DbContract.TABLE_QUIZ_QUESTIONS + " qq, "
-				+ DbContract.TABLE_QUESTION_TYPES + " qt";
+				+ DbContract.TABLE_QUESTION_TYPES + " qt, " + DbContract.TABLE_PHOTOS + " p";
 
 		String condition = "qq." + DbContract.COL_QUIZ_ID + " = ? and qq." + DbContract.COL_QUESTION_ID + " = q."
 				+ DbContract.COL_QUESTION_ID + " AND q." + DbContract.COL_QUESTION_TYPE_ID + " = qt."
-				+ DbContract.COL_QUESTION_TYPE_ID;
+				+ DbContract.COL_QUESTION_TYPE_ID + " AND q." + DbContract.COL_PHOTO_ID + " = " + " p." + DbContract.COL_PHOTO_ID;
 
 		String query = prepareSelectStatementWith("*", tables, condition);
 
@@ -130,9 +130,9 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 					Question current = new Question(questionID, questionStr, qType, maxPoints);
 
 					if (photoID > 0) {
-						// String photoFileName =
-						// rs.getString(DbContract.COL_PHOTO_FILE);
+						String photoURL = rs.getString(DbContract.COL_PHOTO_FILE);
 						current.setPhotoID(photoID);
+						current.setPhoto(photoURL);
 					}
 
 					ArrayList<Answer> answers = getAllAnswersFor(questionID);
@@ -309,6 +309,11 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 	 * @return ID of the new Question in the database
 	 */
 	public int insertQuestion(int quizID, Question newQuestion) {
+		int photoID = -1;
+		if (newQuestion.hasPhoto()) {
+			photoID = insertPhoto(newQuestion.getPhoto());
+		}
+		
 		String[] questionCols = { DbContract.COL_QUESTION, DbContract.COL_QUESTION_TYPE_ID, DbContract.COL_PHOTO_ID,
 				DbContract.COL_MAX_POINTS };
 
@@ -320,8 +325,8 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 			ps.setString(1, newQuestion.getQuestionStr());
 			ps.setInt(2, newQuestion.getType().getID());
 
-			if (newQuestion.hasPhoto()) {
-				ps.setInt(3, newQuestion.getPhotoID());
+			if (photoID != -1) {
+				ps.setInt(3, photoID);
 			} else {
 				ps.setNull(3, Types.INTEGER);
 			}
