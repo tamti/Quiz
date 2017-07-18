@@ -75,10 +75,10 @@ th, td {
 		<div class = "headerMenu" size = "60">
 			<div class = "search-box">
 				<form action="searchServlet" method = "POST" id = "search">
-					<input id="searchForm" style="margin-top:-2%" type = "text" name="q" placeholder="Search ...">
+					<input id="searchForm" style="margin-top:0%" type = "text" name="q" placeholder="Search ...">
 				</form>
 				<p id = "bla" class = "boloshi"><%=u.getUsername()%>'s page</p>
-				<a href="<%=common.getURL()%>"><img class = "user" src="./img/user.png"></a>
+				<a href="homepage.jsp"><img class = "user" src="./img/user.png"></a>
 				<p style="margin-top:2%" class="out" ><a href="SignOutServlet">Sign Out</a></p>
 				
 			</div>
@@ -93,7 +93,6 @@ th, td {
 								SortedSet<String> friends = u.getFriends();
 
 								for (String friend : friends) {
-									System.out.println("friend : " + friend);
 							%>
 							<li><a href=<%="profilePage.jsp?username=" + friend%>><%=friend%></a>
 							</li>
@@ -161,6 +160,7 @@ th, td {
 					<p><strong><%="Message from: "%></strong>
 						<a href=<%="profilePage.jsp?username=" + sender%>><%=sender%></a>
 						<strong><%=" sent on " + msg.getTime()%></strong></p>
+					<hr>
 					<br>
 				<%
 					}
@@ -183,11 +183,40 @@ th, td {
 							<p><strong>Note: </strong><%=note%></p>
 					<%
 						}
+						int challengeID = chal.getChallengeID();
+						int chalQuizID = chal.getQuiz();
+						String chalQuizName = qMan.getQuizName(chalQuizID);
+						Quiz q = qMan.getQuiz(chalQuizName);
 					%>
-					<p><strong><%="Challenge from: "%></strong>
+					<p><strong>Challenge for quiz: </strong><a href=<%=q.getURL()%>><%=q.getQuizName()%></a>
+						<strong><%=" from: "%></strong>
 						<a href=<%="profilePage.jsp?username=" + sender%>><%=sender%></a>
 						<strong><%=" sent on " + chal.getTime()%></strong></p>
-					<p><strong></strong></p>
+						<% if (!chal.challengeSeen()) {%>
+							<form id="accpetchal" action="ChallengeServlet">
+								<input type="hidden" name="challengeID" value="<%=challengeID%>"></input>
+								<input type="hidden" name="URL" value="<%=q.getURL()%>"></input>
+								<input type="hidden" name="response" value="accept"></input> 
+								<input type="submit" value="Accept challenge"></input>
+							</form>
+							<form id="ignorechal" onsubmit="ignoreChallenge(event)">
+								<input type="hidden" name="challengeID" value="<%=challengeID%>"></input>
+								<input type="hidden" name="URL" value="<%="profilePage.jsp?username=" + pageOwner%>"></input>
+								<input type="hidden" name="response" value="ignore"></input> 
+								<input type="submit" value="Ingore challenge"></input>
+							</form>
+						<% 
+							}  else if (chal.challengeAccepted()) {
+						%>
+							<p><strong>Challenge accepted</strong></p>
+						<%	
+							} else { 
+						%>
+							<p><strong>Challenge ignored</strong></p>
+						<% 
+							} 
+						%>
+						<hr>
 					<br>
 				<%
 					}
@@ -273,6 +302,24 @@ th, td {
 				}
 			});
 			$("#msgarea").val('');
+		}
+	</script>
+	
+	<script>
+		function ignoreChallenge(e) {
+			e.preventDefault();
+			var au = "ChallengeServlet";
+			$.ajax({
+				type : "POST",
+				url : au,
+				data : $("#ignorechal").serialize(),
+				headers : {
+					'content-type' : 'application/x-www-form-urlencoded'
+				},
+				success : function(data) {
+					location.reload();
+				}
+			});
 		}
 	</script>
 

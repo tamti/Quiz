@@ -109,9 +109,6 @@ public class AccountManager {
 	 * 
 	 * if (u != null) {
 	 * 
-	 * u.setFriends(uDao.getUserFriends(u.getID(), true));
-	 * u.setFriendRequests(uDao.getUserFriends(u.getID(), false));
-	 * 
 	 * users.put(u.getUsername(), u); }
 	 * 
 	 * return u; }
@@ -184,13 +181,10 @@ public class AccountManager {
 	 * @param receiverUsername
 	 */
 	public void sendFriendRequest(String senderUsername, String receiverUsername) {
-		System.out.println("in sendFriendRequest received sender: " + senderUsername);
 		User sender = getUser(senderUsername);
-		System.out.println("in sendFriendRequest : " + sender.getUsername());
 		
-		System.out.println("in sendFriendRequest received receiver: " + receiverUsername);
 		User receiver = getUser(receiverUsername);
-		System.out.println("in sendFriendRequest : " + receiver.getUsername());
+
 		uDao.insertFriendShip(sender.getID(), receiver.getID(), true, false);
 
 		receiver.addFriendRequest(sender.getUsername());
@@ -248,7 +242,6 @@ public class AccountManager {
 		User [] answer = new User [users.size()];
 		return users.toArray(answer);
 		
-		
 	}
 	
 	/**
@@ -295,4 +288,11 @@ public class AccountManager {
 		return uDao.getChallangeRequest(userID);
 	}
 	
+	public void acceptChallenge(int challengeID) {
+		uDao.updateChallenge(challengeID, true, true);
+	}
+	
+	public void denyChallenge(int challengeID) {
+		uDao.updateChallenge(challengeID, true, false);
+	}
 }

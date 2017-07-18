@@ -146,4 +146,21 @@ public class BasicQuizWebSiteDAO {
 		return result;
 	}
 
+	protected int insertPhoto(String photoURL) {
+		String[] col = { DbContract.COL_PHOTO_FILE };
+		String query = prepareInsertStatementWith(DbContract.TABLE_PHOTOS, col);
+				
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
+			ps.setString(1, photoURL);
+			
+			ps.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return getLastIdOf(DbContract.TABLE_PHOTOS, DbContract.COL_PHOTO_ID);
+	}
 }

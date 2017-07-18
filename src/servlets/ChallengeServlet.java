@@ -13,16 +13,16 @@ import javax.servlet.http.HttpServletResponse;
 import model.AccountManager;
 
 /**
- * Servlet implementation class FriendServlet
+ * Servlet implementation class ChallengeServlet
  */
-@WebServlet("/FriendServlet")
-public class FriendServlet extends HttpServlet {
+@WebServlet("/ChallengeServlet")
+public class ChallengeServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * @see HttpServlet#HttpServlet()
 	 */
-	public FriendServlet() {
+	public ChallengeServlet() {
 		super();
 	}
 
@@ -43,20 +43,26 @@ public class FriendServlet extends HttpServlet {
 			throws ServletException, IOException {
 		ServletContext servletCon = getServletContext();
 		AccountManager accountMan = (AccountManager) servletCon.getAttribute("accountManager");
-		
-		String requestType = (String) request.getParameter("requestType");
 
-		String user1 = request.getParameter("fromUser");
-		String user2 = request.getParameter("toUser");
+		String ans = request.getParameter("response");
 
-		switch (requestType) {
-		case "addFriend":
-			accountMan.sendFriendRequest(user1, user2);
-			break;
-		case "removeFriend":
-			accountMan.removeFromFriendsOf(user1, user2);
-			break;
+		int challengeID = Integer.parseInt(request.getParameter("challengeID"));
+
+		String url = request.getParameter("URL");
+
+		if ((ans.equals("ignore"))) {
+
+			accountMan.denyChallenge(challengeID);
+			
+		} else {
+			
+			accountMan.acceptChallenge(challengeID);
+
+			RequestDispatcher dispatch = request.getRequestDispatcher(url);
+			dispatch.forward(request, response);
+
 		}
+
 	}
 
 }

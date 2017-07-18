@@ -8,23 +8,7 @@
 <%@page import="java.util.ArrayList" %>
 <%@page import="java.util.SortedSet" %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
-<%
-HttpSession ses = request.getSession();
-String username = (String) session.getAttribute("username");
-System.out.println("username: "+username);
-AccountManager accountman = new AccountManager();
-User user = accountman.getUser(username);
-StatisticsDAO stat = new StatisticsDAO();
-if(user == null){
-	response.sendRedirect("homepage.jsp");
-}else{
-	String quizName = request.getParameter("quizname");
-	//System.out.println("quizname: "+quizName);
-	QuizManager man = new QuizManager();
-	Quiz quiz = man.getQuiz(quizName);
-	SortedSet<Statistics> st = stat.getStatisticsByQuiz(quiz.getID());
-	ses.setAttribute("quiz", quiz);
-%>
+
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
@@ -35,9 +19,29 @@ if(user == null){
  		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
  		
 		<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
-<title>Played Quizes</title>
+<title>Summary</title>
 </head>
 <body>
+
+<%
+HttpSession ses = request.getSession();
+String username = (String) session.getAttribute("username");
+System.out.println("username: "+username);
+
+if(username == null){
+	response.sendRedirect("homepage.jsp");
+}else{
+	AccountManager accountman = new AccountManager();
+	User user = accountman.getUser(username);
+	StatisticsDAO stat = new StatisticsDAO();
+	String quizName = request.getParameter("quizname");
+	//System.out.println("quizname: "+quizName);
+	QuizManager man = new QuizManager();
+	Quiz quiz = man.getQuiz(quizName);
+	SortedSet<Statistics> st = stat.getStatisticsByQuiz(quiz.getID());
+	ses.setAttribute("quiz", quiz);
+%>
+
 <a href="createQuiz.jsp"><img class = "quiz" src="./img/blaa.png" title="Create New Quiz"></a>
 			<hr>
 		<div class = "headerMenu" size = "60">
