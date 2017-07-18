@@ -2,6 +2,7 @@ package servlets;
 
 import java.io.IOException;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -42,7 +43,7 @@ public class FriendServlet extends HttpServlet {
 			throws ServletException, IOException {
 		ServletContext servletCon = getServletContext();
 		AccountManager accountMan = (AccountManager) servletCon.getAttribute("accountManager");
-
+		
 		String requestType = (String) request.getParameter("requestType");
 
 		String user1 = (String) request.getParameter("fromUser");
@@ -54,6 +55,23 @@ public class FriendServlet extends HttpServlet {
 			break;
 		case "removeFriend":
 			accountMan.removeFromFriendsOf(user1, user2);
+			break;
+		case "chalRequest" :
+			int challengeID = Integer.parseInt(request.getParameter("challengeID"));
+			String ans = (String) request.getParameter("response");
+			
+			if (ans.equals("accept")) {
+				accountMan.acceptChallenge(challengeID);
+				
+				String quizURL = request.getParameter("quizURL");
+				
+				RequestDispatcher dispatch = request.getRequestDispatcher(quizURL);
+				dispatch.forward(request, response);
+				
+			} else {
+				accountMan.denyChallenge(challengeID);
+			}
+			
 			break;
 		}
 	}

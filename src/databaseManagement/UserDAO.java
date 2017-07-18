@@ -747,14 +747,15 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 			try (ResultSet rs = ps.executeQuery()) {
 
 				while (rs.next()) {
+					int challengeID = rs.getInt(DbContract.COL_CHALLENGE_ID);
 					int senderID = rs.getInt(DbContract.COL_SENDER_ID);
 					int quizID = rs.getInt(DbContract.COL_QUIZ_ID);
 					String txt = rs.getString(DbContract.COL_MESSAGE_TEXT);
 					Timestamp sentOn = rs.getTimestamp(DbContract.COL_TIME_SENT);
-					boolean challangeSeen = rs.getBoolean(DbContract.COL_CHALLANGE_SEEN);
-					boolean challangeAccepted = rs.getBoolean(DbContract.COL_CHALLANGE_ACCEPTED);
+					boolean challangeSeen = rs.getBoolean(DbContract.COL_CHALLENGE_SEEN);
+					boolean challangeAccepted = rs.getBoolean(DbContract.COL_CHALLENGE_ACCEPTED);
 
-					Challenge msg = new Challenge(senderID, receiverID, quizID, txt, sentOn, challangeSeen,
+					Challenge msg = new Challenge(challengeID, senderID, receiverID, quizID, txt, sentOn, challangeSeen,
 							challangeAccepted);
 
 					result.add(msg);
@@ -794,15 +795,36 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 		return getLastIdOf(DbContract.TABLE_MESSAGES, DbContract.COL_MESSAGE_ID);
 	}
 
-	public void insertChallenge(Challenge challenge) {
+	public int insertChallenge(Challenge challenge) {
 		int msgID = insertMessage(challenge);
 		challenge.setMsgID(msgID);
 		insertChallengePart(challenge);
+		return getLastIdOf(DbContract.TABLE_CHALLENGES, DbContract.COL_CHALLENGE_ID);
+	}
+	
+	public void updateChallenge(int challengeID, boolean challengeSeen, boolean challengeAccepted) {
+		String setCols = DbContract.COL_CHALLENGE_SEEN + " = ?, " + DbContract.COL_CHALLENGE_ACCEPTED + " = ?";
+		String condition = DbContract.COL_CHALLENGE_ID + " = ?";
+		String query = prepareUpdateStatementWith(DbContract.TABLE_CHALLENGES, setCols, condition);
+		
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
+			ps.setBoolean(1, challengeSeen);
+			ps.setBoolean(2, challengeAccepted);
+			ps.setInt(3, challengeID);
+
+			ps.executeUpdate();
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
 	}
 
 	private void insertChallengePart(Challenge challenge) {
-		String[] cols = { DbContract.COL_MESSAGE_ID, DbContract.COL_QUIZ_ID, DbContract.COL_CHALLANGE_SEEN,
-				DbContract.COL_CHALLANGE_ACCEPTED };
+		String[] cols = { DbContract.COL_MESSAGE_ID, DbContract.COL_QUIZ_ID, DbContract.COL_CHALLENGE_SEEN,
+				DbContract.COL_CHALLENGE_ACCEPTED };
 
 		String query = prepareInsertStatementWith(DbContract.TABLE_CHALLENGES, cols);
 

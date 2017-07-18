@@ -295,4 +295,11 @@ public class AccountManager {
 		return uDao.getChallangeRequest(userID);
 	}
 	
+	public void acceptChallenge(int challengeID) {
+		uDao.updateChallenge(challengeID, true, true);
+	}
+	
+	public void denyChallenge(int challengeID) {
+		uDao.updateChallenge(challengeID, true, false);
+	}
 }

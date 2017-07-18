@@ -183,11 +183,34 @@ th, td {
 							<p><strong>Note: </strong><%=note%></p>
 					<%
 						}
+						int challengeID = chal.getChallengeID();
+						int chalQuizID = chal.getQuiz();
+						String chalQuizName = qMan.getQuizName(chalQuizID);
+						Quiz q = qMan.getQuiz(chalQuizName);
 					%>
-					<p><strong><%="Challenge from: "%></strong>
+					<p><strong>Challenge for quiz: </strong><a href=<%=q.getURL()%>><%=q.getQuizName()%></a>
+						<strong><%=" from: "%></strong>
 						<a href=<%="profilePage.jsp?username=" + sender%>><%=sender%></a>
+						<% if (!chal.challengeSeen()) {%>
+							<form id="accpetchal" onsubmit="acceptChallenge(event)">
+								<input type="hidden" name="requestType" value="chalRequest"></input>
+								<input type="hidden" name="fromUser" value="<%=sender%>"></input> 
+								<input type="hidden" name="toUser" value="<%=pageOwner%>"></input>
+								<input type="hidden" name="challengeID" value="<%=challengeID%>"></input>
+								<input type="hidden" name="quizURL" value="<%=q.getURL()%>"></input>
+								<input type="hidden" name="response" value="accept"></input> 
+								<input type="submit" value="Accept challenge"></input>
+							</form>
+							<form id="ignorechal" onsubmit="ignoreChallenge(event)">
+								<input type="hidden" name="requestType" value="chalRequest"></input>
+								<input type="hidden" name="fromUser" value="<%=sender%>"></input>
+								<input type="hidden" name="toUser" value="<%=pageOwner%>"></input>
+								<input type="hidden" name="challengeID" value="<%=challengeID%>"></input>
+								<input type="hidden" name="response" value="ignore"></input> 
+								<input type="submit" value="Accept challenge"></input>
+							</form>
+						<% } %>
 						<strong><%=" sent on " + chal.getTime()%></strong></p>
-					<p><strong></strong></p>
 					<br>
 				<%
 					}
@@ -273,6 +296,36 @@ th, td {
 				}
 			});
 			$("#msgarea").val('');
+		}
+	</script>
+	
+	<script>
+		acceptChallenge(e) {
+			e.preventDefault();
+			var au = "FriendServlet";
+			$.ajax({
+				type : "POST",
+				url : au,
+				data : $("#accpetchal").serialize(),
+				headers : {
+					'content-type' : 'application/x-www-form-urlencoded'
+				}
+			});
+		}
+	</script>
+	
+	<script>
+		ignoreChallenge(e) {
+			e.preventDefault();
+			var au = "FriendServlet";
+			$.ajax({
+				type : "POST",
+				url : au,
+				data : $("#ignorechal").serialize(),
+				headers : {
+					'content-type' : 'application/x-www-form-urlencoded'
+				}
+			});
 		}
 	</script>
 
