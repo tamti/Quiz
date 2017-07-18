@@ -77,7 +77,7 @@ th, td {
 				<form action="searchServlet" method = "POST" id = "search">
 					<input id="searchForm" style="margin-top:0%" type = "text" name="q" placeholder="Search ...">
 				</form>
-				<p id = "bla" class = "boloshi"><%=u.getUsername()%>'s page</p>
+				<p style="position: absolute; width: 65px; height: 65px; margin-left: 800px; margin-top:-7%"><%=u.getUsername()%>'s page</p>
 				<a href="homepage.jsp"><img class = "user" src="./img/user.png"></a>
 				<p style="margin-top:2%" class="out" ><a href="SignOutServlet">Sign Out</a></p>
 				
