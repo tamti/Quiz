@@ -1,6 +1,5 @@
-@CHARSET "ISO-8859-1";
 body{
-	background: url(../photos/aa.jpg) ;
+	background: url(../img/aa.jpg) ;
 }
 .hello{
 	position: fixed;
@@ -65,7 +64,7 @@ a{
 	color: black;
 }
 .bolo{
-	color: black;
+	color: red;
 }
 p{
  	position: absolute;
@@ -115,10 +114,10 @@ p{
 }
 
 fieldset{
- font-family:"Courier New",Courier
+	color: black;
+/* 	border:5px dotted;
+ */	font-family:"Courier New",Courier
 }
-
-
 
 .Quizes{
 	margin-left: 100px;
@@ -142,7 +141,7 @@ fieldset{
   height: 29px;
   font-size: 12px;
   font-weight: bold;
-  color: black;
+  color: #527881;
   text-shadow: 0 1px #e3f1f1;
   background: #cde5ef;
   border: 1px solid;

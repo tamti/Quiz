@@ -1,6 +1,12 @@
 @CHARSET "ISO-8859-1";
 body{
-	background: url(./img/aa.jpg) repeat;
+	background: url(../img/aa.jpg) repeat;
+}
+
+fieldset{
+	color: red;
+	border:2px dotted;
+	font-family:"Courier New",Courier
 }
 
 .but{
