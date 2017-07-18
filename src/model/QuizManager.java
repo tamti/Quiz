@@ -161,9 +161,6 @@ public class QuizManager {
 	}
 
 	public void removeAnswer(int answerID) {
-		//Quiz quiz = getQuiz(quizName);
-		//Question question = quiz.getQuestions().get(questionID);
-		//question.removeAnswer(answerID);
 		qDao.removeAnswer(answerID);
 	}
 	

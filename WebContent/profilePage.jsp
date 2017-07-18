@@ -77,7 +77,7 @@ th, td {
 				<form action="searchServlet" method = "POST" id = "search">
 					<input id="searchForm" style="margin-top:0%" type = "text" name="q" placeholder="Search ...">
 				</form>
-				<p id = "bla" class = "boloshi"><%=u.getUsername()%>'s page</p>
+				<p style="position: absolute; width: 65px; height: 65px; margin-left: 800px; margin-top:-7%"><%=u.getUsername()%>'s page</p>
 				<a href="homepage.jsp"><img class = "user" src="./img/user.png"></a>
 				<p style="margin-top:2%" class="out" ><a href="SignOutServlet">Sign Out</a></p>
 				
@@ -196,13 +196,13 @@ th, td {
 							<form id="accpetchal" action="ChallengeServlet">
 								<input type="hidden" name="challengeID" value="<%=challengeID%>"></input>
 								<input type="hidden" name="URL" value="<%=q.getURL()%>"></input>
-								<input type="hidden" name="response" value="accept"></input> 
+								<input type="hidden" name="requestType" value="accept"></input> 
 								<input type="submit" value="Accept challenge"></input>
 							</form>
 							<form id="ignorechal" onsubmit="ignoreChallenge(event)">
 								<input type="hidden" name="challengeID" value="<%=challengeID%>"></input>
 								<input type="hidden" name="URL" value="<%="profilePage.jsp?username=" + pageOwner%>"></input>
-								<input type="hidden" name="response" value="ignore"></input> 
+								<input type="hidden" name="requestType" value="ignore"></input> 
 								<input type="submit" value="Ingore challenge"></input>
 							</form>
 						<% 

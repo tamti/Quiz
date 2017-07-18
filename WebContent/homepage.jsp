@@ -64,9 +64,12 @@ th, td {
 
 				
 <div align="center" id = "cover" style="margin-top:1%">
- <input  class="btn btn-warning hell" style="width:33%" type="button" onclick="location.href='<%=user.getURL()%>'" value="Profile page" />
- <input  class="btn btn-warning hell" style="width:33%" type="button" onclick="location.href='allAboutQuizes.jsp'" value="All about quizes" />
- <input class="btn btn-warning hell" style="width:33%" type="button" onclick="location.href='SignOutServlet'" value = "Sign out" />
+ <input  class="btn btn-warning hell" style="width:25%" type="button" onclick="location.href='<%=user.getURL()%>'" value="Profile page" />
+ <input  class="btn btn-warning hell" style="width:25%" type="button" onclick="location.href='allAboutQuizes.jsp'" value="All about quizes" />
+ 	<%if(accountman.isAdminAcc(username)){%>
+	 	<input  class="btn btn-warning hell" style="width:25%" type="button" onclick="location.href='adminpage.html'" value="ADMIN PAGE" />
+	<%} %>
+ 	<input class="btn btn-warning hell" style="width:25%" type="button" onclick="location.href='SignOutServlet'" value = "Sign out" />
 </div>
 
 <section style ="width:100%">

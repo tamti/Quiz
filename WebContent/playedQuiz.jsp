@@ -14,32 +14,58 @@
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
 				<link rel="stylesheet" type="text/css" href="./css/Quiz.css"/>
 		 <link rel="stylesheet" type="text/css" href="./css/HeaderSCC.css"/>
-<!-- 		<link rel="stylesheet" type="text/css" href="./css/bootstrap/css/bootstrap.min.css"/>
- -->
  		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
  		
 		<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
 <title>Summary</title>
+
+<style>
+	.searchResults {
+	  position:fixed;
+	  top:7%;
+	  background-color: white; 
+	  border: 1px solid black; 
+	  z-index: 50;
+	  display: none;
+	}
+
+	body {
+   		background-image: url("topography.png");
+	}
+
+	table, th, td {
+		border: 1px solid black;
+	}
+	
+	th, td {
+		padding: 5px;
+		text-align: center;
+	}
+</style>
+
 </head>
 <body>
 
 <%
 HttpSession ses = request.getSession();
 String username = (String) session.getAttribute("username");
-System.out.println("username: "+username);
 
-if(username == null){
+if(username == null) {
 	response.sendRedirect("homepage.jsp");
-}else{
+} else {
 	AccountManager accountman = new AccountManager();
 	User user = accountman.getUser(username);
 	StatisticsDAO stat = new StatisticsDAO();
 	String quizName = request.getParameter("quizname");
-	//System.out.println("quizname: "+quizName);
+
 	QuizManager man = new QuizManager();
 	Quiz quiz = man.getQuiz(quizName);
 	SortedSet<Statistics> st = stat.getStatisticsByQuiz(quiz.getID());
 	ses.setAttribute("quiz", quiz);
+	
+	SortedSet<Statistics> userScores = stat.getStatisticsOfUserForQuiz(user.getID(), quiz.getID());
+	Statistics userHighestScore = userScores.first();
+	String message = "I scored " + userHighestScore.getpoints() + " points in " + userHighestScore.getUsedTime() + " seconds. Beat me if you can!";
 %>
 
 <a href="createQuiz.jsp"><img class = "quiz" src="./img/blaa.png" title="Create New Quiz"></a>
@@ -57,9 +83,94 @@ if(username == null){
 				<p style="margin-top:2%" class="out" ><a href="SignOutServlet">Sign Out</a></p>
 			</div>
 		</div>
-<div>
 
-</div>
+		<div id="scoreboard" align="center">
+					<h2>Quiz: <%=quiz.getQuizName()%></h2>
+					
+				<hr>
+				<h3>Your scores for this quiz</h3>
+				<table id="userScores" style='overflow: scroll'>
+					<tr>
+						<th>Score</th>
+						<th>Used time</th>
+						<th>Taken on</th>
+					</tr>
+				<%
+					for (Statistics s : userScores) {
+				%>
+					<tr>
+						<td><%=s.getpoints()%></td>
+						<td><%=s.getUsedTime()%></td>
+						<td><%=s.getTime().toLocalDateTime()%></td>
+					</tr>
+				<%
+					}
+				%>
+  				</table>
+  					
+  					<hr>
+					<legend>Challenge your friends</legend>
+					<form id="sendChall" onsubmit="sendChallenge(event)">
+						<input type="hidden" name="requestType" value="sendchal"></input>
+						<input type="hidden" name="quizID" value="<%=quiz.getID()%>"></input>
+						<input type="hidden" name="fromUser" value="<%=username%>">
+						</input> <input type="hidden" name="msg" value="<%=message%>"></input>
+						<input type="text" name="toUser" placeholder="Type in a username" title="Type in a username"></input>
+						<input type="submit" value="send"></input>
+					</form>
+  					
+				<hr>
+				<h3>Top 10 scores</h3>
+				<table id="topScores" style='overflow: scroll'>
+					<tr>
+						<th>NO</th>
+						<th>Username</th>
+						<th>Used time</th>
+						<th>Score</th>
+						<th>Taken on</th>
+					</tr>
+				<%
+					int no = 1;
+					for (Statistics s : st) {
+						if (no > 10) {
+							break;
+						}
+						int userID = s.getUserID();
+						String scoreOf = accountman.getUserById(userID);
+				%>
+					<tr>
+						<td><%=no%></td>
+						<td>
+							<a href=<%="profilePage.jsp?username=" + scoreOf%>><%=scoreOf%></a>
+						</td>
+						<td><%=s.getUsedTime()%></td>
+						<td><%=s.getpoints()%></td>
+						<td><%=s.getTime().toLocalDateTime()%></td>
+					</tr>
+				<%
+						no++;
+					}
+				%>
+				</table>
+		</div>
+	
+	<script>
+		function sendChallenge(e) {
+			e.preventDefault();
+			var au = "ChallengeServlet";
+			$.ajax({
+				type : "POST",
+				url : au,
+				data : $("#sendChall").serialize(),
+				headers : {
+					'content-type' : 'application/x-www-form-urlencoded'
+				},
+				success : function(data) {
+					location.reload();
+				}
+			});
+		}
+	</script>
 
 </body>
 <%} %>
