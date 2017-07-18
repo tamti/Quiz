@@ -196,13 +196,13 @@ th, td {
 							<form id="accpetchal" action="ChallengeServlet">
 								<input type="hidden" name="challengeID" value="<%=challengeID%>"></input>
 								<input type="hidden" name="URL" value="<%=q.getURL()%>"></input>
-								<input type="hidden" name="response" value="accept"></input> 
+								<input type="hidden" name="requestType" value="accept"></input> 
 								<input type="submit" value="Accept challenge"></input>
 							</form>
 							<form id="ignorechal" onsubmit="ignoreChallenge(event)">
 								<input type="hidden" name="challengeID" value="<%=challengeID%>"></input>
 								<input type="hidden" name="URL" value="<%="profilePage.jsp?username=" + pageOwner%>"></input>
-								<input type="hidden" name="response" value="ignore"></input> 
+								<input type="hidden" name="requestType" value="ignore"></input> 
 								<input type="submit" value="Ingore challenge"></input>
 							</form>
 						<% 

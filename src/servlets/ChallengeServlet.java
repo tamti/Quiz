@@ -44,23 +44,32 @@ public class ChallengeServlet extends HttpServlet {
 		ServletContext servletCon = getServletContext();
 		AccountManager accountMan = (AccountManager) servletCon.getAttribute("accountManager");
 
-		String ans = request.getParameter("response");
+		String ans = request.getParameter("requestType");
 
-		int challengeID = Integer.parseInt(request.getParameter("challengeID"));
-
-		String url = request.getParameter("URL");
-
-		if ((ans.equals("ignore"))) {
+		if (ans.equals("ignore")) {
+			int challengeID = Integer.parseInt(request.getParameter("challengeID"));
 
 			accountMan.denyChallenge(challengeID);
 			
-		} else {
+		} else if (ans.equals("accept")) {
+			int challengeID = Integer.parseInt(request.getParameter("challengeID"));
+			
+			String url = request.getParameter("URL");
 			
 			accountMan.acceptChallenge(challengeID);
 
 			RequestDispatcher dispatch = request.getRequestDispatcher(url);
 			dispatch.forward(request, response);
 
+		} else {
+			String from = request.getParameter("fromUser");
+			String to = request.getParameter("toUser");
+			int quizID = Integer.parseInt(request.getParameter("quizID"));
+			String msg = request.getParameter("msg");
+			
+			if (accountMan.usernameExists(to)) {
+				accountMan.SendChallenge(from, to, quizID, msg);
+			}
 		}
 
 	}
