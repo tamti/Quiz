@@ -152,7 +152,7 @@ public class Statistics implements Comparable<Statistics> {
 	 */
 	@Override
 	public int compareTo(Statistics other) {
-		int result = Double.compare(this.numEarnedPoints, other.getpoints());
+		int result = Double.compare(other.getpoints(), this.numEarnedPoints);
 
 		if (result == 0) {
 			result = Integer.compare(this.usedTimeInSeconds, other.getUsedTime());

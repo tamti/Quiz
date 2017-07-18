@@ -26,7 +26,6 @@
 <%
 HttpSession ses = request.getSession();
 String username = (String) session.getAttribute("username");
-System.out.println("username: "+username);
 
 if(username == null){
 	response.sendRedirect("homepage.jsp");
@@ -35,7 +34,7 @@ if(username == null){
 	User user = accountman.getUser(username);
 	StatisticsDAO stat = new StatisticsDAO();
 	String quizName = request.getParameter("quizname");
-	//System.out.println("quizname: "+quizName);
+
 	QuizManager man = new QuizManager();
 	Quiz quiz = man.getQuiz(quizName);
 	SortedSet<Statistics> st = stat.getStatisticsByQuiz(quiz.getID());
@@ -57,9 +56,43 @@ if(username == null){
 				<p style="margin-top:2%" class="out" ><a href="SignOutServlet">Sign Out</a></p>
 			</div>
 		</div>
-<div>
 
-</div>
+		<div id="scoreboard" align="center">
+					<h2>Quiz: <%=quiz.getQuizName()%></h2>
+					<hr>
+					<h3>Top 10 scores</h3>
+					<table id="historyTable" style='overflow: scroll'>
+						<tr>
+							<th>NO</th>
+							<th>Username</th>
+							<th>Used time</th>
+							<th>Score</th>
+							<th>Taken on</th>
+						</tr>
+				<%
+					int no = 1;
+					for (Statistics s : st) {
+						if (no >10 ) {
+							break;
+						}
+						int userID = s.getUserID();
+						String scoreOf = accountman.getUserById(userID);
+				%>
+					<tr>
+						<td><%=no%></td>
+						<td>
+							<a href=<%="profilePage.jsp?username=" + scoreOf%>><%=scoreOf%></a>
+						</td>
+						<td><%=s.getUsedTime()%></td>
+						<td><%=s.getpoints()%></td>
+						<td><%=s.getTime().toLocalDateTime()%></td>
+					</tr>
+					<%
+						no++;
+					}
+				%>
+				</table>
+		</div>
 
 </body>
 <%} %>
