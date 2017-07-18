@@ -321,7 +321,7 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 			ps.setInt(2, newQuestion.getType().getID());
 
 			if (newQuestion.hasPhoto()) {
-				ps.setInt(3, newQuestion.getPhotoID());
+				ps.setString(3, newQuestion.getPhoto());
 			} else {
 				ps.setNull(3, Types.INTEGER);
 			}
