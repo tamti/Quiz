@@ -1,4 +1,5 @@
 @CHARSET "ISO-8859-1";
+
 .boloshi{
 	margit-left:1000px !important;
 		position: relative;
@@ -29,11 +30,6 @@
 	margin-left: 960px;
 	font-size: 20px;
 	top:-26px;
-}
-.out1{
-	margin-left: 860px;
-	font-size: 20px;
-	top:35px;
 }
 
 .user{
