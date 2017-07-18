@@ -78,12 +78,15 @@ if(user == null){
 		    	
 		     }else if(currType.equals(QuestionType.multipleChoice)){
 		    	 %>     <input type="hidden" value="2" class="type">
-		    	 		<select class="questionAnswer">
-							<option value="A"> <%=questions.get(i).getAnswers().get(0).getAnswerStr() %></option>
-							<option value="B"> <%=questions.get(i).getAnswers().get(1).getAnswerStr() %></option>
-							<option value="C"> <%=questions.get(i).getAnswers().get(2).getAnswerStr() %></option>
-							<option value="D"> <%=questions.get(i).getAnswers().get(3).getAnswerStr() %></option>
-						</select>
+		    	 		<div class="questionAnswer">
+							<input type="checkbox" value="A" checked="checked"><span><%=questions.get(i).getAnswers().get(0).getAnswerStr()%></span></input>
+							<br>
+							<input type="checkbox" value="B"><span><%=questions.get(i).getAnswers().get(1).getAnswerStr()%></span></input>
+							<br>
+							<input type="checkbox" value="C"><span><%=questions.get(i).getAnswers().get(2).getAnswerStr()%></span></input>
+							<br>
+							<input type="checkbox" value="D"><span><%=questions.get(i).getAnswers().get(3).getAnswerStr()%></span></input>
+						</div>
 		    	 <%  
 		     }else if(currType.equals(QuestionType.pictureResponse)){
 		    	 System.out.println(questions.get(i).getPhoto());
@@ -102,7 +105,11 @@ if(user == null){
 		 <input type = "submit" value = "submit" onclick="submitQuiz(this)">
 		 </div>
 		<script>
-    var bla;
+		
+		$('input[type="checkbox"]').on('change', function() {
+			   $(this).siblings('input[type="checkbox"]').prop('checked', false);
+			});
+    
 	function submitQuiz(e){
 		var questions = $(".question");
 		var answers = [];
@@ -117,7 +124,10 @@ if(user == null){
 				break;
 			}
 			case "2":{
-				answers.push($(question).find(".questionAnswer option:selected").html());
+	
+				//alert($(question).find(".questionAnswer :checked").next('span').text());
+				//need to add separatelly all the strings
+				answers.push($(question).find(".questionAnswer :checked").next('label').text());
 				break;
 			}
 			case "3":{
