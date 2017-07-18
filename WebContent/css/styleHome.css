@@ -65,7 +65,7 @@ a{
 	color: black;
 }
 .bolo{
-	color: red;
+	color: black;
 }
 p{
  	position: absolute;
@@ -115,9 +115,7 @@ p{
 }
 
 fieldset{
-	color: black;
-/* 	border:5px dotted;
- */	font-family:"Courier New",Courier
+ font-family:"Courier New",Courier
 }
 
 
@@ -144,7 +142,7 @@ fieldset{
   height: 29px;
   font-size: 12px;
   font-weight: bold;
-  color: #527881;
+  color: black;
   text-shadow: 0 1px #e3f1f1;
   background: #cde5ef;
   border: 1px solid;
