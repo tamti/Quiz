@@ -94,6 +94,32 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 		return result;
 	}
 
+	
+	private String getPhotoURL(int photoID) {
+		String resultURL = "";
+		
+		String condition = DbContract.COL_PHOTO_ID + " = ?";
+		String query = prepareSelectStatementWith("*", DbContract.TABLE_PHOTOS, condition);
+
+		try (Connection con = DataSource.getDataSource().getConnection();
+				PreparedStatement ps = con.prepareStatement(query)) {
+
+			ps.setInt(1, photoID);
+			
+			try (ResultSet rs = ps.executeQuery()) {
+
+				if (rs.next()) {
+					resultURL = rs.getString(DbContract.COL_PHOTO_FILE);
+					System.out.println("took photo url : " + resultURL);
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return resultURL;
+	}
+	
 	/*
 	 * Selects all necessary info from the database and returns SortedSet of all
 	 * Questions that belong to the specified quiz
@@ -102,11 +128,11 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 		ArrayList<Question> res = new ArrayList<Question>();
 
 		String tables = DbContract.TABLE_QUESTIONS + " q, " + DbContract.TABLE_QUIZ_QUESTIONS + " qq, "
-				+ DbContract.TABLE_QUESTION_TYPES + " qt"; /*, " + DbContract.TABLE_PHOTOS + " p";
-*/
+				+ DbContract.TABLE_QUESTION_TYPES + " qt";
+
 		String condition = "qq." + DbContract.COL_QUIZ_ID + " = ? and qq." + DbContract.COL_QUESTION_ID + " = q."
 				+ DbContract.COL_QUESTION_ID + " AND q." + DbContract.COL_QUESTION_TYPE_ID + " = qt."
-				+ DbContract.COL_QUESTION_TYPE_ID /*+ " AND q." + DbContract.COL_PHOTO_ID + " = " + " p." + DbContract.COL_PHOTO_ID*/;
+				+ DbContract.COL_QUESTION_TYPE_ID;
 
 		String query = prepareSelectStatementWith("*", tables, condition);
 
@@ -126,14 +152,14 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 
 					double maxPoints = rs.getDouble(DbContract.COL_MAX_POINTS);
 					int photoID = rs.getInt(DbContract.COL_PHOTO_ID);
-					System.out.println("question" + questionStr);
+					
 					Question current = new Question(questionID, questionStr, qType, maxPoints);
 
-					/*if (photoID > 0) {
-						String photoURL = rs.getString(DbContract.COL_PHOTO_FILE);
+					if (photoID > 0) {
+						String photoURL = getPhotoURL(photoID);
 						current.setPhotoID(photoID);
 						current.setPhoto(photoURL);
-					}*/
+					}
 
 					ArrayList<Answer> answers = getAllAnswersFor(questionID);
 
