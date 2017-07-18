@@ -78,21 +78,21 @@ if(user == null){
 		    	
 		     }else if(currType.equals(QuestionType.multipleChoice)){
 		    	 %>     <input type="hidden" value="2" class="type">
-		    	 		<div class="questionAnswer">
-							<input type="checkbox" value="A" checked="checked"><span><%=questions.get(i).getAnswers().get(0).getAnswerStr()%></span></input>
+		    	 		<div class="questionAnswer" >
+							<input class="answer" type="checkbox" value="A" checked="checked"><span><%=questions.get(i).getAnswers().get(0).getAnswerStr()%></span>
 							<br>
-							<input type="checkbox" value="B"><span><%=questions.get(i).getAnswers().get(1).getAnswerStr()%></span></input>
+							<input class="answer" type="checkbox" value="B"><span><%=questions.get(i).getAnswers().get(1).getAnswerStr()%></span>
 							<br>
-							<input type="checkbox" value="C"><span><%=questions.get(i).getAnswers().get(2).getAnswerStr()%></span></input>
+							<input class="answer" type="checkbox" value="C"><span><%=questions.get(i).getAnswers().get(2).getAnswerStr()%></span>
 							<br>
-							<input type="checkbox" value="D"><span><%=questions.get(i).getAnswers().get(3).getAnswerStr()%></span></input>
+							<input class="answer" type="checkbox" value="D"><span><%=questions.get(i).getAnswers().get(3).getAnswerStr()%></span>
 						</div>
 		    	 <%  
 		     }else if(currType.equals(QuestionType.pictureResponse)){
 		    	 System.out.println(questions.get(i).getPhoto());
 		    	 %> 
 		    	    <input type="hidden" value="3" class="type">
-		    	    <img src="<%=questions.get(i).getPhoto()%>"></img>
+		    	    <img src="<%=questions.get(i).getPhoto()%>" width="100px" height="100px"></img>
 					<textarea rows="2" cols="15" class="questionAnswer"></textarea>
 		    	 <% 
 		     }
@@ -113,6 +113,9 @@ if(user == null){
 	function submitQuiz(e){
 		var questions = $(".question");
 		var answers = [];
+		var been = false;
+		var counter = 0;
+		var multiples = [];
 		for(var i=0; i< questions.length; i++){
 			var question = questions[i];
 			switch($(question).find(".type").val()){
@@ -124,10 +127,27 @@ if(user == null){
 				break;
 			}
 			case "2":{
-	
+	            
 				//alert($(question).find(".questionAnswer :checked").next('span').text());
 				//need to add separatelly all the strings
-				answers.push($(question).find(".questionAnswer :checked").next('label').text());
+				if(!been){
+					
+					//alert($('.answer:checked').next('span').text());
+				/* 	var checkedValue = null; 
+					var inputElements = document.getElementsByClassName('answer');
+					for(var j=0; inputElements[j]; ++j){
+					      if(inputElements[j].checked){
+					    	   // alert(inputElements[j].value);
+					    	   multiples.push($(question).find(".questionAnswer :checked").next('span').text());
+					           checkedValue = inputElements[j].value;
+					      }
+					} */
+					been = true;
+				}
+				//alert(multiples[counter]);
+	            counter ++;
+		
+				//answers.push($(question).find(".questionAnswer :checked").next('label').text());
 				break;
 			}
 			case "3":{
