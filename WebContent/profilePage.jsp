@@ -75,10 +75,10 @@ th, td {
 		<div class = "headerMenu" size = "60">
 			<div class = "search-box">
 				<form action="searchServlet" method = "POST" id = "search">
-					<input id="searchForm" style="margin-top:-2%" type = "text" name="q" placeholder="Search ...">
+					<input id="searchForm" style="margin-top:0%" type = "text" name="q" placeholder="Search ...">
 				</form>
 				<p id = "bla" class = "boloshi"><%=u.getUsername()%>'s page</p>
-				<a href="<%=common.getURL()%>"><img class = "user" src="./img/user.png"></a>
+				<a href="homepage.jsp"><img class = "user" src="./img/user.png"></a>
 				<p style="margin-top:2%" class="out" ><a href="SignOutServlet">Sign Out</a></p>
 				
 			</div>
