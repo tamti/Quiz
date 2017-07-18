@@ -46,8 +46,8 @@ public class FriendServlet extends HttpServlet {
 		
 		String requestType = (String) request.getParameter("requestType");
 
-		String user1 = (String) request.getParameter("fromUser");
-		String user2 = (String) request.getParameter("toUser");
+		String user1 = request.getParameter("fromUser");
+		String user2 = request.getParameter("toUser");
 
 		switch (requestType) {
 		case "addFriend":
@@ -55,23 +55,6 @@ public class FriendServlet extends HttpServlet {
 			break;
 		case "removeFriend":
 			accountMan.removeFromFriendsOf(user1, user2);
-			break;
-		case "chalRequest" :
-			int challengeID = Integer.parseInt(request.getParameter("challengeID"));
-			String ans = (String) request.getParameter("response");
-			
-			if (ans.equals("accept")) {
-				accountMan.acceptChallenge(challengeID);
-				
-				String quizURL = request.getParameter("quizURL");
-				
-				RequestDispatcher dispatch = request.getRequestDispatcher(quizURL);
-				dispatch.forward(request, response);
-				
-			} else {
-				accountMan.denyChallenge(challengeID);
-			}
-			
 			break;
 		}
 	}

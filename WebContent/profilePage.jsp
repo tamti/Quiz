@@ -191,26 +191,31 @@ th, td {
 					<p><strong>Challenge for quiz: </strong><a href=<%=q.getURL()%>><%=q.getQuizName()%></a>
 						<strong><%=" from: "%></strong>
 						<a href=<%="profilePage.jsp?username=" + sender%>><%=sender%></a>
+						<strong><%=" sent on " + chal.getTime()%></strong></p>
 						<% if (!chal.challengeSeen()) {%>
-							<form id="accpetchal" onsubmit="acceptChallenge(event)">
-								<input type="hidden" name="requestType" value="chalRequest"></input>
-								<input type="hidden" name="fromUser" value="<%=sender%>"></input> 
-								<input type="hidden" name="toUser" value="<%=pageOwner%>"></input>
+							<form id="accpetchal" action="ChallengeServlet">
 								<input type="hidden" name="challengeID" value="<%=challengeID%>"></input>
 								<input type="hidden" name="quizURL" value="<%=q.getURL()%>"></input>
 								<input type="hidden" name="response" value="accept"></input> 
 								<input type="submit" value="Accept challenge"></input>
 							</form>
-							<form id="ignorechal" onsubmit="ignoreChallenge(event)">
-								<input type="hidden" name="requestType" value="chalRequest"></input>
-								<input type="hidden" name="fromUser" value="<%=sender%>"></input>
-								<input type="hidden" name="toUser" value="<%=pageOwner%>"></input>
+							<form id="ignorechal" onsubmit="ChallengeServlet">
 								<input type="hidden" name="challengeID" value="<%=challengeID%>"></input>
+								<input type="hidden" name="requestURL" value="<%=u.getURL()%>"></input>
 								<input type="hidden" name="response" value="ignore"></input> 
-								<input type="submit" value="Accept challenge"></input>
+								<input type="submit" value="Ingore challenge"></input>
 							</form>
-						<% } %>
-						<strong><%=" sent on " + chal.getTime()%></strong></p>
+						<% 
+							}  else if (chal.challengeAccepted()) {
+						%>
+							<p><strong>Challenge accepted</strong></p>
+						<%	
+							} else { 
+						%>
+							<p><strong>Challenge ignored</strong></p>
+						<% 
+							} 
+						%>
 					<br>
 				<%
 					}
@@ -300,21 +305,6 @@ th, td {
 	</script>
 	
 	<script>
-		acceptChallenge(e) {
-			e.preventDefault();
-			var au = "FriendServlet";
-			$.ajax({
-				type : "POST",
-				url : au,
-				data : $("#accpetchal").serialize(),
-				headers : {
-					'content-type' : 'application/x-www-form-urlencoded'
-				}
-			});
-		}
-	</script>
-	
-	<script>
 		ignoreChallenge(e) {
 			e.preventDefault();
 			var au = "FriendServlet";
@@ -326,6 +316,7 @@ th, td {
 					'content-type' : 'application/x-www-form-urlencoded'
 				}
 			});
+			location.reload();
 		}
 	</script>
 
