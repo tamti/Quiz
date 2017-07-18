@@ -102,11 +102,11 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 		ArrayList<Question> res = new ArrayList<Question>();
 
 		String tables = DbContract.TABLE_QUESTIONS + " q, " + DbContract.TABLE_QUIZ_QUESTIONS + " qq, "
-				+ DbContract.TABLE_QUESTION_TYPES + " qt, " + DbContract.TABLE_PHOTOS + " p";
-
+				+ DbContract.TABLE_QUESTION_TYPES + " qt"; /*, " + DbContract.TABLE_PHOTOS + " p";
+*/
 		String condition = "qq." + DbContract.COL_QUIZ_ID + " = ? and qq." + DbContract.COL_QUESTION_ID + " = q."
 				+ DbContract.COL_QUESTION_ID + " AND q." + DbContract.COL_QUESTION_TYPE_ID + " = qt."
-				+ DbContract.COL_QUESTION_TYPE_ID + " AND q." + DbContract.COL_PHOTO_ID + " = " + " p." + DbContract.COL_PHOTO_ID;
+				+ DbContract.COL_QUESTION_TYPE_ID /*+ " AND q." + DbContract.COL_PHOTO_ID + " = " + " p." + DbContract.COL_PHOTO_ID*/;
 
 		String query = prepareSelectStatementWith("*", tables, condition);
 
@@ -126,14 +126,14 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 
 					double maxPoints = rs.getDouble(DbContract.COL_MAX_POINTS);
 					int photoID = rs.getInt(DbContract.COL_PHOTO_ID);
-
+					System.out.println("question" + questionStr);
 					Question current = new Question(questionID, questionStr, qType, maxPoints);
 
-					if (photoID > 0) {
+					/*if (photoID > 0) {
 						String photoURL = rs.getString(DbContract.COL_PHOTO_FILE);
 						current.setPhotoID(photoID);
 						current.setPhoto(photoURL);
-					}
+					}*/
 
 					ArrayList<Answer> answers = getAllAnswersFor(questionID);
 
@@ -181,7 +181,7 @@ public class QuizDAO extends BasicQuizWebSiteDAO {
 					Answer current = new Answer(answerID, answerStr, isCorrect);
 
 					int answerNO = rs.getInt(DbContract.COL_ANSWER_NO);
-
+					System.out.println("answer: " + answerStr);
 					if (answerNO > 0) {
 						current.setNO(answerNO);
 					}
