@@ -20,11 +20,11 @@ import model.User;
 public class UserDAO extends BasicQuizWebSiteDAO {
 
 	StatisticsDAO sDao;
-	
+
 	public UserDAO() {
 		sDao = new StatisticsDAO();
 	}
-	
+
 	/**
 	 * Selects from the database all the necessary parameters for the user
 	 * filtered with the given username and returns a User object constructed
@@ -76,7 +76,7 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 			try (ResultSet rs = ps.executeQuery()) {
 				if (rs.next())
 					result = rs.getString(DbContract.COL_USERNAME);
-				
+
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -146,7 +146,8 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 				SortedSet<String> friends = getUserFriends(userID, true);
 				SortedSet<String> friendRequests = getUserFriends(userID, false);
 				SortedSet<Statistics> stats = sDao.getStatisticsByUser(userID);
-				User u = new User(userID, firstName, lastName, email, username, password, friends, friendRequests, stats);
+				User u = new User(userID, firstName, lastName, email, username, password, friends, friendRequests,
+						stats);
 				// String photo = rs.getString(DbContract.COL_PHOTO_FILE);
 
 				u.setPhotoID(photoID);
@@ -361,7 +362,7 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 			ps.setBoolean(4, friendshipActive);
 
 			ps.executeUpdate();
-			
+
 			System.out.println("insertion success");
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -575,7 +576,7 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 		updateUsersBooleanColWith(userID, DbContract.COL_USER_IS_ACTIVE, isActive);
 	}
 
-	public boolean UserActivationStatus(String username){
+	public boolean UserActivationStatus(String username) {
 		boolean res = false;
 
 		String col = DbContract.COL_USER_IS_ACTIVE;
@@ -583,7 +584,7 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 		String condition = DbContract.COL_USERNAME + " = ?";
 
 		String query = prepareSelectStatementWith(col, table, condition);
-		
+
 		try (Connection con = DataSource.getDataSource().getConnection();
 				PreparedStatement ps = con.prepareStatement(query)) {
 
@@ -602,9 +603,9 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 		}
 
 		return res;
-		
+
 	}
-	
+
 	/**
 	 * Updates value of the column DbContract.COL_IS_ADMIN of the specified user
 	 * 
@@ -729,13 +730,12 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 	 *         challangeAccepted is true as well returns all challenges which
 	 *         user has already accepted and therefore completed
 	 */
-	public SortedSet<Challenge> getChallangeRequest(int receiverID, boolean challangeSeen, boolean challangeAccepted) {
+	public SortedSet<Challenge> getChallangeRequest(int receiverID) {
 		SortedSet<Challenge> result = new TreeSet<Challenge>();
 
 		String tables = DbContract.TABLE_CHALLENGES + " c, " + DbContract.TABLE_MESSAGES + " m";
 		String condition = "m." + DbContract.COL_MESSAGE_ID + " = c." + DbContract.COL_MESSAGE_ID + " AND m."
-				+ DbContract.COL_RECEIVER_ID + " = ? AND c." + DbContract.COL_CHALLANGE_SEEN + " = ? AND c."
-				+ DbContract.COL_CHALLANGE_ACCEPTED + " = ?";
+				+ DbContract.COL_RECEIVER_ID + " = ?";
 
 		String query = prepareSelectStatementWith("*", tables, condition);
 
@@ -743,8 +743,6 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 				PreparedStatement ps = con.prepareStatement(query)) {
 
 			ps.setInt(1, receiverID);
-			ps.setBoolean(2, challangeSeen);
-			ps.setBoolean(3, challangeAccepted);
 
 			try (ResultSet rs = ps.executeQuery()) {
 
@@ -753,6 +751,8 @@ public class UserDAO extends BasicQuizWebSiteDAO {
 					int quizID = rs.getInt(DbContract.COL_QUIZ_ID);
 					String txt = rs.getString(DbContract.COL_MESSAGE_TEXT);
 					Timestamp sentOn = rs.getTimestamp(DbContract.COL_TIME_SENT);
+					boolean challangeSeen = rs.getBoolean(DbContract.COL_CHALLANGE_SEEN);
+					boolean challangeAccepted = rs.getBoolean(DbContract.COL_CHALLANGE_ACCEPTED);
 
 					Challenge msg = new Challenge(senderID, receiverID, quizID, txt, sentOn, challangeSeen,
 							challangeAccepted);

@@ -81,7 +81,7 @@ public class DbContract {
 	public static final String COL_TIME_SENT = "time_sent";
 	public static final String COL_MESSAGE_TEXT = "txt";
 	
-	public static final String TABLE_CHALLENGES = "challanges";
+	public static final String TABLE_CHALLENGES = "challenges";
 	public static final String COL_CHALLANGE_ACCEPTED = "challange_accepted";
 	public static final String COL_CHALLANGE_SEEN = "challange_seen";
 	

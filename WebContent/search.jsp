@@ -77,7 +77,7 @@
 		%>
 
 		<h6>
-			<a href="<%=users[i].getURL()%>"> <%= users[i].getFirstName() %> <%= users[i].getLastName()%></a>
+			<a href="<%=users[i].getURL()%>"> <%= users[i].getUsername() %></a>
 		</h6>
 		<%
 			}
